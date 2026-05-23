@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barry Sampath — Cybersecurity Portfolio</title>
+<meta name="description" content="Barry Sampath — QUT cybersecurity and IT student. Blue-team security, IAM, Python. Brisbane, QLD.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ DESIGN TOKENS ═══ */
+:root{
+  --bg:#0D1117;--surf:#161B22;--bdr:#21262D;
+  --teal:#00D4AA;--coral:#F78166;--purple:#a78bfa;
+  --txt:#E6EDF3;--muted:#8B949E;--dim:#484F58;
+  --ta8:rgba(0,212,170,.08);--ta20:rgba(0,212,170,.2);
+  --ca8:rgba(247,129,102,.08);--ca20:rgba(247,129,102,.2);
+  --beyond-bg:#0f0c08;--beyond-surf:#1a150e;
+  --beyond-bdr:#2a1f14;--beyond-txt:#9a8a78;
+  --shadow:none;
+  --fdisp:'Space Grotesk',sans-serif;
+  --fbody:'Inter',sans-serif;
+  --fmono:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(.16,1,.3,1)
+}
+[data-theme="light"]{
+  --bg:#F5F7FA;--surf:#FFFFFF;--bdr:#DDE1E7;
+  --teal:#007A61;--coral:#C44228;--purple:#6d28d9;
+  --txt:#1A1F2E;--muted:#4A5568;--dim:#8896A7;
+  --ta8:rgba(0,122,97,.08);--ta20:rgba(0,122,97,.2);
+  --ca8:rgba(196,66,40,.08);--ca20:rgba(196,66,40,.2);
+  --beyond-bg:#EDE8E1;--beyond-surf:#FFFFFF;
+  --beyond-bdr:#D8D0C6;--beyond-txt:#5C4E42;
+  --shadow:0 1px 4px rgba(0,0,0,.06),0 0 0 1px var(--bdr)
+}
+
+/* ═══ BASE ═══ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--fbody);font-size:16px;line-height:1.65;overflow-x:hidden;transition:background .35s,color .35s}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:3px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+
+/* ═══ DUAL-THEME TEXT ═══ */
+[data-theme="dark"] .lm{display:none}
+[data-theme="light"] .dm{display:none}
+
+/* ═══ NAV ═══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;transition:background .3s,border-color .3s}
+nav.scrolled{background:rgba(13,17,23,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bdr)}
+[data-theme="light"] nav.scrolled{background:rgba(245,247,250,.96);box-shadow:0 1px 0 var(--bdr)}
+.nlogo{font-family:var(--fmono);color:var(--teal);font-size:13px}
+.nlinks{display:flex;align-items:center;gap:28px;list-style:none}
+.nlinks a{color:var(--muted);font-size:13px;transition:color .2s;position:relative}
+.nlinks a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--teal);transition:width .2s}
+.nlinks a:hover{color:var(--txt)}.nlinks a:hover::after,.nlinks a.act::after{width:100%}
+.nlinks a.act{color:var(--teal)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.tbtn{background:none;border:1px solid var(--bdr);width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:border-color .2s;color:var(--muted)}
+.tbtn:hover{border-color:var(--teal)}
+[data-theme="dark"] .tbtn .sun{display:none}
+[data-theme="light"] .tbtn .moon{display:none}
+.ncv{font-family:var(--fmono);font-size:12px;color:var(--teal);border:1px solid var(--teal);padding:7px 14px;border-radius:4px;transition:background .2s,color .2s}
+.ncv:hover{background:var(--teal);color:var(--bg)}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hbg span{display:block;width:22px;height:1.5px;background:var(--txt)}
+.mmenu{display:none;position:fixed;inset:0;background:var(--bg);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.mmenu.open{display:flex}
+.mmenu a{font-family:var(--fdisp);font-size:26px;font-weight:700;transition:color .2s}
+.mmenu a:hover{color:var(--teal)}
+
+/* ═══ DARK MODE HINT — positioned dynamically by JS ═══ */
+.dm-hint{
+  position:fixed;z-index:101;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  opacity:0;pointer-events:none;transition:opacity .5s;
+  /* top/left set by JS */
+}
+.dm-hint.show{opacity:1}
+/* Straight-up bouncing arrow pointing at theme button above */
+.dm-hint svg{color:var(--teal);animation:hintBounce 1.3s ease-in-out infinite}
+.dm-hint-label{font-family:var(--fmono);font-size:10px;color:var(--muted);white-space:nowrap;letter-spacing:.5px}
+@keyframes hintBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+
+/* ═══ SECTION BASE ═══ */
+.sec{padding:110px 40px;max-width:1100px;margin:0 auto}
+.slabel{font-family:var(--fmono);font-size:11px;color:var(--teal);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+[data-theme="light"] .slabel{letter-spacing:2px}
+.stitle{font-family:var(--fdisp);font-size:40px;font-weight:700;line-height:1.15;margin-bottom:44px}
+[data-theme="light"] .stitle{font-size:36px;letter-spacing:-.3px}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.reveal.vis{opacity:1;transform:translateY(0)}
+
+/* ═══ HERO ═══ */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding:0 40px;max-width:100%}
+.hbg-wrap{position:absolute;inset:0;overflow:hidden;z-index:0}
+#gc{width:100%;height:100%}
+.hcnt{position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%}
+.hpre{font-family:var(--fmono);font-size:13px;color:var(--teal);margin-bottom:14px;opacity:0;animation:fup .6s ease forwards .2s}
+.hname{font-family:var(--fdisp);font-size:clamp(44px,7.5vw,78px);font-weight:700;line-height:1.05;margin-bottom:18px;opacity:0;animation:fup .6s ease forwards .4s}
+.hname em{color:var(--teal);font-style:normal}
+.htype{font-family:var(--fmono);font-size:clamp(15px,2.2vw,20px);color:var(--teal);margin-bottom:14px;min-height:28px;opacity:0;animation:fup .6s ease forwards .6s}
+.htype::after{content:'|';animation:blink 1s step-end infinite}
+.hsub{font-size:17px;color:var(--muted);margin-bottom:8px;opacity:0;animation:fup .6s ease forwards .8s}
+.hloc{font-family:var(--fmono);font-size:12px;color:var(--dim);margin-bottom:38px;opacity:0;animation:fup .6s ease forwards 1s}
+.hloc em{color:var(--teal);font-style:normal}
+.hbtns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fup .6s ease forwards 1.2s}
+.bp{background:var(--teal);color:var(--bg);padding:13px 26px;border-radius:6px;font-weight:600;font-size:14px;transition:filter .2s,transform .2s;display:inline-block}
+.bp:hover{filter:brightness(1.09);transform:translateY(-2px)}
+.bg2{border:1px solid var(--bdr);color:var(--txt);padding:13px 26px;border-radius:6px;font-size:14px;transition:border-color .2s,transform .2s;display:inline-block}
+.bg2:hover{border-color:var(--muted);transform:translateY(-2px)}
+.sci{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;animation:fup .6s ease forwards 1.5s}
+.sci span{font-family:var(--fmono);font-size:10px;color:var(--dim);letter-spacing:2px}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:sb 2s ease-in-out infinite}
+
+/* ═══ ABOUT ═══ */
+#about{padding-top:80px}
+.agrid{display:grid;grid-template-columns:1fr 310px;gap:52px;align-items:start}
+.atxt p{color:var(--muted);margin-bottom:18px;font-size:16.5px;line-height:1.75}
+.atxt p strong{color:var(--txt)}
+.acard{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:22px;position:sticky;top:80px}
+[data-theme="light"] .acard{box-shadow:0 2px 12px rgba(0,0,0,.07);border-color:transparent}
+.aci{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.aci:last-child{border-bottom:none}
+.acico{font-size:17px;flex-shrink:0;margin-top:1px}
+.aclbl{font-family:var(--fmono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.acval{font-size:13px;color:var(--txt)}
+.acsub{font-size:11.5px;color:var(--muted)}
+
+/* ═══ EXPERIENCE TIMELINE ═══ */
+.tl{position:relative;padding-left:28px}
+.tl::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:1px;background:linear-gradient(to bottom,var(--teal) 40%,var(--bdr) 100%)}
+.titem{position:relative;margin-bottom:40px}.titem:last-child{margin-bottom:0}
+.tdot{position:absolute;left:-34px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--teal);border:2px solid var(--bg)}
+.tdot.act{box-shadow:0 0 0 3px rgba(0,212,170,.2);animation:pulse 2s ease-in-out infinite}
+.tdot.off{background:var(--dim)}
+.tcard{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:22px;transition:border-color .2s,transform .2s,box-shadow .2s}
+.tcard:hover{border-color:var(--teal);transform:translateX(3px)}
+[data-theme="light"] .tcard{box-shadow:var(--shadow);border-color:transparent}
+[data-theme="light"] .tcard:hover{border-color:var(--teal);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.thdr{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:5px}
+.trole{font-family:var(--fdisp);font-size:17px;font-weight:600}
+.tdate{font-family:var(--fmono);font-size:11px;color:var(--dim)}
+.tco{font-family:var(--fmono);font-size:12px;color:var(--teal);margin-bottom:12px}
+.ttags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tg{font-family:var(--fmono);font-size:10px;padding:3px 9px;border-radius:4px;border:1px solid var(--bdr);color:var(--muted)}
+.tg.t{border-color:var(--ta20);color:var(--teal);background:var(--ta8)}
+.tg.c{border-color:var(--ca20);color:var(--coral);background:var(--ca8)}
+.tbul{list-style:none;display:flex;flex-direction:column;gap:5px}
+.tbul li{font-size:13.5px;color:var(--muted);padding-left:14px;position:relative}
+.tbul li::before{content:'▸';position:absolute;left:0;color:var(--teal);font-size:9px;top:4px}
+.tnote{font-family:var(--fmono);font-size:10px;color:var(--dim);margin-top:12px;padding-top:10px;border-top:1px solid var(--bdr)}
+
+/* ═══ PROJECTS ═══ */
+.pc{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:40px;position:relative;overflow:hidden;transition:border-color .25s,box-shadow .25s}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background .3s}
+.pc:hover{border-color:rgba(0,212,170,.35)}.pc:hover::before{background:var(--teal)}
+.pc.featured::before{background:var(--teal)}
+[data-theme="light"] .pc{box-shadow:0 2px 12px rgba(0,0,0,.07);border-color:transparent}
+[data-theme="light"] .pc:hover{border-color:var(--teal);box-shadow:0 6px 24px rgba(0,0,0,.1)}
+.pc-topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.pc-num{font-family:var(--fmono);font-size:52px;font-weight:700;color:var(--bdr);line-height:1;user-select:none;transition:color .3s}
+.pc:hover .pc-num{color:var(--teal)}
+.pc-badge{font-family:var(--fmono);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:5px 11px;border-radius:4px;display:inline-flex;align-items:center;gap:5px}
+.pb-done{color:var(--teal);background:var(--ta8);border:1px solid var(--ta20)}
+.pb-wip{color:var(--coral);background:var(--ca8);border:1px solid var(--ca20);animation:bpulse 3s ease-in-out infinite}
+.pc-title{font-family:var(--fdisp);font-size:26px;font-weight:700;margin-bottom:5px}
+.pc-ctx{font-family:var(--fmono);font-size:11px;color:var(--dim);margin-bottom:28px}
+.pc-rule{border:none;border-top:1px solid var(--bdr);margin:22px 0}
+.pc-field{margin-bottom:20px}
+.pc-lbl{font-family:var(--fmono);font-size:10px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.pc-val{font-size:14.5px;color:var(--muted);line-height:1.72}
+.pc-val strong{color:var(--txt)}
+.pc-quote{border-left:3px solid var(--teal);padding:14px 20px;margin:22px 0;background:rgba(0,212,170,.03);border-radius:0 6px 6px 0}
+.pc-quote blockquote{font-style:italic;font-size:14.5px;color:var(--muted);line-height:1.7}
+.pc-two{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:4px}
+.pc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pc-chip{font-family:var(--fmono);font-size:11px;padding:4px 11px;border-radius:4px;background:var(--ta8);border:1px solid var(--ta20);color:var(--teal)}
+.pc-list{list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.pc-list li{font-size:13.5px;color:var(--muted);padding-left:18px;position:relative;line-height:1.6}
+.pc-list li::before{content:'→';position:absolute;left:0;color:var(--teal);font-family:var(--fmono);font-size:11px;top:1px}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--bdr)}
+.pc-link{font-family:var(--fmono);font-size:12px;color:var(--teal);display:inline-flex;align-items:center;gap:6px;transition:gap .2s}
+.pc-link:hover{gap:10px}
+.pc-ghost{font-family:var(--fmono);font-size:11px;color:var(--dim);border:1px solid var(--bdr);padding:5px 12px;border-radius:4px;transition:color .2s,border-color .2s}
+.pc-ghost:hover{color:var(--muted);border-color:var(--muted)}
+/* Mini project grid */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px}
+.pcard{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:26px;transition:border-color .2s,transform .2s;display:flex;flex-direction:column}
+.pcard:hover{border-color:var(--teal);transform:translateY(-3px)}
+[data-theme="light"] .pcard{box-shadow:var(--shadow);border-color:transparent}
+[data-theme="light"] .pcard:hover{border-color:var(--teal);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.pclbl{font-family:var(--fmono);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.pclbl.ip{color:var(--coral)}.pclbl.dl{color:var(--teal)}
+.pctit{font-family:var(--fdisp);font-size:18px;font-weight:600;margin-bottom:5px}
+.pcdate{font-family:var(--fmono);font-size:11px;color:var(--dim);margin-bottom:14px}
+.pcdesc{font-size:13.5px;color:var(--muted);line-height:1.65;flex:1}
+.pcstk{display:flex;flex-wrap:wrap;gap:5px;margin-top:16px}
+.pcstk .pc-chip{font-size:10px;padding:3px 9px}
+.bip{display:inline-flex;align-items:center;gap:5px;font-family:var(--fmono);font-size:10px;color:var(--coral);border:1px solid var(--ca20);background:var(--ca8);padding:3px 9px;border-radius:4px;margin-top:14px}
+.bip::before{content:'●';animation:blink 1.5s step-end infinite}
+
+/* ═══ SKILLS ═══ */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.sgrp{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:24px}
+[data-theme="light"] .sgrp{box-shadow:var(--shadow);border-color:transparent}
+.sgtit{font-family:var(--fmono);font-size:10px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.schips{display:flex;flex-wrap:wrap;gap:7px}
+.schip{font-family:var(--fmono);font-size:11px;padding:5px 11px;border-radius:4px;border:1px solid var(--bdr);color:var(--muted);transition:border-color .2s,color .2s,background .2s;cursor:default}
+.schip:hover{border-color:var(--teal);color:var(--teal);background:var(--ta8)}
+
+/* ═══ CERTIFICATIONS ═══ */
+.certg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.certc{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:20px;display:flex;align-items:flex-start;gap:14px;transition:border-color .2s}
+.certc:hover{border-color:var(--teal)}
+.certc.ip{border-color:var(--ca20);animation:bpulse 3s ease-in-out infinite}
+[data-theme="light"] .certc{box-shadow:var(--shadow);border-color:transparent}
+[data-theme="light"] .certc:hover{border-color:var(--teal)}
+[data-theme="light"] .certc.ip{border-color:var(--ca20)}
+.certico{width:40px;height:40px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--bg);border:1px solid var(--bdr)}
+.certn{font-size:14px;font-weight:500;margin-bottom:3px}
+.certi{font-family:var(--fmono);font-size:11px;color:var(--dim);margin-bottom:7px}
+.certs{font-family:var(--fmono);font-size:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px}
+.certs.ok{color:var(--teal);background:var(--ta8);border:1px solid var(--ta20)}
+.certs.go{color:var(--coral);background:var(--ca8);border:1px solid var(--ca20)}
+
+/* ═══ EDUCATION ═══ */
+.edug{display:flex;flex-direction:column;gap:14px}
+.educ{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;transition:border-color .2s}
+.educ:hover{border-color:var(--teal)}
+[data-theme="light"] .educ{box-shadow:var(--shadow);border-color:transparent}
+[data-theme="light"] .educ:hover{border-color:var(--teal)}
+.edudeg{font-family:var(--fdisp);font-size:16px;font-weight:600;margin-bottom:3px}
+.edusch{font-family:var(--fmono);font-size:12px;color:var(--teal);margin-bottom:3px}
+.edud{font-family:var(--fmono);font-size:11px;color:var(--dim)}
+.edugpa{font-family:var(--fmono);font-size:12px;color:var(--teal);background:var(--ta8);border:1px solid var(--ta20);padding:4px 11px;border-radius:4px;white-space:nowrap}
+
+/* ═══ COMMUNITY ═══ */
+.comg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.comc{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:24px;transition:border-color .2s,transform .2s}
+.comc:hover{border-color:var(--coral);transform:translateY(-3px)}
+[data-theme="light"] .comc{box-shadow:var(--shadow);border-color:transparent}
+[data-theme="light"] .comc:hover{border-color:var(--coral);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.comico{font-size:26px;margin-bottom:14px}
+.comr{font-family:var(--fdisp);font-size:15px;font-weight:600;margin-bottom:3px}
+.como{font-family:var(--fmono);font-size:11px;color:var(--coral);margin-bottom:3px}
+.comd2{font-family:var(--fmono);font-size:10px;color:var(--dim);margin-bottom:11px}
+.comdesc{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* ═══ BEYOND — hidden in light mode (not professional-relevant) ═══ */
+#beyond{background:var(--beyond-bg);max-width:100%;padding:110px 40px;transition:background .35s}
+#beyond .inner{max-width:1100px;margin:0 auto}
+#beyond .slabel{color:var(--coral)}
+#beyond .stitle{color:var(--txt);transition:color .35s}
+[data-theme="light"] #beyond .stitle{color:#1A1F2E}
+/* ★ Interests section hidden in professional/light mode */
+[data-theme="light"] #beyond{display:none}
+.bwgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.bwtile{background:var(--beyond-surf);border:1px solid var(--beyond-bdr);border-radius:8px;padding:24px;transition:border-color .2s,transform .2s}
+.bwtile:hover{border-color:var(--coral);transform:translateY(-3px)}
+.bwemi{font-size:26px;margin-bottom:12px}
+.bwlbl{font-family:var(--fmono);font-size:10px;color:var(--coral);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.bwtxt{font-size:13px;color:var(--beyond-txt);line-height:1.65}
+.bwtxt strong{color:#d4c4b0}
+
+/* ═══ CONTACT ═══ */
+#contact{text-align:center;padding-bottom:70px}
+.ctdesc{font-size:17px;color:var(--muted);max-width:520px;margin:0 auto 36px;line-height:1.7}
+.ctemail{font-family:var(--fmono);font-size:18px;color:var(--teal);display:inline-block;margin-bottom:28px;padding-bottom:3px;border-bottom:1px solid var(--ta20);transition:border-color .2s}
+.ctemail:hover{border-color:var(--teal)}
+.ctlinks{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.ctlnk{display:flex;align-items:center;gap:7px;font-family:var(--fmono);font-size:12px;color:var(--muted);border:1px solid var(--bdr);padding:9px 18px;border-radius:6px;transition:border-color .2s,color .2s,transform .2s}
+.ctlnk:hover{border-color:var(--teal);color:var(--teal);transform:translateY(-2px)}
+[data-theme="light"] .ctlnk{box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ctnote{font-family:var(--fmono);font-size:11px;color:var(--dim);margin-top:36px}
+footer{border-top:1px solid var(--bdr);padding:20px 40px;display:flex;justify-content:space-between;font-family:var(--fmono);font-size:11px;color:var(--dim)}
+footer span{color:var(--teal)}
+[data-theme="light"] footer{background:var(--surf)}
+
+/* ═══ KEYFRAMES ═══ */
+@keyframes fup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(0,212,170,.2)}50%{box-shadow:0 0 0 6px rgba(0,212,170,.08)}}
+@keyframes sb{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+@keyframes bpulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .nlinks,.ncv,.tbtn{display:none}.hbg{display:flex}
+  .sec{padding:72px 20px}#hero{padding:0 20px}
+  .hname{font-size:40px}
+  .agrid,.sgrid,.certg,.comg,.bwgrid,.pgrid{grid-template-columns:1fr}
+  .acard{position:static}
+  .pc{padding:24px}.pc-num{font-size:36px}.pc-two{grid-template-columns:1fr}
+  #beyond{padding:72px 20px}
+  footer{flex-direction:column;gap:6px;text-align:center}
+  .dm-hint{display:none}
+}
+@media(max-width:1024px) and (min-width:769px){
+  .agrid{grid-template-columns:1fr}.acard{position:static}
+  .comg,.bwgrid{grid-template-columns:1fr 1fr}
+  .pc-two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="nb" role="navigation" aria-label="Main navigation">
+  <!-- ★ REPLACE: your name/brand -->
+  <a href="#hero" class="nlogo">barry.sampath</a>
+  <ul class="nlinks" role="list">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects"><span class="dm">Projects</span><span class="lm">Projects</span></a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#community"><span class="dm">Community</span><span class="lm">Volunteering</span></a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="tbtn" id="themeBtn" aria-label="Toggle dark/light mode">
+      <span class="moon" aria-hidden="true">🌙</span>
+      <span class="sun" aria-hidden="true">☀️</span>
+    </button>
+    <!-- ★ REPLACE: href to your actual resume PDF -->
+    <a href="resume/barry-sampath-resume.pdf" download class="ncv">Download Resume</a>
+    <button class="hbg" id="hamburger" aria-label="Open menu" aria-expanded="false" onclick="tmm()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Dark mode hint — arrow points UP at theme button, positioned by JS -->
+<div class="dm-hint" id="dmHint" aria-hidden="true">
+  <!-- Straight upward arrow, bounces DOWN to draw eye UP toward button -->
+  <svg width="14" height="26" viewBox="0 0 14 26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="7" y1="24" x2="7" y2="4"/>
+    <polyline points="2,9 7,4 12,9"/>
+  </svg>
+  <span class="dm-hint-label">try dark mode</span>
+</div>
+
+<div class="mmenu" id="mm" role="dialog" aria-modal="true">
+  <a href="#about" onclick="tmm()">About</a>
+  <a href="#experience" onclick="tmm()">Experience</a>
+  <a href="#projects" onclick="tmm()">Projects</a>
+  <a href="#skills" onclick="tmm()">Skills</a>
+  <a href="#community" onclick="tmm()">Community</a>
+  <a href="#contact" onclick="tmm()">Contact</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero" aria-label="Introduction">
+  <div class="hbg-wrap" aria-hidden="true"><canvas id="gc"></canvas></div>
+  <div class="hcnt">
+    <p class="hpre">// Hello, world.</p>
+    <!-- ★ REPLACE: Your full name and nickname -->
+    <h1 class="hname">Bharath <em>"Barry"</em><br>Sampath</h1>
+    <p class="htype" id="ht" aria-label="Cybersecurity Student, Blue Team Analyst, Builder of Things"></p>
+    <p class="hsub">Blue-team thinker. Builder. Problem solver.</p>
+    <!-- ★ REPLACE: Your location and availability -->
+    <p class="hloc">📍 Brisbane, QLD · <em>Open to opportunities</em></p>
+    <div class="hbtns">
+      <a href="#projects" class="bp">View My Work ↓</a>
+      <a href="#contact" class="bg2">Get In Touch</a>
+    </div>
+  </div>
+  <div class="sci" aria-hidden="true"><span>SCROLL</span><div class="sdot"></div></div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about" class="sec" aria-labelledby="about-h">
+  <div class="slabel reveal">
+    <span class="dm">// 01. About</span>
+    <span class="lm">01 — Profile</span>
+  </div>
+  <h2 id="about-h" class="stitle reveal">
+    <span class="dm">The Story So Far</span>
+    <span class="lm">About Me</span>
+  </h2>
+  <div class="agrid">
+    <div class="atxt reveal">
+      <!-- Dark mode: personal, character-driven opener -->
+      <p class="dm">I'm Barry — a cybersecurity and IT student at QUT, based in Brisbane. I'm the kind of person who leans into hard things rather than away from them.</p>
+      <!-- Light mode: professional, portfolio-ready opener -->
+      <p class="lm">I'm Barry — a cybersecurity and IT student at QUT (Cyber Security & Artificial Intelligence), based in Brisbane, with a focused interest in <strong>blue-team security, identity management, and defensive monitoring</strong>.</p>
+
+      <p>I grew up in Ajman, UAE, where I led student council, tutored peers in maths, and learnt early that <strong>persistence is a skill you build, not a trait you're born with.</strong> Moving countries taught me how to adapt fast and find your feet in unfamiliar territory.</p>
+      <p>Now I'm building toward a career in <strong>blue-team security</strong> — SOC analysis, incident response, and defensive monitoring. I'm drawn to this field because it's genuinely important work: protecting systems, catching threats, and keeping things running when they shouldn't stop.</p>
+      <p>I don't just study security. I build home labs, volunteer at CTF events, configure Microsoft Entra ID in real environments, and document everything as if I'm already doing the job — because in many ways, I already am.</p>
+      <p>Outside of screens: I travel when I can, I play chess, I'm learning guitar, and I take fitness seriously. I've lived across two countries and that's shaped how I approach everything — with <strong>curiosity, adaptability, and a real respect for hard work.</strong></p>
+    </div>
+    <aside class="acard reveal" aria-label="Quick facts">
+      <div class="aci"><div class="acico">🎓</div><div><div class="aclbl">Currently Studying</div><div class="acval">B. Information Technology</div><div class="acsub">Cyber Security & AI · QUT</div></div></div>
+      <div class="aci"><div class="acico">📊</div><div><div class="aclbl">Academic Performance</div><div class="acval">GPA 6.286 / 7.000</div><div class="acsub">Graduating Nov 2027</div></div></div>
+      <div class="aci"><div class="acico">🔒</div><div><div class="aclbl">Focus Area</div><div class="acval">Blue Team · SOC · IAM</div><div class="acsub">Defensive Security</div></div></div>
+      <div class="aci"><div class="acico">📍</div><div><div class="aclbl">Location</div><div class="acval">Brisbane, QLD</div><div class="acsub">Originally: Ajman, UAE 🇦🇪</div></div></div>
+      <!-- Real email from resume -->
+      <div class="aci"><div class="acico">✉️</div><div><div class="aclbl">Contact</div><div class="acval" style="font-size:12px"><a href="mailto:barry.sampath@outlook.com" style="color:var(--teal)">barry.sampath@outlook.com</a></div></div></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══ EXPERIENCE ═══ -->
+<section id="experience" class="sec" aria-labelledby="exp-h">
+  <div class="slabel reveal">
+    <span class="dm">// 02. Experience</span>
+    <span class="lm">02 — Experience</span>
+  </div>
+  <h2 id="exp-h" class="stitle reveal">
+    <span class="dm">Where I've Worked</span>
+    <span class="lm">Work Experience</span>
+  </h2>
+  <div class="tl">
+
+    <article class="titem reveal">
+      <div class="tdot act" aria-hidden="true"></div>
+      <div class="tcard">
+        <div class="thdr"><div class="trole">Cybersecurity Consultant — IAM</div><div class="tdate">Apr 2026 – Present</div></div>
+        <div class="tco">ScienceGears · Brisbane, QLD</div>
+        <div class="ttags"><span class="tg t">Cybersecurity</span><span class="tg t">IAM</span><span class="tg t">Microsoft Entra ID</span><span class="tg c">Current</span></div>
+        <ul class="tbul">
+          <li>Configure and manage Microsoft Entra ID identity and access management environments</li>
+          <li>Support cybersecurity incident handling, risk analysis, and security improvement activities</li>
+          <li>Implement and strengthen multi-factor authentication controls across accounts</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="titem reveal">
+      <div class="tdot act" aria-hidden="true"></div>
+      <div class="tcard">
+        <div class="thdr"><div class="trole">Event Officer</div><div class="tdate">Mar 2026 – Present</div></div>
+        <div class="tco">Code Network · Brisbane, QLD</div>
+        <div class="ttags"><span class="tg t">Event Management</span><span class="tg t">Stakeholder Communication</span><span class="tg c">Current</span></div>
+        <ul class="tbul">
+          <li>Coordinate university technology events — venue bookings, scheduling, and on-the-day logistics</li>
+          <li>Manage communication with stakeholders, volunteers, and attendees to ensure smooth delivery</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="titem reveal">
+      <div class="tdot off" aria-hidden="true"></div>
+      <div class="tcard">
+        <div class="thdr"><div class="trole">Technology Consultant — Power Platform</div><div class="tdate">Apr – May 2026</div></div>
+        <div class="tco">DynamX Institute · Brisbane, QLD</div>
+        <div class="ttags"><span class="tg t">Consulting</span><span class="tg t">Power Platform</span><span class="tg t">Business Analysis</span></div>
+        <ul class="tbul">
+          <li>Built a working business system from requirements through to delivery using Power Platform</li>
+          <li>Applied business process modelling, solution design, and structured feedback-driven refinement</li>
+          <li>Practised client-style problem analysis and professional consulting skills throughout the engagement</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Customer Service: current role — opacity restored, "Current" tag added -->
+    <article class="titem reveal">
+      <div class="tdot act" aria-hidden="true"></div>
+      <div class="tcard">
+        <div class="thdr"><div class="trole">Customer Service Supervisor</div><div class="tdate">May 2025 – Present</div></div>
+        <div class="tco">Coles Group · Brisbane, QLD</div>
+        <div class="ttags"><span class="tg">Team Leadership</span><span class="tg">Operations</span><span class="tg c">Current</span></div>
+        <ul class="tbul">
+          <li>Supervise team members and oversee day-to-day operations in a high-volume retail environment</li>
+          <li>Train staff on service standards, POS procedures, refunds, and professional customer communication</li>
+        </ul>
+        <div class="tnote">⚡ Maintained alongside full-time study and concurrent technology roles.</div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<section id="projects" class="sec" aria-labelledby="proj-h">
+  <div class="slabel reveal">
+    <span class="dm">// 03. Projects</span>
+    <span class="lm">03 — Selected Work</span>
+  </div>
+  <h2 id="proj-h" class="stitle reveal">
+    <span class="dm">Things I've Built</span>
+    <span class="lm">Selected Projects</span>
+  </h2>
+
+  <!-- 01: LUNA — Flagship case study -->
+  <!-- ★ REPLACE: GitHub link, tech stack, and all project content -->
+  <article class="pc featured reveal" aria-labelledby="p1-title">
+    <div class="pc-topbar">
+      <div class="pc-num" aria-hidden="true">01</div>
+      <span class="pc-badge pb-done" aria-label="Status: Completed">● Completed</span>
+    </div>
+    <h3 id="p1-title" class="pc-title">LUNA — TurboPi Intelligent Robot</h3>
+    <p class="pc-ctx">QUT University Project · Jul – Nov 2025 · Python · Raspberry Pi · Computer Vision</p>
+    <hr class="pc-rule" aria-hidden="true">
+    <div class="pc-field">
+      <div class="pc-lbl">What it is</div>
+      <p class="pc-val">A Raspberry Pi 4B-based intelligent robot built on the Hiwonder TurboPi platform. The system integrates hardware assembly, Python programming, wireless control, computer vision, offline voice interaction, and PID-tuned movement into one cohesive robotics platform — built collaboratively with a partner from the ground up.</p>
+    </div>
+    <div class="pc-field">
+      <div class="pc-lbl">Why I built it</div>
+      <p class="pc-val">This started as a university robotics unit but became something I actually cared about finishing. I wanted to understand how software decisions translate into real physical behaviour — how a bad control loop causes a robot to spin, or how a missed sensor reading ends a demo early. You can't ignore that kind of feedback. It keeps you honest.</p>
+    </div>
+    <div class="pc-quote">
+      <blockquote>"This was the first project where I could touch what I'd built. Every bug had a physical consequence. You could hear when something wasn't working."</blockquote>
+    </div>
+    <div class="pc-field">
+      <div class="pc-lbl">What I explored</div>
+      <p class="pc-val">How do you integrate independent hardware subsystems — vision, voice, movement, web control — into one robot that responds reliably under real conditions? The core challenge wasn't building individual features. It was making them <strong>coexist without breaking each other</strong>, and understanding the failure modes when they do.</p>
+    </div>
+    <hr class="pc-rule" aria-hidden="true">
+    <div class="pc-two">
+      <div>
+        <div class="pc-lbl">Tech stack</div>
+        <div class="pc-chips">
+          <span class="pc-chip">Python</span><span class="pc-chip">Flask</span><span class="pc-chip">OpenCV</span>
+          <span class="pc-chip">Raspberry Pi 4B</span><span class="pc-chip">WonderEcho</span><span class="pc-chip">I²C</span>
+          <span class="pc-chip">NumPy</span><span class="pc-chip">Tkinter</span>
+        </div>
+      </div>
+      <div>
+        <div class="pc-lbl">What I learned</div>
+        <ul class="pc-list">
+          <li>Hardware debugging is different from software debugging — consequences are immediate and visible</li>
+          <li>Defensive programming matters most in embedded systems where failure has physical impact</li>
+          <li>System integration is its own discipline, not just "connecting parts" together</li>
+          <li>Documenting decisions in real time saves the project when things break at 2am</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pc-foot">
+      <!-- ★ REPLACE: Update with direct repo URL when public -->
+      <a href="https://github.com/bharath-blazecode" target="_blank" rel="noopener" class="pc-link" aria-label="View on GitHub">View on GitHub →</a>
+      <span class="pc-ghost">Python · Robotics · Computer Vision</span>
+    </div>
+  </article>
+
+  <!-- 02 + 03: Supporting projects — minimal side-by-side -->
+  <div class="pgrid">
+    <!-- ★ REPLACE: Add GitHub/write-up link when ready -->
+    <article class="pcard reveal" aria-label="Home SOC Foundation Lab">
+      <div class="pclbl ip">● In Progress</div>
+      <div class="pctit">Home SOC Foundation Lab</div>
+      <div class="pcdate">Apr 2026 – Present · Personal Project</div>
+      <p class="pcdesc">A self-built blue-team lab replicating real SOC work. Windows and Linux endpoints in a virtualised environment, SIEM deployment with detection rules, alert triage, and incident report documentation. This is where I practise what I want to do professionally.</p>
+      <div class="pcstk">
+        <span class="pc-chip">Wazuh</span><span class="pc-chip">Splunk</span><span class="pc-chip">VirtualBox</span>
+        <span class="pc-chip">Sysmon</span><span class="pc-chip">Ubuntu</span><span class="pc-chip">ELK Stack</span>
+      </div>
+      <div class="bip">Actively building</div>
+    </article>
+
+    <!-- ★ REPLACE: Add write-up or link if available -->
+    <article class="pcard reveal" aria-label="Business System Model">
+      <div class="pclbl dl">✓ Delivered</div>
+      <div class="pctit">Business System Model</div>
+      <div class="pcdate">Apr – May 2026 · DynamX Institute</div>
+      <p class="pcdesc">A structured technology consulting engagement — took a real-world business problem from requirements analysis through system design and delivery. Applied Power Platform to build a working solution, refined through professional feedback cycles.</p>
+      <div class="pcstk">
+        <span class="pc-chip">Power Platform</span><span class="pc-chip">Power Apps</span>
+        <span class="pc-chip">Process Design</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ═══ SKILLS ═══ -->
+<section id="skills" class="sec" aria-labelledby="skills-h">
+  <div class="slabel reveal">
+    <span class="dm">// 04. Skills</span>
+    <!-- Updated: covers both technical AND professional skills -->
+    <span class="lm">04 — Skills &amp; Competencies</span>
+  </div>
+  <h2 id="skills-h" class="stitle reveal">
+    <span class="dm">What I Work With</span>
+    <span class="lm">Skills &amp; Competencies</span>
+  </h2>
+  <div class="sgrid">
+    <!-- ★ REPLACE: Update skills to match your actual proficiencies -->
+    <div class="sgrp reveal">
+      <div class="sgtit">Security</div>
+      <div class="schips"><span class="schip">Microsoft Entra ID</span><span class="schip">IAM & Access Controls</span><span class="schip">MFA Implementation</span><span class="schip">Incident Response</span><span class="schip">SIEM / Log Analysis</span><span class="schip">Risk & Compliance</span><span class="schip">Cybersecurity Fundamentals</span><span class="schip">CTF Experience</span></div>
+    </div>
+    <div class="sgrp reveal">
+      <div class="sgtit">Programming & Data</div>
+      <div class="schips"><span class="schip">Python</span><span class="schip">SQL</span><span class="schip">Data Analysis</span><span class="schip">Basic AI / ML</span><span class="schip">Power Platform</span><span class="schip">OpenCV</span><span class="schip">Flask</span></div>
+    </div>
+    <div class="sgrp reveal">
+      <div class="sgtit">Systems & Tools</div>
+      <div class="schips"><span class="schip">Raspberry Pi</span><span class="schip">GitHub</span><span class="schip">Microsoft 365</span><span class="schip">VirtualBox / VMware</span><span class="schip">Linux</span><span class="schip">Windows Server</span><span class="schip">Wazuh / Splunk</span><span class="schip">Networking Fundamentals</span></div>
+    </div>
+    <div class="sgrp reveal">
+      <div class="sgtit">Professional</div>
+      <div class="schips"><span class="schip">Stakeholder Communication</span><span class="schip">Team Leadership</span><span class="schip">Problem Solving</span><span class="schip">Event Coordination</span><span class="schip">Training & Peer Support</span><span class="schip">Adaptability</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CERTIFICATIONS ═══ -->
+<section id="certifications" class="sec" aria-labelledby="cert-h">
+  <div class="slabel reveal">
+    <span class="dm">// 05. Certifications</span>
+    <span class="lm">05 — Certifications</span>
+  </div>
+  <h2 id="cert-h" class="stitle reveal">
+    <span class="dm">Structured Learning</span>
+    <span class="lm">Certifications &amp; Training</span>
+  </h2>
+  <div class="certg">
+    <!-- ★ REPLACE: Update certifications, issuers, and statuses -->
+    <div class="certc reveal"><div class="certico" aria-hidden="true">🔐</div><div><div class="certn">Foundations of Cybersecurity</div><div class="certi">Google · 2025</div><span class="certs ok">✓ Complete</span></div></div>
+    <div class="certc reveal"><div class="certico" aria-hidden="true">🏦</div><div><div class="certn">Introduction to Data Science</div><div class="certi">Forage × Commonwealth Bank · 2025</div><span class="certs ok">✓ Complete</span></div></div>
+    <div class="certc reveal"><div class="certico" aria-hidden="true">🤖</div><div><div class="certn">Introduction to Artificial Intelligence</div><div class="certi">Vedantu · 2021</div><span class="certs ok">✓ Complete</span></div></div>
+    <div class="certc ip reveal"><div class="certico" aria-hidden="true">🎓</div><div><div class="certn">CS50's Introduction to Python</div><div class="certi">Harvard / edX · 2026</div><span class="certs go">⟳ In Progress</span></div></div>
+  </div>
+</section>
+
+<!-- ═══ EDUCATION ═══ -->
+<section id="education" class="sec" aria-labelledby="edu-h">
+  <div class="slabel reveal">
+    <span class="dm">// 06. Education</span>
+    <span class="lm">06 — Education</span>
+  </div>
+  <h2 id="edu-h" class="stitle reveal">
+    <span class="dm">Academic Background</span>
+    <span class="lm">Education</span>
+  </h2>
+  <div class="edug">
+    <!-- ★ REPLACE: Update degrees, institutions, dates, GPAs -->
+    <div class="educ reveal"><div><div class="edudeg">Bachelor of Information Technology</div><div class="edusch">QUT · Cyber Security & Artificial Intelligence</div><div class="edud">Feb 2026 – Nov 2027 · Brisbane, QLD</div></div><div class="edugpa">GPA 6.286 / 7.0</div></div>
+    <div class="educ reveal"><div><div class="edudeg">Diploma of Information Technology</div><div class="edusch">QUT · Brisbane, QLD</div><div class="edud">Feb 2025 – Nov 2025</div></div><div class="edugpa">GPA 6.250 / 7.0</div></div>
+    <div class="educ reveal"><div><div class="edudeg">CBSE Senior Secondary — Science Stream</div><div class="edusch">Habitat Schools · Ajman, UAE 🇦🇪</div><div class="edud">Apr 2019 – May 2024</div></div></div>
+  </div>
+</section>
+
+<!-- ═══ COMMUNITY ═══
+     Code Network moved to Experience (it's work, not volunteering).
+     Habitat Schools Student Council added to show leadership history.
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="community" class="sec" aria-labelledby="com-h">
+  <div class="slabel reveal">
+    <span class="dm">// 07. Community</span>
+    <span class="lm">07 — Volunteering</span>
+  </div>
+  <h2 id="com-h" class="stitle reveal">
+    <span class="dm">Giving Back</span>
+    <span class="lm">Community Involvement</span>
+  </h2>
+  <div class="comg">
+    <!-- ★ REPLACE: Update volunteer roles, organisations, dates, descriptions -->
+    <div class="comc reveal"><div class="comico" aria-hidden="true">🚩</div><div class="comr">CTF Events Volunteer</div><div class="como">Cyber in Motion</div><div class="comd2">Apr 2026 – Present</div><p class="comdesc">Supporting the planning and delivery of hands-on cybersecurity events, including Capture the Flag activities. This is where I learn alongside the community I'm actively building toward.</p></div>
+    <div class="comc reveal"><div class="comico" aria-hidden="true">🎓</div><div class="comr">Events & Student Engagement</div><div class="como">QUT Guild</div><div class="comd2">Aug 2025 – Present</div><p class="comdesc">Supporting student engagement initiatives through event assistance, communication, and on-the-day volunteer support across campus events and programs.</p></div>
+    <!-- Habitat Schools: shows leadership background and global history -->
+    <div class="comc reveal"><div class="comico" aria-hidden="true">🏫</div><div class="comr">Student Council Member</div><div class="como">Habitat Schools</div><div class="comd2">Apr 2023 – Mar 2024 · Ajman, UAE</div><p class="comdesc">Contributed to school initiatives through teamwork and leadership. Informally supported classmates with maths — an early sign of how I approach problems and people.</p></div>
+  </div>
+</section>
+
+<!-- ═══ BEYOND THE SCREEN (dark mode only — hidden in light) ═══ -->
+<section id="beyond" aria-labelledby="beyond-h">
+  <div class="inner">
+    <div class="slabel reveal">// 08. Beyond the Screen</div>
+    <h2 id="beyond-h" class="stitle reveal">What Makes Me, Me</h2>
+    <div class="bwgrid">
+      <!-- ★ REPLACE: Your interests and descriptions -->
+      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">✈️</div><div class="bwlbl">Travel</div><p class="bwtxt">I've lived in two countries and counting. Moving from the UAE to Australia wasn't just a relocation — it was a reset. <strong>Wanderlust is real</strong>, and so is the perspective it gives you.</p></div>
+      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">♟</div><div class="bwlbl">Chess</div><p class="bwtxt">Chess taught me that <strong>patience is a strategy, not a flaw.</strong> Every game is a system — you learn to think three moves ahead, and get comfortable with uncertainty.</p></div>
+      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">🎵</div><div class="bwlbl">Music & Guitar</div><p class="bwtxt">Learning guitar — no formal lessons yet, but <strong>that's kind of the point.</strong> Some things are worth figuring out on your own, at your own pace.</p></div>
+      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">🥊</div><div class="bwlbl">Boxing</div><p class="bwtxt">Discipline and controlled intensity. Boxing isn't just physical — it's a mental exercise in staying composed when everything is pushing back.</p></div>
+      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">🏸</div><div class="bwlbl">Badminton</div><p class="bwtxt">Fast sport. <strong>Faster reflexes.</strong> Good for the mind, better for the competitive streak.</p></div>
+      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">📚</div><div class="bwlbl">Always Learning</div><p class="bwtxt">I absorb anything that helps me grow — financially, technically, or just as a person. <strong>Curiosity isn't a phase.</strong> It's the whole point.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact" class="sec" aria-labelledby="contact-h">
+  <div class="slabel reveal">
+    <span class="dm">// 09. Contact</span>
+    <span class="lm">08 — Contact</span>
+  </div>
+  <h2 id="contact-h" class="stitle reveal">
+    <span class="dm">Let's Talk</span>
+    <span class="lm">Get In Touch</span>
+  </h2>
+  <!-- ★ REPLACE: Update availability/message if needed -->
+  <p class="ctdesc reveal">I'm currently open to cybersecurity internships, blue-team roles, and collaborative projects in Brisbane. If you're building something interesting or hiring, I'd like to hear from you.</p>
+  <!-- Real email from resume -->
+  <a href="mailto:barry.sampath@outlook.com" class="ctemail reveal">barry.sampath@outlook.com</a>
+  <div class="ctlinks reveal">
+    <!-- Real LinkedIn profile -->
+    <a href="https://www.linkedin.com/in/barrysampath" target="_blank" rel="noopener" class="ctlnk" aria-label="LinkedIn profile (opens in new tab)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      LinkedIn
+    </a>
+    <!-- Real GitHub profile -->
+    <a href="https://github.com/bharath-blazecode" target="_blank" rel="noopener" class="ctlnk" aria-label="GitHub profile (opens in new tab)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+      GitHub
+    </a>
+    <!-- Clickable email link -->
+    <a href="mailto:barry.sampath@outlook.com" class="ctlnk" aria-label="Send email">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+      Email Me
+    </a>
+  </div>
+  <!-- ★ REPLACE: Update location and year as needed -->
+  <p class="ctnote reveal">Brisbane, QLD · Available for opportunities in 2026</p>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <!-- ★ REPLACE: Your name/brand -->
+  <span>barry.sampath</span>
+  <span style="color:var(--dim)">Built with curiosity · Brisbane 2026</span>
+</footer>
+
+<!-- ═══ JAVASCRIPT ═══ -->
+<script>
+/* ── Animated grid canvas ── */
+const cv=document.getElementById('gc'),cx=cv.getContext('2d');
+function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight}
+rsz();window.addEventListener('resize',()=>{rsz();positionHint()});
+function dg(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  const s=52,t=Date.now()/9000;
+  const light=document.documentElement.getAttribute('data-theme')==='light';
+  cx.strokeStyle=light?'rgba(0,122,97,0.045)':'rgba(0,212,170,0.035)';
+  cx.lineWidth=1;
+  for(let x=0;x<cv.width+s;x+=s){cx.beginPath();cx.moveTo(x+Math.sin(t)*5,0);cx.lineTo(x+Math.sin(t)*5,cv.height);cx.stroke()}
+  for(let y=0;y<cv.height+s;y+=s){cx.beginPath();cx.moveTo(0,y+Math.cos(t)*5);cx.lineTo(cv.width,y+Math.cos(t)*5);cx.stroke()}
+  cx.fillStyle=light?'rgba(0,122,97,0.07)':'rgba(0,212,170,0.055)';
+  for(let x=0;x<cv.width;x+=s)for(let y=0;y<cv.height;y+=s){cx.beginPath();cx.arc(x,y,1.2,0,Math.PI*2);cx.fill()}
+  requestAnimationFrame(dg)
+}
+dg();
+
+/* ── Typing animation ──
+   ★ REPLACE: Edit these phrases if you want different rotating titles */
+const phrases=['Cybersecurity Student_','Blue Team Analyst_','Builder of Things_'];
+let pi=0,ci=0,del=false,pau=0;
+const el=document.getElementById('ht');
+function typ(){
+  if(pau>0){pau--;setTimeout(typ,50);return}
+  const cur=phrases[pi];
+  if(!del){el.textContent=cur.slice(0,++ci);if(ci===cur.length){del=true;pau=44}setTimeout(typ,78)}
+  else{el.textContent=cur.slice(0,--ci);if(ci===0){del=false;pi=(pi+1)%phrases.length;pau=12}setTimeout(typ,38)}
+}
+setTimeout(typ,1500);
+
+/* ── Nav scroll ── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nb').classList.toggle('scrolled',scrollY>40)
+});
+
+/* ── Reveal animations ── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      e.target.style.transitionDelay=(i*.07)+'s';
+      e.target.classList.add('vis');obs.unobserve(e.target)
+    }
+  })
+},{threshold:.08,rootMargin:'0px 0px -32px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ── Active nav link ── */
+const secs=document.querySelectorAll('section[id]');
+const nas=document.querySelectorAll('.nlinks a');
+secs.forEach(s=>new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)nas.forEach(a=>{a.classList.toggle('act',a.getAttribute('href')==='#'+s.id)})})
+},{threshold:.3}).observe(s));
+
+/* ── Mobile menu ── */
+function tmm(){
+  const m=document.getElementById('mm'),h=document.getElementById('hamburger');
+  const o=m.classList.toggle('open');
+  h.setAttribute('aria-expanded',String(o));
+  document.body.style.overflow=o?'hidden':'';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('mm').classList.contains('open'))tmm()
+});
+
+/* ═══════════════════════════════════════════════
+   DARK MODE HINT — positioned directly below theme button
+   Arrow points UP toward the button above it
+   ═══════════════════════════════════════════════ */
+const hint=document.getElementById('dmHint');
+const themeBtn=document.getElementById('themeBtn');
+let hintTimer=null;
+
+/* Position hint centered below the theme toggle button */
+function positionHint(){
+  if(!themeBtn||!hint)return;
+  const br=themeBtn.getBoundingClientRect();
+  const hW=hint.offsetWidth||80;
+  /* Center horizontally under the button */
+  const left=br.left+br.width/2-hW/2;
+  hint.style.left=Math.max(8,left)+'px';
+  hint.style.top=(br.bottom+10)+'px';
+}
+
+function showHint(){
+  if(document.documentElement.getAttribute('data-theme')==='light'){
+    positionHint();
+    hintTimer=setTimeout(()=>{positionHint();hint.classList.add('show')},2200)
+  }
+}
+function hideHint(){clearTimeout(hintTimer);hint.classList.remove('show')}
+
+/* ═══════════════════════════════════════════════
+   CREATIVE TRANSITION: Light → Dark (pixel cascade)
+   Professional Transition: Dark → Light (instant fade)
+   ═══════════════════════════════════════════════ */
+function pixelToDark(cb){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;overflow:hidden;pointer-events:all';
+  document.body.appendChild(ov);
+  const C=22,R=15;
+  const W=Math.ceil(window.innerWidth/C);
+  const H=Math.ceil(window.innerHeight/R);
+  const frag=document.createDocumentFragment();
+  let maxMs=0;
+  for(let r=0;r<R;r++){
+    for(let c=0;c<C;c++){
+      const dist=Math.sqrt((C-c)**2+(r*0.8)**2);
+      const delay=Math.round(dist*30);
+      if(delay>maxMs)maxMs=delay;
+      const t=document.createElement('div');
+      t.style.cssText=`position:absolute;left:${c*W}px;top:${r*H}px;width:${W+1}px;height:${H+1}px;background:#0D1117;transform:scale(0);transform-origin:top right;border-radius:2px`;
+      frag.appendChild(t);
+      setTimeout(()=>{t.style.transition='transform 0.22s cubic-bezier(.2,.8,.3,1)';t.style.transform='scale(1)'},delay);
+    }
+  }
+  ov.appendChild(frag);
+  setTimeout(()=>{
+    cb();
+    setTimeout(()=>{ov.style.transition='opacity 0.2s';ov.style.opacity='0';setTimeout(()=>ov.remove(),200)},60);
+  },maxMs+240);
+}
+
+/* ═══════════════════════════════════════════════
+   THEME TOGGLE
+   Default: light mode. Saves preference to localStorage.
+   ═══════════════════════════════════════════════ */
+const saved=localStorage.getItem('portfolio-theme');
+const initTheme=saved||'light';
+document.documentElement.setAttribute('data-theme',initTheme);
+if(initTheme==='light'){
+  /* Delay hint until after page entrance animations settle */
+  setTimeout(showHint,500);
+}
+
+themeBtn.addEventListener('click',()=>{
+  hideHint();
+  const cur=document.documentElement.getAttribute('data-theme');
+  if(cur==='light'){
+    /* Creative pixel cascade: light → dark */
+    pixelToDark(()=>{
+      document.documentElement.setAttribute('data-theme','dark');
+      localStorage.setItem('portfolio-theme','dark');
+    });
+  } else {
+    /* Professional instant fade: dark → light */
+    document.documentElement.setAttribute('data-theme','light');
+    localStorage.setItem('portfolio-theme','light');
+    setTimeout(showHint,600);
+  }
+});
+</script>
+</body>
+</html>
