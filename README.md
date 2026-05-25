@@ -2,4 +2,4 @@
 
 This is my personal portfolio website showcasing my projects, skills, resume, and contact information.
 
-Live website: Coming soon.
+Live website: In Progress.
