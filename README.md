@@ -35,7 +35,7 @@ Features include animated canvas background, scroll-triggered reveal animations,
 
 ## Resume
 
-The latest resume PDF is in the `bharath-blazecode.github.io/resume/` folder.
+The latest resume PDF is in the [(bharath-blazecode.github.io/resume)]`(resume)` folder.
 
 ---
 
