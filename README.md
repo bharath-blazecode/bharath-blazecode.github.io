@@ -1,46 +1,23 @@
 # Barry Sampath — Cybersecurity Portfolio
 
-Personal portfolio website for Barry Sampath, a second-year Bachelor of IT student at QUT majoring in Cybersecurity and Artificial Intelligence, based in Brisbane, QLD.
+Personal portfolio for a QUT Bachelor of IT student in cybersecurity and artificial intelligence, based in Brisbane.
 
-**Live site:** [bharath-blazecode.github.io](https://bharath-blazecode.github.io)
+**Site:** https://bharath-blazecode.github.io
 
----
+## Content
 
-## About
+- ClassQuest: team project and People’s Choice Award, with frontend, upload-handling and Q&A contributions.
+- LUNA robotics collaboration and completed HomeLab infrastructure (further development paused).
+- Experience, education, training and contact details. Expected degree completion: December 2027; Bachelor GPA: 6.091/7.0.
 
-This site serves as a central place for my professional profile, project work, and contact details. It covers my experience in identity security and IAM, personal lab projects, certifications, and community involvement in the Brisbane cybersecurity scene.
+## Development
 
-The site has two modes: a professional light mode for recruiters and collaborators, and a casual dark mode with a bit more personality for anyone curious enough to explore.
+Static HTML/CSS/JavaScript; no build step or dependencies. Serve this folder with a local static HTTP server or open index.html. GitHub Pages serves the default branch.
 
----
+Core content and navigation remain available without JavaScript. JavaScript provides a mobile navigation disclosure, theme persistence and a static decorative grid. Motion is suppressed for reduced-motion preferences; there are no continuous animation loops.
 
-## What's inside
+The existing resume PDF is retained as an earlier artifact. Contact Barry for a current resume; the site does not promote an unreviewed export as the latest version.
 
-- **Experience** — current and past roles including cybersecurity consulting, event coordination, and retail leadership
-- **Projects** — ITDR home lab (Wazuh SIEM, MITRE ATT&CK, Python), LUNA TurboPi robot (Raspberry Pi, Python, OpenCV), and consulting work
-- **Skills** — identity security, Zero Trust, Wazuh SIEM, MITRE ATT&CK, Python, Microsoft 365, Power Platform
-- **Certifications** — Google Cybersecurity, Forage, CompTIA A+ (in progress), CS50 Python (in progress)
-- **Community** — CTF volunteering with Cyber in Motion (3rd place CIMCTF 2026), QUT Guild events
-- **Contact** — email and links to LinkedIn and GitHub
+## Content evidence
 
----
-
-## Tech
-
-Single-file HTML/CSS/JS. No frameworks or build tools. Hosted on GitHub Pages.
-
-Features include animated canvas background, scroll-triggered reveal animations, light/dark theme toggle with a pixel cascade transition, typing animation in the hero, and a responsive mobile layout.
-
----
-
-## Resume
-
-The latest resume PDF is in the [(bharath-blazecode.github.io/resume)](resume) folder.
-
----
-
-## Contact
-
-- Email: barry.sampath@outlook.com
-- LinkedIn: [linkedin.com/in/barrysampath](https://linkedin.com/in/barrysampath)
-- GitHub: [github.com/bharath-blazecode](https://github.com/bharath-blazecode)
+ClassQuest code contributions: [upload handling and regression tests](https://github.com/MikePineda/class-quest/commit/ac8aee9f8277323683ddd9431f6dc375bfe5dd23), [learning preferences](https://github.com/MikePineda/class-quest/commit/f7dcfd0bfdfd7f592fcd44e4343f02a45c8a9fe3), [server dashboard](https://github.com/MikePineda/class-quest/commit/e8c1ff14239f3c01ed8bfc2b6500f7edc7095dee). Award and Q&A contribution confirmed by Barry. Code review establishes the changes made, not a comprehensive security certification.
