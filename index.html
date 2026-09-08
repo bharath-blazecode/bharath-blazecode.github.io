@@ -179,6 +179,13 @@ nav.scrolled{background:rgba(13,17,23,.94);backdrop-filter:blur(14px);border-bot
 .pc-lbl{font-family:var(--fmono);font-size:10px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
 .pc-val{font-size:14.5px;color:var(--muted);line-height:1.72}
 .pc-val strong{color:var(--txt)}
+.cq-evidence{margin:0 0 24px;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);padding:12px 0}
+.cq-evidence summary{cursor:pointer;font-size:14px;font-weight:600;line-height:1.6;padding:10px 0;color:var(--txt)}
+.cq-evidence summary:focus-visible{outline:2px solid var(--txt);outline-offset:4px;border-radius:3px}
+.cq-evidence ul{padding-left:22px;margin:14px 0}
+.cq-evidence li{margin-bottom:14px}
+.cq-evidence a{color:var(--txt);text-decoration:underline;text-underline-offset:3px}
+.cq-evidence a:focus-visible{outline:2px solid var(--txt);outline-offset:3px}
 .pc-quote{border-left:3px solid var(--teal);padding:14px 20px;margin:22px 0;background:rgba(0,212,170,.03);border-radius:0 6px 6px 0}
 .pc-quote blockquote{font-style:italic;font-size:14.5px;color:var(--muted);line-height:1.7}
 .pc-two{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:4px}
@@ -517,10 +524,21 @@ section,article[id]{scroll-margin-top:80px}
     <h3 id="cq-title" class="pc-title">ClassQuest — learn by playing</h3>
     <p class="pc-ctx">Code Network Winter Hackathon 2026 · August 2026 · Team project</p>
     <div class="pc-field"><div class="pc-lbl">The project</div><p class="pc-val">A learning website that turns lecture material into playable quests and challenges. Our team won the People’s Choice Award.</p></div>
-    <div class="pc-field"><div class="pc-lbl">My contribution</div><p class="pc-val">As one of the main contributors, I built frontend features for personalized learning preferences, onboarding and the server dashboard. I contributed bounded upload reads and server-generated storage names, with regression tests for file handling. I also presented during the team’s Q&amp;A.</p></div>
+    <div class="pc-field"><div class="pc-lbl">My contribution</div><p class="pc-val">As one of the main contributors, I worked from the playable demo and frontend foundation through visual styling, learning features, security patches and debugging. I built sign-in, onboarding and server creation/join flows, added cohort challenges and learning preferences, and contributed upload-handling fixes with regression tests. I also presented during the team’s Q&amp;A.</p></div>
+    <details class="cq-evidence">
+      <summary>Explore my contributions and code evidence</summary>
+      <ul class="pc-val">
+        <li><strong>Playable learning demo.</strong> Built the prediction → diagnosis → source evidence → transfer/retry loop, answer choices and concept trail; added an overfitting fixture and updated backend test expectations. <a href="https://github.com/MikePineda/class-quest/pull/5" target="_blank" rel="noopener">Demo PR #5</a>.</li>
+        <li><strong>Frontend foundation and visual system.</strong> Connected sign-in and registration to the existing API, restored sessions, built onboarding and server flows, and added loading/error recovery. Applied the team’s visual system across these screens and the demo. <a href="https://github.com/MikePineda/class-quest/pull/11" target="_blank" rel="noopener">Foundation #11</a> · <a href="https://github.com/MikePineda/class-quest/pull/14" target="_blank" rel="noopener">Visuals #14</a>.</li>
+        <li><strong>Upload security and regression tests.</strong> Replaced client-controlled storage filenames with generated IDs and bounded upload reads. Added traversal, absolute-path and size-limit tests, plus a security baseline documenting remaining hardening work. <a href="https://github.com/MikePineda/class-quest/pull/12" target="_blank" rel="noopener">Security patch #12</a>.</li>
+        <li><strong>Cohort learning and preferences.</strong> Added an asynchronous practice challenge and readiness feedback using shared answer patterns, with tests and safeguards against sparse or tied evidence. Added validated local learning preferences and storage-failure fallbacks. <a href="https://github.com/MikePineda/class-quest/pull/20" target="_blank" rel="noopener">Challenge #20</a> · <a href="https://github.com/MikePineda/class-quest/pull/21" target="_blank" rel="noopener">Readiness #21</a> · <a href="https://github.com/MikePineda/class-quest/pull/23" target="_blank" rel="noopener">Preferences #23</a>.</li>
+        <li><strong>Iteration and debugging.</strong> Revised the starting experience to remove forced learning modes, fixed the obsolete dependent hub card after a failed typecheck, and added universal dashboard actions. The follow-up frontend checks passed. <a href="https://github.com/MikePineda/class-quest/pull/24" target="_blank" rel="noopener">Starting path #24</a> · <a href="https://github.com/MikePineda/class-quest/pull/25" target="_blank" rel="noopener">Integration fix #25</a> · <a href="https://github.com/MikePineda/class-quest/pull/26" target="_blank" rel="noopener">Dashboard #26</a>.</li>
+      </ul>
+      <p class="pc-val">These links document my contributions during development; the team continued to refine the application afterward.</p>
+    </details>
     <div class="pc-field"><div class="pc-lbl">Team credit</div><p class="pc-val">Built with Miguel Pineda and our ClassQuest teammates. Miguel led the technical build; my contribution combined implementation with product presentation and Q&amp;A.</p></div>
     <div class="pc-chips"><span class="pc-chip">React</span><span class="pc-chip">TypeScript</span><span class="pc-chip">FastAPI</span><span class="pc-chip">Python</span><span class="pc-chip">SQLite</span></div>
-    <div class="pc-foot"><a class="pc-link" href="https://github.com/MikePineda/class-quest" target="_blank" rel="noopener">Team repository →</a><a class="pc-link" href="https://github.com/MikePineda/class-quest/commit/ac8aee9f8277323683ddd9431f6dc375bfe5dd23" target="_blank" rel="noopener">Upload-handling contribution →</a></div>
+    <div class="pc-foot"><a class="pc-link" href="https://github.com/MikePineda/class-quest" target="_blank" rel="noopener">Team repository →</a><a class="pc-link" href="https://github.com/MikePineda/class-quest/pulls?q=is%3Apr+author%3Abharath-blazecode" target="_blank" rel="noopener">My pull requests →</a></div>
   </article>
 
   <!-- LUNA -->
