@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>LUNA — Barry Sampath</title>
+<meta name="description" content="LUNA, a Raspberry Pi TurboPi robot integrating computer vision, offline voice, wireless control and PID-tuned movement — and what integration actually costs.">
+<link rel="canonical" href="https://bharath-blazecode.github.io/work/luna/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+
+<a class="skip" href="#built">Skip to what I built</a>
+
+<div class="bar">
+  <div class="shell">
+    <a class="mark" href="../../">Barry Sampath<span> / security</span></a>
+    <div class="barright">
+      <nav aria-label="Sections">
+        <ul class="barnav">
+          <li><a href="../homelab/">Home lab</a></li>
+          <li><a href="../classquest/">ClassQuest</a></li>
+          <li><a href="../../#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
+        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<main>
+<header class="casehead">
+  <div class="shell intro">
+    <p class="crumb"><a href="../../">Barry Sampath</a> &nbsp;/&nbsp; Work &nbsp;/&nbsp; LUNA</p>
+    <h1>LUNA</h1>
+    <p class="lede">A Raspberry Pi robot where computer vision, offline voice, wireless control and PID-tuned movement all had to run at once without breaking each other.</p>
+    <div class="casemeta">
+      <span><b>When</b> Jul&ndash;Nov 2025</span>
+      <span><b>Where</b> QUT university project</span>
+      <span><b>With</b> Zhirui Lu</span>
+      <span><b>Stack</b> Python · OpenCV · Flask · NumPy · Tkinter · Raspberry Pi 4B</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="spine">
+    <div class="sg"><span class="sn">Context</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>A robotics unit that stopped being coursework</h2>
+      <p>LUNA is built on the Hiwonder TurboPi platform around a Raspberry Pi 4B: hardware assembly, Python control software, a web interface for wireless operation, computer vision, offline voice interaction over a WonderEcho module, and PID-tuned movement. Built from the ground up with Zhirui Lu.</p>
+      <p>It started as an assessment item and became the project I actually wanted to finish. The reason is specific: I wanted to understand how a software decision turns into physical behaviour. A badly tuned control loop does not throw an exception, it makes the robot spin. A missed sensor reading does not log a warning, it ends the demonstration. That feedback is immediate and public and it keeps you honest in a way a failing unit test does not.</p>
+    </div>
+  </div>
+
+  <div class="spine" id="built">
+    <div class="sg"><span class="sn">What I built</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Four subsystems and the seams between them</h2>
+      <p>The individual features were not the hard part. Line following works. Colour tracking works. A Flask interface serving control commands works. Voice recognition over I&sup2;C works. The difficulty was making all four coexist on one Pi, sharing a camera, a bus and a control loop, without any one of them starving the others.</p>
+
+      <div class="tele"><b>Vision</b>      OpenCV — line following, colour tracking, tag detection
+<b>Voice</b>       WonderEcho over I²C, offline recognition, no network
+<b>Control</b>     Flask web interface for wireless operation
+<b>Movement</b>    PID-tuned drive with mecanum wheels
+<b>Interface</b>   Tkinter for local diagnostics</div>
+
+      <p style="margin-top:20px">The integration question was the real one: how do you get independent hardware subsystems to respond reliably under real conditions, when each of them assumes it owns the loop? Most of the work was arbitration, timing and deciding what degrades gracefully when something else takes too long.</p>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">What broke</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Physical failure modes</h2>
+      <ol class="actions">
+        <li><b>Control loop tuning made it spin.</b> PID values that looked reasonable produced overcorrection that compounded. There is no stack trace for this; you watch it and reason backwards from the behaviour.</li>
+        <li><b>Missed sensor reads ended demonstrations.</b> A dropped frame or a bus timeout that a desktop program would shrug off becomes a robot driving into a wall, so every read needed a defined behaviour for the case where it returns nothing.</li>
+        <li><b>Subsystems starved each other.</b> Vision processing at full rate left nothing for voice. Both wanted to be the thing that decided what happened next.</li>
+      </ol>
+      <p>The habit that came out of this is the one that runs through everything else on this site: <strong>documenting decisions in real time is what saves the project when something breaks at 2am.</strong> The failure log on my home lab exists because of this robot.</p>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">What I&rsquo;d change</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Honest revisions</h2>
+      <ol class="actions">
+        <li><b>Design the arbitration first.</b> We built four subsystems and then worked out how they would share resources. The order should have been the reverse, and roughly half the integration pain came from that one decision.</li>
+        <li><b>Instrument it from the start.</b> There was no timing telemetry, so diagnosing starvation meant guessing and re-testing. Logging loop durations from day one would have turned a week of that into an afternoon.</li>
+        <li><b>Define degradation explicitly.</b> "What should this do when the camera returns nothing" is a design question, and we kept answering it accidentally, in whichever way the code happened to fall through.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">Evidence</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Code and documentation</h2>
+      <ul class="evidence">
+        <li><a href="https://github.com/bharath-blazecode/luna-turbopi-intelligent-robot"><span class="et">Repository, source and documentation</span><span class="eu">GitHub</span></a></li>
+        <li><a href="mailto:barry.sampath@outlook.com?subject=LUNA%20project"><span class="et">Build notes and demonstration video, on request</span><span class="eu">Email</span></a></li>
+      </ul>
+      <p style="margin-top:22px">Built collaboratively with Zhirui Lu, who I always name in full because the work was genuinely joint.</p>
+    </div>
+  </div>
+
+  <nav class="nextprev" aria-label="Other case studies">
+    <a href="../../#work">&larr; All work</a>
+    <a href="../homelab/">ITDR Home Lab &rarr;</a>
+  </nav>
+</div>
+</main>
+
+<footer>
+  <div class="shell">
+    <span>Barry Sampath &middot; Brisbane, QLD</span>
+    <span>Built with Zhirui Lu.</span>
+  </div>
+</footer>
+
+<script src="../../js/site.js"></script>
+</body>
+</html>

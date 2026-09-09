@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>ClassQuest — Barry Sampath</title>
+<meta name="description" content="ClassQuest, the People's Choice Award winner at the Code Network Winter Hackathon 2026: what I contributed, the upload security work, and every pull request behind it.">
+<link rel="canonical" href="https://bharath-blazecode.github.io/work/classquest/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+
+<a class="skip" href="#built">Skip to what I built</a>
+
+<div class="bar">
+  <div class="shell">
+    <a class="mark" href="../../">Barry Sampath<span> / security</span></a>
+    <div class="barright">
+      <nav aria-label="Sections">
+        <ul class="barnav">
+          <li><a href="../homelab/">Home lab</a></li>
+          <li><a href="../luna/">LUNA</a></li>
+          <li><a href="../../#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
+        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<main>
+<header class="casehead">
+  <div class="shell intro">
+    <p class="crumb"><a href="../../">Barry Sampath</a> &nbsp;/&nbsp; Work &nbsp;/&nbsp; ClassQuest</p>
+    <h1>ClassQuest</h1>
+    <p class="lede">A learning site that turns lecture material into playable quests, built over one weekend by a team of four. It won the People&rsquo;s Choice Award.</p>
+    <div class="casemeta">
+      <span><b>Event</b> Code Network Winter Hackathon, 21&ndash;23 Aug 2026</span>
+      <span><b>Result</b> People&rsquo;s Choice Award</span>
+      <span><b>Team</b> Four, led technically by Miguel Pineda</span>
+      <span><b>Stack</b> React · TypeScript · FastAPI · Python · SQLite</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="spine">
+    <div class="sg"><span class="sn">Context</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>What it is, and what my part in it was</h2>
+      <p>ClassQuest takes course material and turns it into a sequence of playable challenges: predict, diagnose, check the source evidence, then transfer the idea or retry. Students join a cohort server, work through quests, and get readiness feedback based on how the group is answering.</p>
+      <p><strong>The honest framing on credit:</strong> this was a team project and Miguel Pineda led the technical build. I was one of the main contributors, working across the playable demo, the frontend foundation, upload security and the cohort features, and I presented during the judging Q&amp;A. The award went to the team, not to me.</p>
+      <p>I was also an Engagement Officer for Code Network, which runs the hackathon. Competing in an event I helped organise was cleared beforehand; I mention it because leaving it out would be the more interesting omission.</p>
+    </div>
+  </div>
+
+  <div class="spine" id="built">
+    <div class="sg"><span class="sn">What I built</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Ten pull requests, grouped by what they did</h2>
+
+      <h3>The playable learning loop</h3>
+      <p>Built the prediction &rarr; diagnosis &rarr; source evidence &rarr; transfer-or-retry cycle, the answer choices and the concept trail. Added an overfitting fixture and updated the backend test expectations to match.</p>
+
+      <h3>Frontend foundation and the visual system</h3>
+      <p>Connected sign-in and registration to the existing API, restored sessions on return, and built the onboarding and server create/join flows with loading and error recovery. Applied the team&rsquo;s visual system across those screens and the demo.</p>
+
+      <h3>Upload security and regression tests</h3>
+      <p>This is the piece I would want asked about in an interview. The original handler used client-supplied filenames as storage paths and read uploads without a bound.</p>
+      <p>Two problems in one function. A client-controlled filename means a caller can choose where the file lands, which is path traversal in the ordinary case and file overwrite in the worse one. An unbounded read means one request can exhaust memory or disk.</p>
+      <p>The fix was to generate storage identifiers server-side and discard the supplied name entirely, and to bound the read. Then tests for traversal attempts, absolute paths and size limits, so the next person to touch it finds out immediately if they undo it. I also wrote a security baseline documenting what was still unhardened, because a weekend build has more holes than one pull request closes and pretending otherwise is worse than listing them.</p>
+
+      <h3>Cohort learning and preferences</h3>
+      <p>An asynchronous practice challenge and readiness feedback derived from shared answer patterns, with safeguards for sparse or tied evidence so the system does not make confident claims from three data points. Plus validated local learning preferences with fallbacks for when storage is blocked.</p>
+
+      <h3>Iteration and debugging</h3>
+      <p>Revised the starting experience to remove forced learning modes, fixed a dependent hub card that broke after a failed typecheck, and added universal dashboard actions.</p>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">What broke</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Weekend-build realities</h2>
+      <ol class="actions">
+        <li><b>A failed typecheck left a broken card in the hub.</b> A change upstream invalidated a dependent component and the type error was skipped past under time pressure. It surfaced as a visibly broken card during testing rather than as a build failure, which is the expensive order to find things in.</li>
+        <li><b>The first onboarding forced a learning mode on people.</b> It tested fine with the team, who all knew what the modes meant, and confused everyone else. We removed the forced choice entirely.</li>
+        <li><b>The upload handler shipped insecure first.</b> It worked, which in a hackathon is the bar, and it was wrong. Finding it during the build rather than after is the only reason it is a story about the fix instead of a story about the incident.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">What I&rsquo;d change</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Honest revisions</h2>
+      <ol class="actions">
+        <li><b>Write the upload handler correctly the first time.</b> Server-generated identifiers and a bounded read are not advanced techniques. They are the default, and I reached for them second rather than first.</li>
+        <li><b>Test onboarding with someone outside the team on day one.</b> Every usability problem we found late would have been found in ten minutes by one person who had not been in the planning conversation.</li>
+        <li><b>Finish the security baseline earlier.</b> Writing down what is unhardened is most useful while there is still time to harden some of it, not at the end as documentation.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">Evidence</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Every claim above, linked</h2>
+      <p class="lede">These pull requests document my contributions during the hackathon. The team continued refining the application afterwards.</p>
+      <ul class="evidence">
+        <li><a href="https://github.com/MikePineda/class-quest/pull/5"><span class="et">Playable learning demo, overfitting fixture, backend test updates</span><span class="eu">PR #5</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/11"><span class="et">Frontend foundation, sign-in, sessions, onboarding, server flows</span><span class="eu">PR #11</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/12"><span class="et">Upload security patch, traversal and size-limit tests, security baseline</span><span class="eu">PR #12</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/14"><span class="et">Visual system applied across screens</span><span class="eu">PR #14</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/20"><span class="et">Asynchronous cohort practice challenge</span><span class="eu">PR #20</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/21"><span class="et">Readiness feedback with sparse-evidence safeguards</span><span class="eu">PR #21</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/23"><span class="et">Validated learning preferences with storage fallbacks</span><span class="eu">PR #23</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/24"><span class="et">Starting path revised, forced learning modes removed</span><span class="eu">PR #24</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/25"><span class="et">Integration fix for the obsolete dependent hub card</span><span class="eu">PR #25</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pull/26"><span class="et">Universal dashboard actions</span><span class="eu">PR #26</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest/pulls?q=is%3Apr+author%3Abharath-blazecode"><span class="et">All of my pull requests on the repository</span><span class="eu">Filtered view</span></a></li>
+        <li><a href="https://github.com/MikePineda/class-quest"><span class="et">Team repository</span><span class="eu">MikePineda/class-quest</span></a></li>
+      </ul>
+    </div>
+  </div>
+
+  <nav class="nextprev" aria-label="Other case studies">
+    <a href="../../#work">&larr; All work</a>
+    <a href="../luna/">LUNA &rarr;</a>
+  </nav>
+</div>
+</main>
+
+<footer>
+  <div class="shell">
+    <span>Barry Sampath &middot; Brisbane, QLD</span>
+    <span>Built with Miguel Pineda and the ClassQuest team.</span>
+  </div>
+</footer>
+
+<script src="../../js/site.js"></script>
+</body>
+</html>
