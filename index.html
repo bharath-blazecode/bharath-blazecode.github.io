@@ -1,804 +1,602 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Barry Sampath — Cybersecurity Portfolio</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="color-scheme" content="light dark">
+<title>Barry Sampath — Cybersecurity &amp; IT Automation</title>
+<meta name="description" content="Barry Sampath — QUT cybersecurity and AI student in Brisbane. Blue-team detection, identity and access management, IT automation. Wazuh and Sysmon home lab, ClassQuest, LUNA.">
 <link rel="canonical" href="https://bharath-blazecode.github.io/">
-<meta property="og:title" content="Barry Sampath — Cybersecurity &amp; Projects">
-<meta property="og:description" content="QUT cybersecurity student, IT automation and ClassQuest People’s Choice-winning team contributor.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bharath-blazecode.github.io/">
-<meta name="description" content="Barry Sampath — QUT cybersecurity and IT student. Blue-team security, IAM, Python. Brisbane, QLD.">
+<meta property="og:title" content="Barry Sampath — Cybersecurity &amp; IT Automation">
+<meta property="og:description" content="Blue-team detection, identity and access management, IT automation. Brisbane, QLD.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-/* ═══ DESIGN TOKENS ═══ */
-:root{
-  --bg:#0D1117;--surf:#161B22;--bdr:#21262D;
-  --teal:#00D4AA;--coral:#F78166;--purple:#a78bfa;
-  --txt:#E6EDF3;--muted:#8B949E;--dim:#484F58;
-  --ta8:rgba(0,212,170,.08);--ta20:rgba(0,212,170,.2);
-  --ca8:rgba(247,129,102,.08);--ca20:rgba(247,129,102,.2);
-  --beyond-bg:#0f0c08;--beyond-surf:#1a150e;
-  --beyond-bdr:#2a1f14;--beyond-txt:#9a8a78;
-  --shadow:none;
-  --fdisp:'Space Grotesk',sans-serif;
-  --fbody:'Inter',sans-serif;
-  --fmono:'JetBrains Mono',monospace;
-  --ease:cubic-bezier(.16,1,.3,1)
-}
-[data-theme="light"]{
-  --bg:#F5F7FA;--surf:#FFFFFF;--bdr:#DDE1E7;
-  --teal:#007A61;--coral:#C44228;--purple:#6d28d9;
-  --txt:#1A1F2E;--muted:#4A5568;--dim:#8896A7;
-  --ta8:rgba(0,122,97,.08);--ta20:rgba(0,122,97,.2);
-  --ca8:rgba(196,66,40,.08);--ca20:rgba(196,66,40,.2);
-  --beyond-bg:#EDE8E1;--beyond-surf:#FFFFFF;
-  --beyond-bdr:#D8D0C6;--beyond-txt:#5C4E42;
-  --shadow:0 1px 4px rgba(0,0,0,.06),0 0 0 1px var(--bdr)
-}
-
-/* ═══ BASE ═══ */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--txt);font-family:var(--fbody);font-size:16px;line-height:1.65;overflow-x:hidden;transition:background .35s,color .35s}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
-a{color:inherit;text-decoration:none}
-:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:3px}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
-
-/* ═══ DUAL-THEME TEXT ═══ */
-[data-theme="dark"] .lm{display:none}
-[data-theme="light"] .dm{display:none}
-
-/* ═══ NAV ═══ */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;transition:background .3s,border-color .3s}
-nav.scrolled{background:rgba(13,17,23,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--bdr)}
-[data-theme="light"] nav.scrolled{background:rgba(245,247,250,.96);box-shadow:0 1px 0 var(--bdr)}
-.nlogo{font-family:var(--fmono);color:var(--teal);font-size:13px}
-.nlinks{display:flex;align-items:center;gap:28px;list-style:none}
-.nlinks a{color:var(--muted);font-size:13px;transition:color .2s;position:relative}
-.nlinks a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--teal);transition:width .2s}
-.nlinks a:hover{color:var(--txt)}.nlinks a:hover::after,.nlinks a.act::after{width:100%}
-.nlinks a.act{color:var(--teal)}
-.nav-right{display:flex;align-items:center;gap:10px}
-.tbtn{background:none;border:1px solid var(--bdr);width:44px;height:44px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:border-color .2s;color:var(--muted)}
-.tbtn:hover{border-color:var(--teal)}
-[data-theme="dark"] .tbtn .sun{display:none}
-[data-theme="light"] .tbtn .moon{display:none}
-.ncv{font-family:var(--fmono);font-size:12px;color:var(--teal);border:1px solid var(--teal);padding:7px 14px;border-radius:4px;transition:background .2s,color .2s}
-.ncv:hover{background:var(--teal);color:var(--bg)}
-.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
-.hbg span{display:block;width:22px;height:1.5px;background:var(--txt)}
-.mmenu{display:none;position:fixed;inset:0;background:var(--bg);z-index:99;flex-direction:column;align-items:center;justify-content:center;gap:28px}
-.mmenu.open{display:flex}
-.mmenu a{font-family:var(--fdisp);font-size:26px;font-weight:700;transition:color .2s}
-.mmenu a:hover{color:var(--teal)}
-
-/* ═══ DARK MODE HINT — positioned dynamically by JS ═══ */
-.dm-hint{
-  position:fixed;z-index:101;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  opacity:0;pointer-events:none;transition:opacity .5s;
-  /* top/left set by JS */
-}
-.dm-hint.show{opacity:1}
-/* Straight-up bouncing arrow pointing at theme button above */
-.dm-hint svg{color:var(--teal);animation:hintBounce 1.3s ease-in-out infinite}
-.dm-hint-label{font-family:var(--fmono);font-size:10px;color:var(--muted);white-space:nowrap;letter-spacing:.5px}
-@keyframes hintBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-
-/* ═══ SECTION BASE ═══ */
-.sec{padding:110px 40px;max-width:1100px;margin:0 auto}
-.slabel{font-family:var(--fmono);font-size:11px;color:var(--teal);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
-[data-theme="light"] .slabel{letter-spacing:2px}
-.stitle{font-family:var(--fdisp);font-size:40px;font-weight:700;line-height:1.15;margin-bottom:44px}
-[data-theme="light"] .stitle{font-size:36px;letter-spacing:-.3px}
-.reveal{opacity:1;transform:none}
-.reveal.vis{opacity:1;transform:translateY(0)}
-
-/* ═══ HERO ═══ */
-#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding:0 40px;max-width:100%}
-.hbg-wrap{position:absolute;inset:0;overflow:hidden;z-index:0}
-#gc{width:100%;height:100%}
-.hcnt{position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%}
-.hpre{font-family:var(--fmono);font-size:13px;color:var(--teal);margin-bottom:14px;opacity:0;animation:fup .6s ease forwards .2s}
-.hname{font-family:var(--fdisp);font-size:clamp(44px,7.5vw,78px);font-weight:700;line-height:1.05;margin-bottom:18px;opacity:0;animation:fup .6s ease forwards .4s}
-.hname em{color:var(--teal);font-style:normal}
-.htype{font-family:var(--fmono);font-size:clamp(15px,2.2vw,20px);color:var(--teal);margin-bottom:14px;min-height:28px;opacity:0;animation:fup .6s ease forwards .6s}
-.htype::after{content:'|';animation:blink 1s step-end infinite}
-.hsub{font-size:17px;color:var(--muted);margin-bottom:8px;opacity:0;animation:fup .6s ease forwards .8s}
-.hloc{font-family:var(--fmono);font-size:12px;color:var(--dim);margin-bottom:38px;opacity:0;animation:fup .6s ease forwards 1s}
-.hloc em{color:var(--teal);font-style:normal}
-.hbtns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fup .6s ease forwards 1.2s}
-.bp{background:var(--teal);color:var(--bg);padding:13px 26px;border-radius:6px;font-weight:600;font-size:14px;transition:filter .2s,transform .2s;display:inline-block}
-.bp:hover{filter:brightness(1.09);transform:translateY(-2px)}
-.bg2{border:1px solid var(--bdr);color:var(--txt);padding:13px 26px;border-radius:6px;font-size:14px;transition:border-color .2s,transform .2s;display:inline-block}
-.bg2:hover{border-color:var(--muted);transform:translateY(-2px)}
-.sci{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;animation:fup .6s ease forwards 1.5s}
-.sci span{font-family:var(--fmono);font-size:10px;color:var(--dim);letter-spacing:2px}
-.sdot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:sb 2s ease-in-out infinite}
-
-/* ═══ ABOUT ═══ */
-#about{padding-top:80px}
-.agrid{display:grid;grid-template-columns:1fr 310px;gap:52px;align-items:start}
-.atxt p{color:var(--muted);margin-bottom:18px;font-size:16.5px;line-height:1.75}
-.atxt p strong{color:var(--txt)}
-.acard{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:22px;position:sticky;top:80px}
-[data-theme="light"] .acard{box-shadow:0 2px 12px rgba(0,0,0,.07);border-color:transparent}
-.aci{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
-.aci:last-child{border-bottom:none}
-.acico{font-size:17px;flex-shrink:0;margin-top:1px}
-.aclbl{font-family:var(--fmono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
-.acval{font-size:13px;color:var(--txt)}
-.acsub{font-size:11.5px;color:var(--muted)}
-
-/* ═══ EXPERIENCE TIMELINE ═══ */
-.tl{position:relative;padding-left:28px}
-.tl::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:1px;background:linear-gradient(to bottom,var(--teal) 40%,var(--bdr) 100%)}
-.titem{position:relative;margin-bottom:40px}.titem:last-child{margin-bottom:0}
-.tdot{position:absolute;left:-34px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--teal);border:2px solid var(--bg)}
-.tdot.act{box-shadow:0 0 0 3px rgba(0,212,170,.2);animation:pulse 2s ease-in-out infinite}
-.tdot.off{background:var(--dim)}
-.tcard{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:22px;transition:border-color .2s,transform .2s,box-shadow .2s}
-.tcard:hover{border-color:var(--teal);transform:translateX(3px)}
-[data-theme="light"] .tcard{box-shadow:var(--shadow);border-color:transparent}
-[data-theme="light"] .tcard:hover{border-color:var(--teal);box-shadow:0 4px 16px rgba(0,0,0,.1)}
-.thdr{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:5px}
-.trole{font-family:var(--fdisp);font-size:17px;font-weight:600}
-.tdate{font-family:var(--fmono);font-size:11px;color:var(--dim)}
-.tco{font-family:var(--fmono);font-size:12px;color:var(--teal);margin-bottom:12px}
-.ttags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.tg{font-family:var(--fmono);font-size:10px;padding:3px 9px;border-radius:4px;border:1px solid var(--bdr);color:var(--muted)}
-.tg.t{border-color:var(--ta20);color:var(--teal);background:var(--ta8)}
-.tg.c{border-color:var(--ca20);color:var(--coral);background:var(--ca8)}
-.tbul{list-style:none;display:flex;flex-direction:column;gap:5px}
-.tbul li{font-size:13.5px;color:var(--muted);padding-left:14px;position:relative}
-.tbul li::before{content:'▸';position:absolute;left:0;color:var(--teal);font-size:9px;top:4px}
-.tnote{font-family:var(--fmono);font-size:10px;color:var(--dim);margin-top:12px;padding-top:10px;border-top:1px solid var(--bdr)}
-
-/* ═══ PROJECTS ═══ */
-.pc{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:40px;position:relative;overflow:hidden;transition:border-color .25s,box-shadow .25s}
-.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background .3s}
-.pc:hover{border-color:rgba(0,212,170,.35)}.pc:hover::before{background:var(--teal)}
-.pc.featured::before{background:var(--teal)}
-[data-theme="light"] .pc{box-shadow:0 2px 12px rgba(0,0,0,.07);border-color:transparent}
-[data-theme="light"] .pc:hover{border-color:var(--teal);box-shadow:0 6px 24px rgba(0,0,0,.1)}
-.pc-topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
-.pc-num{font-family:var(--fmono);font-size:52px;font-weight:700;color:var(--bdr);line-height:1;user-select:none;transition:color .3s}
-.pc:hover .pc-num{color:var(--teal)}
-.pc-badge{font-family:var(--fmono);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:5px 11px;border-radius:4px;display:inline-flex;align-items:center;gap:5px}
-.pb-done{color:var(--teal);background:var(--ta8);border:1px solid var(--ta20)}
-.pb-wip{color:var(--coral);background:var(--ca8);border:1px solid var(--ca20);animation:bpulse 3s ease-in-out infinite}
-.pc-title{font-family:var(--fdisp);font-size:26px;font-weight:700;margin-bottom:5px}
-.pc-ctx{font-family:var(--fmono);font-size:11px;color:var(--dim);margin-bottom:28px}
-.pc-rule{border:none;border-top:1px solid var(--bdr);margin:22px 0}
-.pc-field{margin-bottom:20px}
-.pc-lbl{font-family:var(--fmono);font-size:10px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
-.pc-val{font-size:14.5px;color:var(--muted);line-height:1.72}
-.pc-val strong{color:var(--txt)}
-.cq-evidence{margin:0 0 24px;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);padding:12px 0}
-.cq-evidence summary{cursor:pointer;font-size:14px;font-weight:600;line-height:1.6;padding:10px 0;color:var(--txt)}
-.cq-evidence summary:focus-visible{outline:2px solid var(--txt);outline-offset:4px;border-radius:3px}
-.cq-evidence ul{padding-left:22px;margin:14px 0}
-.cq-evidence li{margin-bottom:14px}
-.cq-evidence a{color:var(--txt);text-decoration:underline;text-underline-offset:3px}
-.cq-evidence a:focus-visible{outline:2px solid var(--txt);outline-offset:3px}
-.pc-quote{border-left:3px solid var(--teal);padding:14px 20px;margin:22px 0;background:rgba(0,212,170,.03);border-radius:0 6px 6px 0}
-.pc-quote blockquote{font-style:italic;font-size:14.5px;color:var(--muted);line-height:1.7}
-.pc-two{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:4px}
-.pc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.pc-chip{font-family:var(--fmono);font-size:11px;padding:4px 11px;border-radius:4px;background:var(--ta8);border:1px solid var(--ta20);color:var(--teal)}
-.pc-list{list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:8px}
-.pc-list li{font-size:13.5px;color:var(--muted);padding-left:18px;position:relative;line-height:1.6}
-.pc-list li::before{content:'→';position:absolute;left:0;color:var(--teal);font-family:var(--fmono);font-size:11px;top:1px}
-.pc-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--bdr)}
-.pc-link{font-family:var(--fmono);font-size:12px;color:var(--teal);display:inline-flex;align-items:center;gap:6px;transition:gap .2s}
-.pc-link:hover{gap:10px}
-.pc-ghost{font-family:var(--fmono);font-size:11px;color:var(--dim);border:1px solid var(--bdr);padding:5px 12px;border-radius:4px;transition:color .2s,border-color .2s}
-.pc-ghost:hover{color:var(--muted);border-color:var(--muted)}
-/* Mini project grid */
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px}
-.pcard{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:26px;transition:border-color .2s,transform .2s;display:flex;flex-direction:column}
-.pcard:hover{border-color:var(--teal);transform:translateY(-3px)}
-[data-theme="light"] .pcard{box-shadow:var(--shadow);border-color:transparent}
-[data-theme="light"] .pcard:hover{border-color:var(--teal);box-shadow:0 4px 16px rgba(0,0,0,.1)}
-.pclbl{font-family:var(--fmono);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
-.pclbl.ip{color:var(--coral)}.pclbl.dl{color:var(--teal)}
-.pctit{font-family:var(--fdisp);font-size:18px;font-weight:600;margin-bottom:5px}
-.pcdate{font-family:var(--fmono);font-size:11px;color:var(--dim);margin-bottom:14px}
-.pcdesc{font-size:13.5px;color:var(--muted);line-height:1.65;flex:1}
-.pcstk{display:flex;flex-wrap:wrap;gap:5px;margin-top:16px}
-.pcstk .pc-chip{font-size:10px;padding:3px 9px}
-.bip{display:inline-flex;align-items:center;gap:5px;font-family:var(--fmono);font-size:10px;color:var(--coral);border:1px solid var(--ca20);background:var(--ca8);padding:3px 9px;border-radius:4px;margin-top:14px}
-.bip::before{content:'●';animation:blink 1.5s step-end infinite}
-
-/* ═══ SKILLS ═══ */
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.sgrp{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:24px}
-[data-theme="light"] .sgrp{box-shadow:var(--shadow);border-color:transparent}
-.sgtit{font-family:var(--fmono);font-size:10px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
-.schips{display:flex;flex-wrap:wrap;gap:7px}
-.schip{font-family:var(--fmono);font-size:11px;padding:5px 11px;border-radius:4px;border:1px solid var(--bdr);color:var(--muted);transition:border-color .2s,color .2s,background .2s;cursor:default}
-.schip:hover{border-color:var(--teal);color:var(--teal);background:var(--ta8)}
-
-/* ═══ CERTIFICATIONS ═══ */
-.certg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.certc{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:20px;display:flex;align-items:flex-start;gap:14px;transition:border-color .2s}
-.certc:hover{border-color:var(--teal)}
-.certc.ip{border-color:var(--ca20);animation:bpulse 3s ease-in-out infinite}
-[data-theme="light"] .certc{box-shadow:var(--shadow);border-color:transparent}
-[data-theme="light"] .certc:hover{border-color:var(--teal)}
-[data-theme="light"] .certc.ip{border-color:var(--ca20)}
-.certico{width:40px;height:40px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--bg);border:1px solid var(--bdr)}
-.certn{font-size:14px;font-weight:500;margin-bottom:3px}
-.certi{font-family:var(--fmono);font-size:11px;color:var(--dim);margin-bottom:7px}
-.certs{font-family:var(--fmono);font-size:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px}
-.certs.ok{color:var(--teal);background:var(--ta8);border:1px solid var(--ta20)}
-.certs.go{color:var(--coral);background:var(--ca8);border:1px solid var(--ca20)}
-
-/* ═══ EDUCATION ═══ */
-.edug{display:flex;flex-direction:column;gap:14px}
-.educ{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;transition:border-color .2s}
-.educ:hover{border-color:var(--teal)}
-[data-theme="light"] .educ{box-shadow:var(--shadow);border-color:transparent}
-[data-theme="light"] .educ:hover{border-color:var(--teal)}
-.edudeg{font-family:var(--fdisp);font-size:16px;font-weight:600;margin-bottom:3px}
-.edusch{font-family:var(--fmono);font-size:12px;color:var(--teal);margin-bottom:3px}
-.edud{font-family:var(--fmono);font-size:11px;color:var(--dim)}
-.edugpa{font-family:var(--fmono);font-size:12px;color:var(--teal);background:var(--ta8);border:1px solid var(--ta20);padding:4px 11px;border-radius:4px;white-space:nowrap}
-
-/* ═══ COMMUNITY ═══ */
-.comg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.comc{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:24px;transition:border-color .2s,transform .2s}
-.comc:hover{border-color:var(--coral);transform:translateY(-3px)}
-[data-theme="light"] .comc{box-shadow:var(--shadow);border-color:transparent}
-[data-theme="light"] .comc:hover{border-color:var(--coral);box-shadow:0 4px 16px rgba(0,0,0,.1)}
-.comico{font-size:26px;margin-bottom:14px}
-.comr{font-family:var(--fdisp);font-size:15px;font-weight:600;margin-bottom:3px}
-.como{font-family:var(--fmono);font-size:11px;color:var(--coral);margin-bottom:3px}
-.comd2{font-family:var(--fmono);font-size:10px;color:var(--dim);margin-bottom:11px}
-.comdesc{font-size:13px;color:var(--muted);line-height:1.6}
-
-/* ═══ BEYOND — hidden in light mode (not professional-relevant) ═══ */
-#beyond{background:var(--beyond-bg);max-width:100%;padding:110px 40px;transition:background .35s}
-#beyond .inner{max-width:1100px;margin:0 auto}
-#beyond .slabel{color:var(--coral)}
-#beyond .stitle{color:var(--txt);transition:color .35s}
-[data-theme="light"] #beyond .stitle{color:#1A1F2E}
-/* ★ Interests section hidden in professional/light mode */
-[data-theme="light"] #beyond{display:none}
-.bwgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.bwtile{background:var(--beyond-surf);border:1px solid var(--beyond-bdr);border-radius:8px;padding:24px;transition:border-color .2s,transform .2s}
-.bwtile:hover{border-color:var(--coral);transform:translateY(-3px)}
-.bwemi{font-size:26px;margin-bottom:12px}
-.bwlbl{font-family:var(--fmono);font-size:10px;color:var(--coral);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
-.bwtxt{font-size:13px;color:var(--beyond-txt);line-height:1.65}
-.bwtxt strong{color:#d4c4b0}
-
-/* ═══ CONTACT ═══ */
-#contact{text-align:center;padding-bottom:70px}
-.ctdesc{font-size:17px;color:var(--muted);max-width:520px;margin:0 auto 36px;line-height:1.7}
-.ctemail{font-family:var(--fmono);font-size:18px;color:var(--teal);display:inline-block;margin-bottom:28px;padding-bottom:3px;border-bottom:1px solid var(--ta20);transition:border-color .2s}
-.ctemail:hover{border-color:var(--teal)}
-.ctlinks{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
-.ctlnk{display:flex;align-items:center;gap:7px;font-family:var(--fmono);font-size:12px;color:var(--muted);border:1px solid var(--bdr);padding:9px 18px;border-radius:6px;transition:border-color .2s,color .2s,transform .2s}
-.ctlnk:hover{border-color:var(--teal);color:var(--teal);transform:translateY(-2px)}
-[data-theme="light"] .ctlnk{box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.ctnote{font-family:var(--fmono);font-size:11px;color:var(--dim);margin-top:36px}
-footer{border-top:1px solid var(--bdr);padding:20px 40px;display:flex;justify-content:space-between;font-family:var(--fmono);font-size:11px;color:var(--dim)}
-footer span{color:var(--teal)}
-[data-theme="light"] footer{background:var(--surf)}
-
-/* ═══ KEYFRAMES ═══ */
-@keyframes fup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(0,212,170,.2)}50%{box-shadow:0 0 0 6px rgba(0,212,170,.08)}}
-@keyframes sb{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
-@keyframes bpulse{0%,100%{opacity:1}50%{opacity:.6}}
-
-/* ═══ RESPONSIVE ═══ */
-@media(max-width:768px){
-  nav{padding:0 20px}
-  .nlinks,.ncv{display:none}.hbg{display:flex}
-  .sec{padding:72px 20px}#hero{padding:0 20px}
-  .hname{font-size:40px}
-  .agrid,.sgrid,.certg,.comg,.bwgrid,.pgrid{grid-template-columns:1fr}
-  .acard{position:static}
-  .pc{padding:24px}.pc-num{font-size:36px}.pc-two{grid-template-columns:1fr}
-  #beyond{padding:72px 20px}
-  footer{flex-direction:column;gap:6px;text-align:center}
-  .dm-hint{display:none}
-}
-@media(max-width:1024px) and (min-width:769px){
-  .agrid{grid-template-columns:1fr}.acard{position:static}
-  .comg,.bwgrid{grid-template-columns:1fr 1fr}
-  .pc-two{grid-template-columns:1fr}
-}
-
-/* Content is visible by default; scripting enhances navigation and theme only. */
-[hidden]{display:none!important}
-.hbg{min-width:44px;min-height:44px;align-items:center;justify-content:center}
-.mmenu{inset:60px 0 auto;max-height:calc(100vh - 60px);overflow:auto;padding:24px;gap:18px;border-bottom:1px solid var(--bdr)}
-.pc-ctx,.pcdate{color:var(--muted);font-size:12px}
-.pc-foot{flex-wrap:wrap;gap:16px}.pc.featured + .pc.featured{margin-top:28px}
-.hpre,.hname,.htype,.hsub,.hloc,.hbtns,.sci{opacity:1;animation:none}
-.htype::after{content:none}.sdot,.dm-hint svg{animation:none}
-.hloc{color:var(--muted)}
-section,article[id]{scroll-margin-top:80px}
-.skip-link{position:fixed;top:-100px;left:12px;z-index:1000;background:var(--surf);color:var(--txt);padding:12px}
-.skip-link:focus{top:8px}
-@media(prefers-reduced-motion:reduce){
- *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-}
-</style>
-<noscript><style>.nav-right{display:none}@media(max-width:768px){.nlinks{display:flex;gap:12px;flex-wrap:wrap}.nlogo{display:none}#nb{height:auto;min-height:60px;padding:10px}}</style></noscript>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="css/site.css">
 </head>
 <body>
-<a class="skip-link" href="#projects">Skip to projects</a>
 
-<!-- ═══ NAV ═══ -->
-<nav id="nb" role="navigation" aria-label="Main navigation">
+<a class="skip" href="#glance">Skip to the summary</a>
 
-  <a href="#hero" class="nlogo">barry.sampath</a>
-  <ul class="nlinks" role="list">
-    <li><a href="#about">About</a></li>
-    <li><a href="#experience">Experience</a></li>
-    <li><a href="#projects"><span class="dm">Projects</span><span class="lm">Projects</span></a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#community"><span class="dm">Community</span><span class="lm">Volunteering</span></a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-  <div class="nav-right">
-    <button class="tbtn" id="themeBtn" aria-label="Toggle dark/light mode">
-      <span class="moon" aria-hidden="true">🌙</span>
-      <span class="sun" aria-hidden="true">☀️</span>
-    </button>
-
-    <a class="ncv" href="#contact">Request current resume</a>
-    <button class="hbg" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mm" >
-      <span></span><span></span><span></span>
-    </button>
+<!-- ══════════ BAR ══════════ -->
+<div class="bar">
+  <div class="shell">
+    <a class="mark" href="#top">Barry Sampath<span> / security</span></a>
+    <div class="barright">
+      <nav aria-label="Sections">
+        <ul class="barnav">
+          <li><a href="#about">About</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#background">Background</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="modectl" role="group" aria-label="Reading mode">
+        <button type="button" data-mode="skim" aria-pressed="false">Skim</button>
+        <button type="button" data-mode="read" aria-pressed="true">Read</button>
+      </div>
+      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
+        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
+      </button>
+    </div>
   </div>
-</nav>
-
-<!-- Dark mode hint — arrow points UP at theme button, positioned by JS -->
-<div class="dm-hint" id="dmHint" aria-hidden="true">
-  <!-- Straight upward arrow, bounces DOWN to draw eye UP toward button -->
-  <svg width="14" height="26" viewBox="0 0 14 26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="7" y1="24" x2="7" y2="4"/>
-    <polyline points="2,9 7,4 12,9"/>
-  </svg>
-  <span class="dm-hint-label">try dark mode</span>
 </div>
 
-<div class="mmenu" id="mm" role="navigation" aria-label="Mobile navigation" hidden>
-  <a href="#about" >About</a>
-  <a href="#experience" >Experience</a>
-  <a href="#projects" >Projects</a>
-  <a href="#skills" >Skills</a>
-  <a href="#community" >Community</a>
-  <a href="#contact" >Contact</a>
+<main id="top">
+
+<!-- ══════════ HERO ══════════ -->
+<div class="hero">
+  <div class="shell">
+    <div class="intro">
+      <p class="status"><span class="live" aria-hidden="true"></span> Brisbane, QLD &middot; open to 2027 internships</p>
+
+      <h1>I build the detection side, <em>and I keep the notes on what broke.</em></h1>
+
+      <p class="roles">
+        <span class="rlab">Working toward</span>
+        <span class="rlist" id="roleList">
+          <span>Blue team</span><span>SOC analyst</span><span>Identity &amp; access</span><span>GRC</span><span>IT automation</span>
+        </span>
+      </p>
+
+      <p class="herolede">Second-year Cybersecurity and AI student at QUT, working part-time as a security and automation analyst, and building the practical side in a home lab and in competition.</p>
+
+      <div class="cta">
+        <a class="solid" href="#work">Three projects &rarr;</a>
+        <a class="ghost" href="resume/Barry_Sampath_Resume.pdf">Resume &middot; PDF</a>
+      </div>
+    </div>
+
+    <div>
+      <figure style="margin:0">
+        <div class="portrait">
+          <!-- Replace this block with: <img src="assets/barry.jpg" alt="Barry Sampath"> -->
+          <div class="empty">
+            <b>Photograph</b>
+            <span>Drop a 4:5 image at assets/barry.jpg and swap this block for an img tag.</span>
+          </div>
+        </div>
+        <figcaption class="figcap">Fig. 1 &mdash; Brisbane, 2026.</figcaption>
+      </figure>
+    </div>
+  </div>
 </div>
 
-<!-- ═══ HERO ═══ -->
-<section id="hero" aria-label="Introduction">
-  <div class="hbg-wrap" aria-hidden="true"><canvas id="gc"></canvas></div>
-  <div class="hcnt">
-    <p class="hpre">// Hello, world.</p>
-
-    <h1 class="hname">Bharath <em>"Barry"</em><br>Sampath</h1>
-    <p class="htype" id="ht">Cybersecurity student · IT automation</p>
-    <p class="hsub">Main contributor to ClassQuest · Our team won the People’s Choice Award</p>
-
-    <p class="hloc">📍 Brisbane, QLD · <em>Open to opportunities</em></p>
-    <div class="hbtns">
-      <a href="#projects" class="bp">View My Work ↓</a>
-      <a href="#contact" class="bg2">Get In Touch</a>
+<!-- ══════════ AT A GLANCE — the twenty-second tier ══════════ -->
+<div class="glance bleed" id="glance">
+  <div class="shell">
+    <div class="gwrap">
+      <div class="gcell">
+        <h4>Who</h4>
+        <p class="big">Barry Sampath</p>
+        <p>Bharath Sampath. QUT Bachelor of IT, Cybersecurity &amp; AI, second year. GPA 6.091 / 7.000, finishing December 2027. Grew up in the UAE, based in Brisbane.</p>
+      </div>
+      <div class="gcell">
+        <h4>Doing now</h4>
+        <ul>
+          <li><b>ScienceGears</b> — Cybersecurity &amp; IT Automation Analyst, paid contract</li>
+          <li><b>Code Network</b> — Engagement Officer</li>
+          <li><b>Coles Group</b> — Customer Service Supervisor</li>
+        </ul>
+      </div>
+      <div class="gcell">
+        <h4>Built</h4>
+        <ul>
+          <li><a href="work/homelab/"><b>ITDR home lab</b></a> — Wazuh SIEM, Sysmon telemetry</li>
+          <li><a href="work/classquest/"><b>ClassQuest</b></a> — 10 merged PRs, People&rsquo;s Choice Award</li>
+          <li><a href="work/luna/"><b>LUNA</b></a> — Raspberry Pi robot, vision and voice</li>
+        </ul>
+      </div>
+      <div class="gcell">
+        <h4>Proof</h4>
+        <ul>
+          <li><b>3rd place</b> CIMCTF 2026, team SushiShield</li>
+          <li><b>People&rsquo;s Choice</b> Winter Hackathon 2026</li>
+          <li>Google Cybersecurity &middot; CBA Data Science</li>
+          <li><a href="resume/Barry_Sampath_Resume.pdf">Resume, one page</a></li>
+        </ul>
+      </div>
     </div>
   </div>
-  <div class="sci" aria-hidden="true"><span>SCROLL</span><div class="sdot"></div></div>
-</section>
+</div>
 
-<!-- ═══ ABOUT ═══ -->
-<section id="about" class="sec" aria-labelledby="about-h">
-  <div class="slabel reveal">
-    <span class="dm">// 01. About</span>
-    <span class="lm">01 — Profile</span>
-  </div>
-  <h2 id="about-h" class="stitle reveal">
-    <span class="dm">The Story So Far</span>
-    <span class="lm">About Me</span>
-  </h2>
-  <div class="agrid">
-    <div class="atxt reveal">
-      <!-- Dark mode: personal, character-driven opener -->
-      <p class="dm">I'm Barry, a cybersecurity and IT student at QUT, based in Brisbane. I'm the kind of person who leans into hard things rather than away from them.</p>
-      <!-- Light mode: professional, portfolio-ready opener -->
-      <p class="lm">I'm Barry, a cybersecurity and IT student at QUT (Cyber Security & Artificial Intelligence), based in Brisbane, with a focused interest in <strong>blue-team security, identity management, and defensive monitoring</strong>.</p>
-
-      <p>I’m originally from the Dubai / UAE region, grew up in Sharjah and went to school in Ajman. I’m now based in Brisbane, studying cybersecurity and artificial intelligence at QUT.</p>
-      <p>My work spans identity and access management, Python and collaborative software projects. I was one of the main contributors to <a href="#classquest">ClassQuest</a>, our People’s Choice-winning hackathon project, contributing frontend features and upload-handling changes and presenting during the Q&amp;A.</p>
-      <p>I’m building toward a career in SOC, IAM and defensive security. My HomeLab infrastructure is established; further development is currently paused while I focus on university and existing work.</p>
-      <p>Outside of study and work, I keep active through the gym and badminton. Guitar and boxing are interests I’d like to make more time for.</p>
+<!-- ══════════ ABOUT ══════════ -->
+<section id="about" class="about">
+  <div class="shell">
+    <div>
+      <p class="slab">About</p>
+      <h2>The short version</h2>
+      <p>I am a cybersecurity and AI student at QUT with a specific interest in the defensive side: blue-team detection, identity and access management, and the governance work that decides which controls are worth having in the first place.</p>
+      <p>I grew up in the UAE, near Dubai, and moved to Brisbane to study. That move is most of why I am comfortable starting from nothing inside an unfamiliar system and working out how it fits together, which turns out to be the job.</p>
+      <p>My work splits three ways. There is paid consulting at ScienceGears, where I run identity controls and automation on a live Microsoft 365 tenant. There is university and the projects that come out of it. And there is the practical side I build myself, because SIEM experience lives inside companies and the only way to have any as a student is to run one.</p>
+      <p class="detail-only">I would rather show a failure log than a polished screenshot. The home lab section below is written that way on purpose, and it is the part of this site I would most like to be asked about.</p>
+      <p class="skimnote">Skim mode is on. Switch to Read for the full detail, including the detection walkthrough, the failure log and the role bullets.</p>
     </div>
-    <aside class="acard reveal" aria-label="Quick facts">
-      <div class="aci"><div class="acico">🎓</div><div><div class="aclbl">Currently Studying</div><div class="acval">B. Information Technology</div><div class="acsub">Cyber Security & AI · QUT</div></div></div>
-      <div class="aci"><div class="acico">📊</div><div><div class="aclbl">Academic Performance</div><div class="acval">GPA 6.091 / 7.000</div><div class="acsub">Expected completion Dec 2027</div></div></div>
-      <div class="aci"><div class="acico">🔒</div><div><div class="aclbl">Focus Area</div><div class="acval">Blue Team · SOC · IAM · Risk &amp; Assurance</div><div class="acsub">Identity Security · Defensive Monitoring</div></div></div>
-      <div class="aci"><div class="acico">📍</div><div><div class="aclbl">Location</div><div class="acval">Brisbane, QLD</div><div class="acsub">Originally: Dubai / UAE 🇦🇪</div></div></div>
-      <!-- Real email from resume -->
-      <div class="aci"><div class="acico">✉️</div><div><div class="aclbl">Contact</div><div class="acval" style="font-size:12px"><a href="mailto:barry.sampath@outlook.com" style="color:var(--teal)">barry.sampath@outlook.com</a></div></div></div>
-    </aside>
-  </div>
-</section>
-
-<!-- ═══ EXPERIENCE ═══ -->
-<section id="experience" class="sec" aria-labelledby="exp-h">
-  <div class="slabel reveal">
-    <span class="dm">// 02. Experience</span>
-    <span class="lm">02 — Experience</span>
-  </div>
-  <h2 id="exp-h" class="stitle reveal">
-    <span class="dm">Where I've Worked</span>
-    <span class="lm">Work Experience</span>
-  </h2>
-  <div class="tl">
-
-    <article class="titem reveal">
-      <div class="tdot act" aria-hidden="true"></div>
-      <div class="tcard">
-        <div class="thdr"><div class="trole">Cybersecurity &amp; IT Automation Analyst</div><div class="tdate">Apr 2026 – Present</div></div>
-        <div class="tco">ScienceGears · Brisbane, QLD</div>
-        <div class="ttags"><span class="tg t">Zero Trust</span><span class="tg t">IAM</span><span class="tg t">Microsoft Entra ID</span><span class="tg t">Risk Assessment</span><span class="tg c">Current</span></div>
-        <ul class="tbul">
-          <li>Conducted risk assessments across identity security posture and access governance, producing prioritised remediation reports with clear client-facing guidance</li>
-          <li>Deployed and managed Zero Trust IT controls using Microsoft Entra ID, configuring MFA enforcement, Conditional Access compliance policies, and role-based access governance</li>
-          <li>Built an AI-assisted email triage system that classifies and validates incoming correspondence, generating structured draft replies and reducing manual processing time</li>
-          <li>Automated IT operational workflows using Python scripting, improving consistency of security control application across client operations</li>
-        </ul>
-      </div>
-    </article>
-
-    <article class="titem reveal">
-      <div class="tdot act" aria-hidden="true"></div>
-      <div class="tcard">
-        <div class="thdr"><div class="trole">Event Officer</div><div class="tdate">Mar 2026 – Present</div></div>
-        <div class="tco">Code Network · Brisbane, QLD</div>
-        <div class="ttags"><span class="tg t">Event Management</span><span class="tg t">Stakeholder Communication</span><span class="tg c">Current</span></div>
-        <ul class="tbul">
-          <li>Coordinated end-to-end logistics for university technology events, managing venue bookings, scheduling, and attendee coordination for up to 40 participants per event</li>
-          <li>Managed communication across stakeholders, volunteers, and attendees to ensure consistent and well-run event delivery</li>
-        </ul>
-      </div>
-    </article>
-
-    <article class="titem reveal">
-      <div class="tdot off" aria-hidden="true"></div>
-      <div class="tcard">
-        <div class="thdr"><div class="trole">Technology Consultant — Power Platform</div><div class="tdate">Apr – May 2026</div></div>
-        <div class="tco">DynamX Institute · Brisbane, QLD</div>
-        <div class="ttags"><span class="tg t">Consulting</span><span class="tg t">Power Platform</span><span class="tg t">Business Analysis</span></div>
-        <ul class="tbul">
-          <li>Designed and delivered a working Power Platform business system for a real-world client scenario, applying requirements analysis and solution design from brief through to final submission</li>
-          <li>Mapped business processes and modelled solution architecture, iterating through multiple structured feedback cycles to strengthen delivery quality</li>
-          <li>Presented solution findings and design rationale to program assessors, practising client communication and structured reporting expected in a consulting environment</li>
-        </ul>
-      </div>
-    </article>
-
-    <!-- Customer Service: current role — opacity restored, "Current" tag added -->
-    <article class="titem reveal">
-      <div class="tdot act" aria-hidden="true"></div>
-      <div class="tcard">
-        <div class="thdr"><div class="trole">Customer Service Supervisor</div><div class="tdate">May 2025 – Present</div></div>
-        <div class="tco">Coles Group · Brisbane, QLD</div>
-        <div class="ttags"><span class="tg">Team Leadership</span><span class="tg">Operations</span><span class="tg c">Current</span></div>
-        <ul class="tbul">
-          <li>Supervised customer service operations across a high-volume retail team, maintaining consistent service standards and team performance under pressure</li>
-          <li>Trained and onboarded 20+ team members on POS procedures, refunds, and customer communication standards</li>
-          <li>Resolved escalated customer complaints, maintaining team morale and service quality during peak trading periods</li>
-        </ul>
-        <div class="tnote">⚡ Maintained alongside full-time study and concurrent technology roles.</div>
-      </div>
-    </article>
-
+    <div class="aside">
+      <dl>
+        <dt>Studying</dt><dd>B. Information Technology, Cybersecurity &amp; AI, QUT</dd>
+        <dt>GPA</dt><dd>6.091 / 7.000 &middot; Diploma 6.250</dd>
+        <dt>Finishing</dt><dd>December 2027</dd>
+        <dt>Based</dt><dd>Brisbane, QLD &middot; from the UAE</dd>
+        <dt>Focus</dt><dd>Blue team &middot; SOC &middot; IAM &middot; GRC</dd>
+        <dt>Seeking</dt><dd>2027 internships and vacationer programs</dd>
+      </dl>
+    </div>
   </div>
 </section>
 
-<!-- ═══ PROJECTS ═══ -->
-<section id="projects" class="sec" aria-labelledby="proj-h">
-  <div class="slabel reveal">
-    <span class="dm">// 03. Projects</span>
-    <span class="lm">03 — Selected Work</span>
+<!-- ══════════ CONSOLE BAND ══════════ -->
+<div class="band bleed" id="detection">
+  <div class="shell">
+    <div>
+      <p class="slab">From the home lab</p>
+      <h2>What happens when Word spawns PowerShell</h2>
+      <p>A busy endpoint produces thousands of process-creation events a day. Almost all of them are boring, which is the point: you cannot recognise the one that matters without knowing what ordinary looks like.</p>
+      <p>This is that stream, playing at real speed. Wait for it.</p>
+      <p style="font-family:var(--f-mono);font-size:11px;color:var(--ink3);letter-spacing:.04em">One of three projects &middot; <a href="work/homelab/" style="color:var(--ink)">ITDR home lab &rarr;</a></p>
+      <button type="button" class="creplay" id="replay">Replay</button>
+    </div>
+    <div>
+      <div class="console" id="console" role="img" aria-label="A simulated endpoint event stream: routine process and network events, ending with PowerShell launched by Microsoft Word and a level 12 alert.">
+        <div class="ln">11:42:04  EventID 1   svchost.exe    &larr; services.exe</div>
+        <div class="ln">11:42:06  EventID 3   chrome.exe     &rarr; 142.250.76.14:443</div>
+        <div class="ln">11:42:08  EventID 1   Teams.exe      &larr; explorer.exe</div>
+        <div class="ln hit">11:42:18  EventID 1   powershell.exe &larr; WINWORD.EXE  -nop -w hidden -enc</div>
+      </div>
+    </div>
   </div>
-  <h2 id="proj-h" class="stitle reveal">
-    <span class="dm">Things I've Built</span>
-    <span class="lm">Selected Projects</span>
-  </h2>
+</div>
 
-  <article id="classquest" class="pc featured reveal" aria-labelledby="cq-title">
-    <div class="pc-topbar"><div class="pc-num" aria-hidden="true">01</div><span class="pc-badge pb-done">People’s Choice Award</span></div>
-    <h3 id="cq-title" class="pc-title">ClassQuest — learn by playing</h3>
-    <p class="pc-ctx">Code Network Winter Hackathon 2026 · August 2026 · Team project</p>
-    <div class="pc-field"><div class="pc-lbl">The project</div><p class="pc-val">A learning website that turns lecture material into playable quests and challenges. Our team won the People’s Choice Award.</p></div>
-    <div class="pc-field"><div class="pc-lbl">My contribution</div><p class="pc-val">As one of the main contributors, I worked from the playable demo and frontend foundation through visual styling, learning features, security patches and debugging. I built sign-in, onboarding and server creation/join flows, added cohort challenges and learning preferences, and contributed upload-handling fixes with regression tests. I also presented during the team’s Q&amp;A.</p></div>
-    <details class="cq-evidence">
-      <summary>Explore my contributions and code evidence</summary>
-      <ul class="pc-val">
-        <li><strong>Playable learning demo.</strong> Built the prediction → diagnosis → source evidence → transfer/retry loop, answer choices and concept trail; added an overfitting fixture and updated backend test expectations. <a href="https://github.com/MikePineda/class-quest/pull/5" target="_blank" rel="noopener">Demo PR #5</a>.</li>
-        <li><strong>Frontend foundation and visual system.</strong> Connected sign-in and registration to the existing API, restored sessions, built onboarding and server flows, and added loading/error recovery. Applied the team’s visual system across these screens and the demo. <a href="https://github.com/MikePineda/class-quest/pull/11" target="_blank" rel="noopener">Foundation #11</a> · <a href="https://github.com/MikePineda/class-quest/pull/14" target="_blank" rel="noopener">Visuals #14</a>.</li>
-        <li><strong>Upload security and regression tests.</strong> Replaced client-controlled storage filenames with generated IDs and bounded upload reads. Added traversal, absolute-path and size-limit tests, plus a security baseline documenting remaining hardening work. <a href="https://github.com/MikePineda/class-quest/pull/12" target="_blank" rel="noopener">Security patch #12</a>.</li>
-        <li><strong>Cohort learning and preferences.</strong> Added an asynchronous practice challenge and readiness feedback using shared answer patterns, with tests and safeguards against sparse or tied evidence. Added validated local learning preferences and storage-failure fallbacks. <a href="https://github.com/MikePineda/class-quest/pull/20" target="_blank" rel="noopener">Challenge #20</a> · <a href="https://github.com/MikePineda/class-quest/pull/21" target="_blank" rel="noopener">Readiness #21</a> · <a href="https://github.com/MikePineda/class-quest/pull/23" target="_blank" rel="noopener">Preferences #23</a>.</li>
-        <li><strong>Iteration and debugging.</strong> Revised the starting experience to remove forced learning modes, fixed the obsolete dependent hub card after a failed typecheck, and added universal dashboard actions. The follow-up frontend checks passed. <a href="https://github.com/MikePineda/class-quest/pull/24" target="_blank" rel="noopener">Starting path #24</a> · <a href="https://github.com/MikePineda/class-quest/pull/25" target="_blank" rel="noopener">Integration fix #25</a> · <a href="https://github.com/MikePineda/class-quest/pull/26" target="_blank" rel="noopener">Dashboard #26</a>.</li>
-      </ul>
-      <p class="pc-val">These links document my contributions during development; the team continued to refine the application afterward.</p>
-    </details>
-    <div class="pc-field"><div class="pc-lbl">Team credit</div><p class="pc-val">Built with Miguel Pineda and our ClassQuest teammates. Miguel led the technical build; my contribution combined implementation with product presentation and Q&amp;A.</p></div>
-    <div class="pc-chips"><span class="pc-chip">React</span><span class="pc-chip">TypeScript</span><span class="pc-chip">FastAPI</span><span class="pc-chip">Python</span><span class="pc-chip">SQLite</span></div>
-    <div class="pc-foot"><a class="pc-link" href="https://github.com/MikePineda/class-quest" target="_blank" rel="noopener">Team repository →</a><a class="pc-link" href="https://github.com/MikePineda/class-quest/pulls?q=is%3Apr+author%3Abharath-blazecode" target="_blank" rel="noopener">My pull requests →</a></div>
-  </article>
+<!-- ══════════ WALKTHROUGH ══════════ -->
+<section id="walkthrough" class="detail-only">
+  <div class="shell">
+    <p class="slab">The rule behind it</p>
+    <h2>One event, through my rule, to a response</h2>
+    <p class="lede">Step through with the tabs or the arrow keys. Sample telemetry modelled on my lab; the rule is the shape I write them in.</p>
 
-  <!-- LUNA -->
-
-  <article class="pc featured reveal" aria-labelledby="p1-title">
-    <div class="pc-topbar">
-      <div class="pc-num" aria-hidden="true">02</div>
-      <span class="pc-badge pb-done" aria-label="Status: Completed">● Completed</span>
-    </div>
-    <h3 id="p1-title" class="pc-title">LUNA — TurboPi Intelligent Robot</h3>
-    <p class="pc-ctx">QUT University Project · Jul – Nov 2025 · Python · Raspberry Pi · Computer Vision</p>
-    <hr class="pc-rule" aria-hidden="true">
-    <div class="pc-field">
-      <div class="pc-lbl">What it is</div>
-      <p class="pc-val">A Raspberry Pi 4B-based intelligent robot built on the Hiwonder TurboPi platform. The system integrates hardware assembly, Python programming, wireless control, computer vision, offline voice interaction, and PID-tuned movement into one cohesive robotics platform, built collaboratively with a partner from the ground up.</p>
-    </div>
-    <div class="pc-field">
-      <div class="pc-lbl">Why I built it</div>
-      <p class="pc-val">This started as a university robotics unit but became something I actually cared about finishing. I wanted to understand how software decisions translate into real physical behaviour. How a bad control loop causes a robot to spin, or how a missed sensor reading ends a demo early. You can't ignore that kind of feedback. It keeps you honest.</p>
+    <div class="steps" role="tablist" aria-label="Detection walkthrough">
+      <button type="button" role="tab" aria-selected="true" aria-controls="p1" id="t1"><b>Step 01</b>Raw Sysmon event</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="p2" id="t2"><b>Step 02</b>The rule that matches</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="p3" id="t3"><b>Step 03</b>Alert fires</button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="p4" id="t4"><b>Step 04</b>Analyst response</button>
     </div>
 
-    <div class="pc-field">
-      <div class="pc-lbl">What I explored</div>
-      <p class="pc-val">How do you integrate independent hardware subsystems — vision, voice, movement, web control — into one robot that responds reliably under real conditions? The core challenge wasn't building individual features. It was making them <strong>coexist without breaking each other</strong>, and understanding the failure modes when they do.</p>
+    <div class="panels">
+      <div class="panel live" role="tabpanel" id="p1" aria-labelledby="t1">
+        <h3>The endpoint reports a process creation</h3>
+        <p>Sysmon logs Event ID 1 on every process start. On its own this is noise. The signal lives in the parent-child relationship.</p>
+        <div class="tele"><b>EventID</b>      1  (Process Create)
+<b>UtcTime</b>      2026-09-07 11:42:18.221
+<b>Image</b>        C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+<u>ParentImage</u>  C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE
+<u>CommandLine</u>  powershell.exe -nop -w hidden -enc SQBFAFgAKABOAGUAdw...
+<b>User</b>         DESKTOP-••••••••\barry
+<b>Hashes</b>       SHA256=1B2F4C9A...E77D</div>
+        <p>Two fields carry the whole detection. A document is not supposed to start a shell, and an encoded command in a hidden window is not how anyone runs PowerShell on purpose.</p>
+      </div>
+
+      <div class="panel" role="tabpanel" id="p2" aria-labelledby="t2">
+        <h3>The rule, in <code>local_rules.xml</code></h3>
+        <p>It chains off Wazuh&rsquo;s built-in Sysmon process-create rule and narrows on the parent. Level 12 puts it above the noise floor so it surfaces on the dashboard instead of settling into the archive.</p>
+        <div class="tele">&lt;group name="sysmon,windows,"&gt;
+  &lt;rule id="<u>100210</u>" level="<u>12</u>"&gt;
+    &lt;if_sid&gt;61603&lt;/if_sid&gt;
+    &lt;field name="win.eventdata.parentImage"&gt;WINWORD.EXE|EXCEL.EXE&lt;/field&gt;
+    &lt;field name="win.eventdata.image"&gt;powershell.exe&lt;/field&gt;
+    &lt;description&gt;Office application spawned PowerShell&lt;/description&gt;
+    &lt;mitre&gt;&lt;id&gt;<u>T1059.001</u>&lt;/id&gt;&lt;/mitre&gt;
+  &lt;/rule&gt;
+&lt;/group&gt;</div>
+        <p>The MITRE mapping matters more than it looks. It means the alert arrives carrying a name any responder already knows, rather than a description only its author understands.</p>
+      </div>
+
+      <div class="panel" role="tabpanel" id="p3" aria-labelledby="t3">
+        <h3>What the analyst actually sees</h3>
+        <p>The dashboard card, roughly two seconds after the process starts.</p>
+        <div class="alertcard">
+          <div class="ah">
+            <span class="lv">Level 12</span>
+            <span class="at">Office application spawned PowerShell</span>
+            <span class="ts">11:42:18 UTC</span>
+          </div>
+          <dl class="arows">
+            <dt>Rule</dt><dd>100210 &middot; T1059.001 Command and Scripting Interpreter</dd>
+            <dt>Agent</dt><dd>Windows-Lab-Endpoint</dd>
+            <dt>Process</dt><dd>powershell.exe &larr; WINWORD.EXE</dd>
+            <dt>Flags</dt><dd>-nop &middot; -w hidden &middot; -enc</dd>
+            <dt>Decoder</dt><dd>windows_eventchannel</dd>
+          </dl>
+        </div>
+        <p>Severity is the only colour on this page that is not ink or paper. It is reserved for exactly this, which is why it reads as urgent when it appears.</p>
+      </div>
+
+      <div class="panel" role="tabpanel" id="p4" aria-labelledby="t4">
+        <h3>Triage, in the order I work it</h3>
+        <ol class="actions">
+          <li><b>Decode the payload.</b> Base64 out of the encoded block first, because everything after this depends on what it was trying to do.</li>
+          <li><b>Establish the document.</b> Which file Word had open, where it came from, who else received it.</li>
+          <li><b>Pull sibling events.</b> Network connections and registry writes from the same process GUID inside the following minute.</li>
+          <li><b>Contain or clear.</b> Isolate the endpoint if the payload reached out. If it turns out to be a macro someone wrote in-house, the rule needs an exception, not the user a lecture.</li>
+          <li><b>Write it down.</b> Every tuning decision goes in the log, or the next person inherits a rule nobody can explain.</li>
+        </ol>
+      </div>
     </div>
-    <hr class="pc-rule" aria-hidden="true">
-    <div class="pc-two">
+  </div>
+</section>
+
+<!-- ══════════ WORK ══════════ -->
+<section id="work" class="sec-rule">
+  <div class="shell">
+    <p class="slab">Selected work</p>
+    <h2>Three projects, one structure</h2>
+    <p class="lede">Each page runs the same five parts: context, what I built, what broke, what I would change, and the evidence for all of it.</p>
+
+    <div class="cards">
+      <a class="card" href="work/classquest/">
+        <div class="cbody">
+          <span class="cbadge done">People&rsquo;s Choice Award</span>
+          <h3>ClassQuest</h3>
+          <p class="cmeta">Code Network Winter Hackathon &middot; Aug 2026 &middot; Team of four</p>
+          <p>A learning site that turns lecture material into playable quests. I worked from the playable demo and frontend foundation through to upload security, cohort challenges and the judging Q&amp;A. Ten merged pull requests, each linked.</p>
+          <p class="detail-only">The upload handler is the part worth reading. Accepting student-supplied files into a site other students load is most of the attack surface in one function.</p>
+          <div class="ctags"><span>React</span><span>TypeScript</span><span>FastAPI</span><span>Python</span><span>SQLite</span></div>
+          <span class="cgo">Read the case study &rarr;</span>
+        </div>
+        <div class="cthumb"><span>Interface still<br>or team photo</span></div>
+      </a>
+
+      <a class="card" href="work/homelab/">
+        <div class="cbody">
+          <span class="cbadge pause">Phase 1 complete &middot; paused</span>
+          <h3>ITDR Home Lab</h3>
+          <p class="cmeta">Personal project &middot; from June 2026</p>
+          <p>A Wazuh 4.9.2 server, an enrolled Windows endpoint and Sysmon telemetry, built on a laptop and documented as it went. Detection-rule development is the next phase.</p>
+          <p class="detail-only">The build notes are the substance here, faults included. Four separate failures before the first dashboard login.</p>
+          <div class="ctags"><span>Wazuh 4.9.2</span><span>Sysmon</span><span>Ubuntu</span><span>VMware</span></div>
+          <span class="cgo">Read the case study &rarr;</span>
+        </div>
+        <div class="cthumb"><span>Wazuh dashboard<br>screenshot</span></div>
+      </a>
+
+      <a class="card" href="work/luna/">
+        <div class="cbody">
+          <span class="cbadge done">Completed</span>
+          <h3>LUNA &mdash; TurboPi robot</h3>
+          <p class="cmeta">QUT university project &middot; Jul&ndash;Nov 2025 &middot; With Zhirui Lu</p>
+          <p>A Raspberry Pi robot integrating computer vision, offline voice, wireless control and PID-tuned movement into one platform that had to keep working while all four ran at once.</p>
+          <p class="detail-only">Where I learned that hardware tells you immediately when your logic is wrong, and where the habit of documenting decisions in real time started.</p>
+          <div class="ctags"><span>Python</span><span>OpenCV</span><span>Flask</span><span>Raspberry Pi</span></div>
+          <span class="cgo">Read the case study &rarr;</span>
+        </div>
+        <div class="cthumb"><span>Robot photo</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PULL QUOTE ══════════ -->
+<div class="pull bleed detail-only">
+  <div class="shell">
+    <p>A lab that came up first try would <em>tell you nothing</em> about how I work.</p>
+    <p class="src">HomeLab ITDR &middot; Phase 1 build notes</p>
+  </div>
+</div>
+
+<!-- ══════════ FAILURE LOG ══════════ -->
+<section id="log" class="detail-only">
+  <div class="shell">
+    <p class="slab">Failure log</p>
+    <h2>Four things that broke, and what fixed them</h2>
+    <p class="lede">Real entries from the Phase 1 build. Anyone can post a screenshot of a working dashboard.</p>
+
+    <div class="scroller">
+      <table class="logtable">
+        <caption class="sr">Faults encountered building the ITDR home lab, with diagnosis and resolution.</caption>
+        <thead>
+          <tr><th scope="col">Symptom</th><th scope="col">Diagnosis</th><th scope="col">Fix</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="sym">VM storage corrupting</span></td>
+            <td>OneDrive was syncing the VM directory and holding locks on open <code>.vmdk</code> files mid-write.</td>
+            <td class="fix">Moved every VM file outside the OneDrive tree. Now a standing rule for anything that writes continuously.</td>
+          </tr>
+          <tr>
+            <td><span class="sym">Server unreachable</span></td>
+            <td>A stale netplan config held a static address of <code>192.168.170.10</code>, from a subnet that stopped existing when the adapter changed.</td>
+            <td class="fix">Rewrote netplan against the bridged adapter. Found by comparing the configured address to the adapter&rsquo;s actual subnet rather than debugging the service on top.</td>
+          </tr>
+          <tr>
+            <td><span class="sym">Indexer stalling</span></td>
+            <td>Virtual disk at 99% of 50&nbsp;GB. The indexer degrades quietly rather than failing loudly, so it presented as a performance problem first.</td>
+            <td class="fix">Expanded to 100&nbsp;GB via LVM without a rebuild. Sized for retention from then on instead of for install.</td>
+          </tr>
+          <tr>
+            <td><span class="sym">SSH dead on NAT</span></td>
+            <td>NAT networking left the host unreachable while the agent still enrolled, so the failure looked partial rather than total.</td>
+            <td class="fix">Reverted to bridged to get the lab productive. NAT restoration on the correct subnet is documented and queued, not abandoned.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ EXPERIENCE ══════════ -->
+<section id="experience" class="sec-rule">
+  <div class="shell">
+    <p class="slab">Experience</p>
+    <h2>Four roles, held alongside full-time study</h2>
+
+    <ul class="roles-list">
+      <li class="role">
+        <div class="when"><b>Apr 2026 — present</b>Brisbane, QLD<br>Paid contract</div>
+        <div>
+          <h3>Cybersecurity &amp; IT Automation Analyst</h3>
+          <p class="org">ScienceGears</p>
+          <ul class="detail-only">
+            <li>Conducted risk assessments across identity security posture and access governance, producing prioritised remediation reports with client-facing guidance.</li>
+            <li>Deployed and managed Zero Trust controls in Microsoft Entra ID: MFA enforcement, Conditional Access compliance policies and role-based access governance.</li>
+            <li>Built an AI-assisted email triage system that classifies and validates incoming correspondence and generates structured draft replies, cutting manual processing time.</li>
+            <li>Automated IT operational workflows in Python, improving how consistently security controls are applied across client operations.</li>
+          </ul>
+          <div class="rtags"><span>Zero Trust</span><span>Entra ID</span><span>Conditional Access</span><span>Risk assessment</span><span>Python</span></div>
+        </div>
+      </li>
+
+      <li class="role">
+        <div class="when"><b>Mar 2026 — present</b>Brisbane, QLD<br>Volunteer committee</div>
+        <div>
+          <h3>Engagement Officer</h3>
+          <p class="org">Code Network</p>
+          <ul class="detail-only">
+            <li>Coordinated end-to-end logistics for university technology events, covering venue bookings, scheduling and attendee coordination for up to 40 participants per event.</li>
+            <li>Managed communication across stakeholders, volunteers and attendees so events ran consistently.</li>
+            <li>Promoted from Event Officer at the September 2026 AGM.</li>
+          </ul>
+          <div class="rtags"><span>Event delivery</span><span>Stakeholder comms</span><span>Community</span></div>
+        </div>
+      </li>
+
+      <li class="role">
+        <div class="when"><b>Apr — May 2026</b>Brisbane, QLD<br>Program placement</div>
+        <div>
+          <h3>Technology Consultant — Power Platform</h3>
+          <p class="org">DynamX Institute</p>
+          <ul class="detail-only">
+            <li>Designed and delivered a working Power Platform business system for a real client scenario, from requirements analysis through to final submission.</li>
+            <li>Mapped business processes and modelled solution architecture, iterating through several structured feedback cycles.</li>
+            <li>Presented findings and design rationale to program assessors.</li>
+          </ul>
+          <div class="rtags"><span>Power Platform</span><span>Business analysis</span><span>Solution design</span></div>
+        </div>
+      </li>
+
+      <li class="role">
+        <div class="when"><b>May 2025 — present</b>Brisbane, QLD<br>Part-time</div>
+        <div>
+          <h3>Customer Service Supervisor</h3>
+          <p class="org">Coles Group</p>
+          <ul class="detail-only">
+            <li>Supervised customer service operations across a high-volume retail team, holding service standards under pressure.</li>
+            <li>Trained and onboarded more than 20 team members on point-of-sale procedures, refunds and customer communication standards.</li>
+            <li>Resolved escalated complaints during peak trading periods.</li>
+          </ul>
+          <div class="rtags"><span>Team leadership</span><span>Training</span><span>Operations</span></div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ SKILLS ══════════ -->
+<section id="skills">
+  <div class="shell">
+    <p class="slab">Skills</p>
+    <h2>What I work with</h2>
+    <div class="skills">
       <div>
-        <div class="pc-lbl">Tech stack</div>
-        <div class="pc-chips">
-          <span class="pc-chip">Python</span><span class="pc-chip">Flask</span><span class="pc-chip">OpenCV</span>
-          <span class="pc-chip">Raspberry Pi 4B</span><span class="pc-chip">WonderEcho</span><span class="pc-chip">I²C</span>
-          <span class="pc-chip">NumPy</span><span class="pc-chip">Tkinter</span>
+        <h4>Security</h4>
+        <div class="tags">
+          <span>Microsoft Entra ID</span><span>Conditional Access</span><span>MFA</span>
+          <span>Zero Trust</span><span>Wazuh SIEM</span><span>Sysmon</span>
+          <span>MITRE ATT&amp;CK</span><span>IT controls review</span><span>Risk &amp; compliance</span><span>CTF</span>
         </div>
       </div>
       <div>
-        <div class="pc-lbl">What I learned</div>
-        <ul class="pc-list">
-          <li>Hardware debugging is different from software debugging. Consequences are immediate and visible</li>
-          <li>Defensive programming matters most in embedded systems where failure has physical impact</li>
-          <li>System integration is its own discipline, not just "connecting parts" together</li>
-          <li>Documenting decisions in real time saves the project when things break at 2am</li>
+        <h4>Programming &amp; data</h4>
+        <div class="tags">
+          <span>Python</span><span>PowerShell</span><span>SQL</span><span>Data analysis</span>
+          <span>OpenCV</span><span>Flask</span><span>FastAPI</span><span>React</span><span>TypeScript</span>
+        </div>
+      </div>
+      <div>
+        <h4>Systems &amp; tools</h4>
+        <div class="tags">
+          <span>Microsoft 365</span><span>Power Platform</span><span>Power Automate</span>
+          <span>Linux</span><span>VMware Workstation</span><span>Raspberry Pi</span>
+          <span>Git &amp; GitHub</span><span>Networking</span><span>Cryptography</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BACKGROUND ══════════ -->
+<section id="background" class="sec-rule">
+  <div class="shell">
+    <p class="slab">Background</p>
+    <h2>Education, training and community</h2>
+
+    <div class="appx">
+      <div>
+        <h4>Education</h4>
+        <ul>
+          <li><b>Bachelor of Information Technology</b> — QUT, Cybersecurity &amp; AI. Feb 2026 to Dec 2027 expected. GPA 6.091 / 7.000</li>
+          <li><b>Diploma of Information Technology</b> — QUT, Feb to Nov 2025. GPA 6.250 / 7.000</li>
+          <li><b>CBSE Senior Secondary, Science</b> — Habitat Schools, Ajman, UAE. 2019 to 2024</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Certifications</h4>
+        <ul>
+          <li><b>Foundations of Cybersecurity</b> — Google, 2025. Complete</li>
+          <li><b>Introduction to Data Science</b> — Forage × Commonwealth Bank. Complete</li>
+          <li><b>Introduction to Artificial Intelligence</b> — Vedantu, 2021. Complete</li>
+        </ul>
+      </div>
+      <div>
+        <h4>In progress</h4>
+        <ul>
+          <li><b>CompTIA A+</b> — Lumify Learn</li>
+          <li><b>CS50P</b> — Harvard / edX, Python</li>
+          <li><b>SC-900</b> — next in the sequence, ahead of SC-300</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Competitions</h4>
+        <ul>
+          <li><b>CIMCTF 2026</b> — 3rd place with team SushiShield, across identity, web exploitation and OSINT</li>
+          <li><b>Winter Hackathon 2026</b> — People&rsquo;s Choice Award with team ClassQuest</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Community</h4>
+        <ul>
+          <li><b>Cyber in Motion</b> — CTF events volunteer, from Apr 2026. Supported planning and delivery of Capture the Flag events</li>
+          <li><b>QUT Guild</b> — events and student engagement, Aug to Nov 2025</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Earlier</h4>
+        <ul>
+          <li><b>Student Council</b> — Habitat Schools, Ajman, 2023 to 2024. Contributed to school initiatives and informally tutored classmates in maths</li>
         </ul>
       </div>
     </div>
-    <div class="pc-foot">
+  </div>
+</section>
 
-      <a href="https://github.com/bharath-blazecode/luna-turbopi-intelligent-robot" target="_blank" rel="noopener" class="pc-link" aria-label="View on GitHub">View on GitHub →</a>
-      <span class="pc-ghost">Python · Robotics · Computer Vision</span>
+<!-- ══════════ HELLO, WORLD ══════════ -->
+<div class="hw bleed" id="helloworld">
+  <div class="shell">
+    <div>
+      <p class="slab">hello, world</p>
+      <h2>Every field has a first line</h2>
+      <p>Programming has <code>print("Hello, world")</code>. Security has a handful, and knowing them is a bit like knowing the words to a song everyone in the room already knows.</p>
+      <p style="font-size:.9rem;color:var(--ink3)">Cycles on its own. Click for the next one.</p>
     </div>
-  </article>
-
-  <!-- 02 + 03: Supporting projects — minimal side-by-side -->
-  <div class="pgrid">
-
-    <article class="pcard reveal" aria-label="ITDR Home Lab">
-      <div class="pclbl ip">Phase 1 complete · Development paused</div><div class="pctit">ITDR Home Lab</div>
-      <div class="pcdate">Started June 2026 · Personal project</div>
-      <p class="pcdesc">Established a Wazuh server, connected an endpoint agent and installed Sysmon for Windows telemetry. Documented network connectivity, SSH access and the first dashboard login. Detection-rule development and incident-response exercises are the next planned phase when I return to the lab.</p>
-      <div class="pcstk"><span class="pc-chip">Wazuh</span><span class="pc-chip">Sysmon</span><span class="pc-chip">Endpoint telemetry</span></div>
-    </article>
-
-
-    <article class="pcard reveal" aria-label="Business System Model">
-      <div class="pclbl dl">✓ Delivered</div>
-      <div class="pctit">Business System Model</div>
-      <div class="pcdate">Apr – May 2026 · DynamX Institute</div>
-      <p class="pcdesc">A structured technology consulting engagement: took a real-world business problem from requirements analysis through system design and delivery. Applied Power Platform to build a working solution, refined through professional feedback cycles.</p>
-      <div class="pcstk">
-        <span class="pc-chip">Power Platform</span><span class="pc-chip">Power Apps</span>
-        <span class="pc-chip">Process Design</span>
+    <div class="hwbox">
+      <div class="hwline">
+        <p class="hwcode" id="hwCode">nmap -sV scanme.nmap.org</p>
+        <p class="hwgloss" id="hwGloss">Everyone&rsquo;s first scan, run against the one host on the internet that explicitly asks to be scanned.</p>
       </div>
-    </article>
-  </div>
-</section>
-
-<!-- ═══ SKILLS ═══ -->
-<section id="skills" class="sec" aria-labelledby="skills-h">
-  <div class="slabel reveal">
-    <span class="dm">// 04. Skills</span>
-    <!-- Updated: covers both technical AND professional skills -->
-    <span class="lm">04 — Skills &amp; Competencies</span>
-  </div>
-  <h2 id="skills-h" class="stitle reveal">
-    <span class="dm">What I Work With</span>
-    <span class="lm">Skills &amp; Competencies</span>
-  </h2>
-  <div class="sgrid">
-
-    <div class="sgrp reveal">
-      <div class="sgtit">Security</div>
-      <div class="schips"><span class="schip">Microsoft Entra ID</span><span class="schip">Conditional Access</span><span class="schip">MFA</span><span class="schip">Zero Trust</span><span class="schip">Wazuh SIEM</span><span class="schip">MITRE ATT&amp;CK</span><span class="schip">IT Controls Review</span><span class="schip">Risk &amp; Compliance</span><span class="schip">CTF Experience</span></div>
-    </div>
-    <div class="sgrp reveal">
-      <div class="sgtit">Programming & Data</div>
-      <div class="schips"><span class="schip">Python</span><span class="schip">SQL</span><span class="schip">Data Analysis</span><span class="schip">Basic AI / ML</span><span class="schip">Power Platform</span><span class="schip">OpenCV</span><span class="schip">Flask</span></div>
-    </div>
-    <div class="sgrp reveal">
-      <div class="sgtit">Systems & Tools</div>
-      <div class="schips"><span class="schip">Microsoft 365</span><span class="schip">Power Platform</span><span class="schip">GitHub</span><span class="schip">Raspberry Pi</span><span class="schip">VMware Workstation</span><span class="schip">Sysmon</span><span class="schip">Linux</span><span class="schip">Networking Fundamentals</span><span class="schip">Cryptography</span></div>
-    </div>
-    <div class="sgrp reveal">
-      <div class="sgtit">Professional</div>
-      <div class="schips"><span class="schip">Stakeholder Communication</span><span class="schip">Team Leadership</span><span class="schip">Problem Solving</span><span class="schip">Event Coordination</span><span class="schip">Training & Peer Support</span><span class="schip">Adaptability</span></div>
+      <div class="hwbar">
+        <div class="hwdots" id="hwDots" aria-hidden="true"></div>
+        <button type="button" class="hwnext" id="hwNext">Next</button>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ═══ CERTIFICATIONS ═══ -->
-<section id="certifications" class="sec" aria-labelledby="cert-h">
-  <div class="slabel reveal">
-    <span class="dm">// 05. Certifications</span>
-    <span class="lm">05 — Certifications</span>
-  </div>
-  <h2 id="cert-h" class="stitle reveal">
-    <span class="dm">Structured Learning</span>
-    <span class="lm">Certifications &amp; Training</span>
-  </h2>
-  <div class="certg">
+<!-- ══════════ OFF SHIFT — after dark only ══════════ -->
+<section id="offshift" class="bleed" aria-label="Off shift">
+  <div class="shell">
+    <p class="slab">Off shift</p>
+    <h2>What I do when the dashboard is someone else&rsquo;s problem</h2>
+    <p class="lede">This part of the page only exists at night. It seemed like the right place for it.</p>
 
-    <div class="certc reveal"><div class="certico" aria-hidden="true">🔐</div><div><div class="certn">Foundations of Cybersecurity</div><div class="certi">Google · 2025</div><span class="certs ok">✓ Complete</span></div></div>
-    <div class="certc reveal"><div class="certico" aria-hidden="true">🏦</div><div><div class="certn">Introduction to Data Science Job Simulation</div><div class="certi">Forage × Commonwealth Bank</div><span class="certs ok">✓ Complete</span></div></div>
-    <div class="certc reveal"><div class="certico" aria-hidden="true">🤖</div><div><div class="certn">Introduction to Artificial Intelligence</div><div class="certi">Vedantu · 2021</div><span class="certs ok">✓ Complete</span></div></div>
-    <div class="certc ip reveal"><div class="certico" aria-hidden="true">🎓</div><div><div class="certn">CS50's Introduction to Python</div><div class="certi">Harvard / edX · 2026</div><span class="certs go">Planned learning</span></div></div>
-    <div class="certc ip reveal"><div class="certico" aria-hidden="true">💻</div><div><div class="certn">CompTIA A+</div><div class="certi">CompTIA · 2026</div><span class="certs go">Planned learning</span></div></div>
+    <div class="offgrid">
+      <div>
+        <p class="oi">01</p>
+        <h3>Two countries, counting</h3>
+        <p>Raised in Sharjah, school in Ajman, now Brisbane. Moving countries was less a relocation than a reset, and it is most of why I am comfortable starting from nothing in an unfamiliar system.</p>
+      </div>
+      <div>
+        <p class="oi">02</p>
+        <h3>Chess</h3>
+        <p>Patience as a strategy rather than a personality flaw. Every game is a system with rules you can reason about and an opponent you cannot, which turns out to be reasonable practice for security.</p>
+      </div>
+      <div>
+        <p class="oi">03</p>
+        <h3>Badminton and the gym</h3>
+        <p>The two that are actually current. Badminton is a fast sport with faster reflexes and it satisfies a competitive streak that has to go somewhere.</p>
+      </div>
+      <div>
+        <p class="oi">04</p>
+        <h3>Guitar, and boxing eventually</h3>
+        <p>Both are honestly interests rather than habits right now. Guitar is early stage. Boxing is on the list for when the timetable allows, and I would rather say that than pretend otherwise.</p>
+      </div>
+      <div>
+        <p class="oi">05</p>
+        <h3>Reading, paused</h3>
+        <p>Shelved until exams are done. It comes back in December.</p>
+      </div>
+      <div>
+        <p class="oi">06</p>
+        <h3>Documenting things</h3>
+        <p>The habit behind the failure log above. It started with a robot that stopped working at 2am and a set of notes that turned out to be the only reason I could fix it.</p>
+      </div>
+    </div>
 
-  </div>
-</section>
-
-<!-- ═══ EDUCATION ═══ -->
-<section id="education" class="sec" aria-labelledby="edu-h">
-  <div class="slabel reveal">
-    <span class="dm">// 06. Education</span>
-    <span class="lm">06 — Education</span>
-  </div>
-  <h2 id="edu-h" class="stitle reveal">
-    <span class="dm">Academic Background</span>
-    <span class="lm">Education</span>
-  </h2>
-  <div class="edug">
-
-    <div class="educ reveal"><div><div class="edudeg">Bachelor of Information Technology</div><div class="edusch">QUT · Cyber Security & Artificial Intelligence</div><div class="edud">Feb 2026 – Dec 2027 (expected) · Brisbane, QLD</div></div><div class="edugpa">GPA 6.091 / 7.0</div></div>
-    <div class="educ reveal"><div><div class="edudeg">Diploma of Information Technology</div><div class="edusch">QUT · Brisbane, QLD</div><div class="edud">Feb 2025 – Nov 2025</div></div><div class="edugpa">GPA 6.250 / 7.0</div></div>
-    <div class="educ reveal"><div><div class="edudeg">CBSE Senior Secondary — Science Stream</div><div class="edusch">Habitat Schools · Ajman, UAE 🇦🇪</div><div class="edud">Apr 2019 – May 2024</div></div></div>
-  </div>
-</section>
-
-<!-- ═══ COMMUNITY ═══
-     Code Network moved to Experience (it's work, not volunteering).
-     Habitat Schools Student Council added to show leadership history.
-     ═══════════════════════════════════════════════════════════════ -->
-<section id="community" class="sec" aria-labelledby="com-h">
-  <div class="slabel reveal">
-    <span class="dm">// 07. Community</span>
-    <span class="lm">07 — Volunteering</span>
-  </div>
-  <h2 id="com-h" class="stitle reveal">
-    <span class="dm">Giving Back</span>
-    <span class="lm">Community Involvement</span>
-  </h2>
-  <div class="comg">
-
-    <div class="comc reveal"><div class="comico" aria-hidden="true">🚩</div><div class="comr">CTF Events Volunteer</div><div class="como">Cyber in Motion</div><div class="comd2">Apr 2026 – Present</div><p class="comdesc">Supported planning and delivery of Capture the Flag events for Cyber in Motion. Placed 3rd at CIMCTF 2026 with team SushiShield, competing in identity, web exploitation, and OSINT categories.</p></div>
-    <div class="comc reveal"><div class="comico" aria-hidden="true">🎓</div><div class="comr">Events & Student Engagement</div><div class="como">QUT Guild</div><div class="comd2">Aug 2025 – Nov 2025</div><p class="comdesc">Supporting student engagement initiatives through event assistance, communication, and on-the-day volunteer support across campus events and programs.</p></div>
-    <!-- Habitat Schools: shows leadership background and global history -->
-    <div class="comc reveal"><div class="comico" aria-hidden="true">🏫</div><div class="comr">Student Council Member</div><div class="como">Habitat Schools</div><div class="comd2">Apr 2023 – Mar 2024 · Ajman, UAE</div><p class="comdesc">Contributed to school initiatives through teamwork and leadership. Informally supported classmates with maths — an early sign of how I approach problems and people.</p></div>
+    <p class="offnote">You found the night shift. Switch back to day and this section goes home.</p>
   </div>
 </section>
 
-<!-- ═══ BEYOND THE SCREEN (dark mode only — hidden in light) ═══ -->
-<section id="beyond" aria-labelledby="beyond-h">
-  <div class="inner">
-    <div class="slabel reveal">// 08. Beyond the Screen</div>
-    <h2 id="beyond-h" class="stitle reveal">What Makes Me... Me!</h2>
-    <div class="bwgrid">
-
-      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">✈️</div><div class="bwlbl">Travel</div><p class="bwtxt">I've lived in two countries and counting. Moving from the UAE to Australia wasn't just a relocation — it was a reset. <strong>Wanderlust is real</strong>, and so is the perspective it gives you.</p></div>
-      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">♟</div><div class="bwlbl">Chess</div><p class="bwtxt">Chess taught me that <strong>patience is a strategy, not a flaw.</strong> Every game is a system — you learn to think three moves ahead, and get comfortable with uncertainty.</p></div>
-      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">🎵</div><div class="bwlbl">Music & Guitar</div><p class="bwtxt">Guitar is something I’d like to make time for alongside study and work.</p></div>
-      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">🥊</div><div class="bwlbl">Boxing</div><p class="bwtxt">Boxing is an interest I’d like to try when my schedule allows. My current routine is gym and badminton.</p></div>
-      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">🏸</div><div class="bwlbl">Badminton</div><p class="bwtxt">Fast sport. <strong>Faster reflexes.</strong> Good for the mind, better for the competitive streak.</p></div>
-      <div class="bwtile reveal"><div class="bwemi" aria-hidden="true">📚</div><div class="bwlbl">Always Learning</div><p class="bwtxt">I absorb anything that helps me grow — financially, technically, or just as a person. <strong>Curiosity isn't a phase.</strong> It's the whole point.</p></div>
+<!-- ══════════ CONTACT ══════════ -->
+<section id="contact" class="contact sec-rule">
+  <div class="shell">
+    <div>
+      <p class="slab">Contact</p>
+      <h2>Open to 2027 internships and graduate roles</h2>
+      <p class="lede">Blue team, SOC, identity and access, GRC or IT automation. Brisbane-based, with working rights within student visa conditions.</p>
+      <p>If you have read this far and want the parts that are not on the site — the full rule set, the lab configs, references — ask and I will send them.</p>
+    </div>
+    <div>
+      <ul class="clist">
+        <li><a href="mailto:barry.sampath@outlook.com"><span class="ck">Email</span><span class="cv">barry.sampath@outlook.com</span></a></li>
+        <li><a href="https://www.linkedin.com/in/barrysampath"><span class="ck">LinkedIn</span><span class="cv">/in/barrysampath</span></a></li>
+        <li><a href="https://github.com/bharath-blazecode"><span class="ck">GitHub</span><span class="cv">bharath-blazecode</span></a></li>
+        <li><a href="resume/Barry_Sampath_Resume.pdf"><span class="ck">Resume</span><span class="cv">Barry_Sampath_Resume.pdf</span></a></li>
+      </ul>
     </div>
   </div>
 </section>
+</main>
 
-<!-- ═══ CONTACT ═══ -->
-<section id="contact" class="sec" aria-labelledby="contact-h">
-  <div class="slabel reveal">
-    <span class="dm">// 09. Contact</span>
-    <span class="lm">08 — Contact</span>
-  </div>
-  <h2 id="contact-h" class="stitle reveal">
-    <span class="dm">Let's Talk</span>
-    <span class="lm">Get In Touch</span>
-  </h2>
-
-  <p class="ctdesc reveal">I'm currently open to cybersecurity internships, blue-team roles, and collaborative projects in Brisbane. If you're building something interesting or hiring, I'd like to hear from you.</p>
-  <!-- Real email from resume -->
-  <a href="mailto:barry.sampath@outlook.com" class="ctemail reveal">barry.sampath@outlook.com</a>
-  <div class="ctlinks reveal">
-    <!-- Real LinkedIn profile -->
-    <a href="https://www.linkedin.com/in/barrysampath" target="_blank" rel="noopener" class="ctlnk" aria-label="LinkedIn profile (opens in new tab)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      LinkedIn
-    </a>
-    <!-- Real GitHub profile -->
-    <a href="https://github.com/bharath-blazecode" target="_blank" rel="noopener" class="ctlnk" aria-label="GitHub profile (opens in new tab)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-      GitHub
-    </a>
-    <!-- Clickable email link -->
-    <a href="mailto:barry.sampath@outlook.com" class="ctlnk" aria-label="Send email">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
-      Email Me
-    </a>
-  </div>
-
-  <p class="ctnote reveal">Brisbane, QLD · Available for opportunities in 2026</p>
-</section>
-
-<!-- ═══ FOOTER ═══ -->
 <footer>
-
-  <span>barry.sampath</span>
-  <span style="color:var(--dim)">Built with curiosity · Brisbane 2026</span>
+  <div class="shell">
+    <span>Barry Sampath &middot; Brisbane, QLD</span>
+    <span>Built by hand. No framework, no build step.</span>
+    <span class="hint day-only">Some of this page only exists after dark.</span>
+    <span class="hint night-only">Off shift is open above.</span>
+  </div>
 </footer>
 
-<!-- ═══ JAVASCRIPT ═══ -->
-<script>
-const root=document.documentElement;
-const themeButton=document.getElementById('themeBtn');
-try { const saved=localStorage.getItem('portfolio-theme'); if(['light','dark'].includes(saved)) root.dataset.theme=saved; } catch {}
-themeButton.addEventListener('click',()=>{
-  root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';
-  try {localStorage.setItem('portfolio-theme',root.dataset.theme)} catch {}
-  drawGrid();
-});
-const menu=document.getElementById('mm'), hamburger=document.getElementById('hamburger');
-function closeMenu(){menu.hidden=true;menu.classList.remove('open');hamburger.setAttribute('aria-expanded','false');hamburger.setAttribute('aria-label','Open menu')}
-hamburger.addEventListener('click',()=>{
-  const opening=menu.hidden;
-  if(!opening){closeMenu();return}
-  menu.hidden=false;menu.classList.add('open');hamburger.setAttribute('aria-expanded','true');hamburger.setAttribute('aria-label','Close menu');menu.querySelector('a').focus();
-});
-menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
-  closeMenu();const target=document.querySelector(a.getAttribute('href'));target.setAttribute('tabindex','-1');target.focus({preventScroll:true});
-}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){closeMenu();hamburger.focus()}});
-document.addEventListener('click',e=>{if(!menu.hidden&&!menu.contains(e.target)&&!hamburger.contains(e.target))closeMenu()});
-document.addEventListener('focusin',e=>{if(!menu.hidden&&!menu.contains(e.target)&&!hamburger.contains(e.target))closeMenu()});
-window.addEventListener('resize',()=>{if(innerWidth>768)closeMenu();drawGrid()});
-window.addEventListener('scroll',()=>document.getElementById('nb').classList.toggle('scrolled',scrollY>40),{passive:true});
-function drawGrid(){
- const canvas=document.getElementById('gc'),ctx=canvas.getContext('2d');if(!ctx)return;
- canvas.width=innerWidth;canvas.height=innerHeight;ctx.strokeStyle=root.dataset.theme==='light'?'rgba(0,122,97,.045)':'rgba(0,212,170,.035)';
- for(let x=0;x<canvas.width;x+=52){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}
- for(let y=0;y<canvas.height;y+=52){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}
-}
-drawGrid();
-</script>
+<script src="js/site.js"></script>
 </body>
 </html>

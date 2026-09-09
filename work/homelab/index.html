@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>ITDR Home Lab — Barry Sampath</title>
+<meta name="description" content="Building a Wazuh 4.9.2 SIEM with a Sysmon-instrumented Windows endpoint: what I built, what broke, and what I would do differently.">
+<link rel="canonical" href="https://bharath-blazecode.github.io/work/homelab/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+
+<a class="skip" href="#built">Skip to what I built</a>
+
+<div class="bar">
+  <div class="shell">
+    <a class="mark" href="../../">Barry Sampath<span> / security</span></a>
+    <div class="barright">
+      <nav aria-label="Sections">
+        <ul class="barnav">
+          <li><a href="../classquest/">ClassQuest</a></li>
+          <li><a href="../luna/">LUNA</a></li>
+          <li><a href="../../#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
+        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<main>
+<header class="casehead">
+  <div class="shell intro">
+    <p class="crumb"><a href="../../">Barry Sampath</a> &nbsp;/&nbsp; Work &nbsp;/&nbsp; ITDR Home Lab</p>
+    <h1>ITDR Home Lab</h1>
+    <p class="lede">A Wazuh SIEM with a Sysmon-instrumented Windows endpoint, built on one laptop and documented while it was going wrong.</p>
+    <div class="casemeta">
+      <span><b>Started</b> June 2026</span>
+      <span><b>Status</b> Phase 1 complete, development paused</span>
+      <span><b>Stack</b> Wazuh 4.9.2 · Sysmon 15.20 · Ubuntu 22.04 · Windows 11 · VMware</span>
+      <span><b>Type</b> Personal project</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div class="spine">
+    <div class="sg"><span class="sn">Context</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Why build one at all</h2>
+      <p>Every blue-team job description asks for SIEM experience, and no student has it, because SIEMs live inside companies. The way around that is to run one yourself and treat it as infrastructure rather than a tutorial: enroll a real endpoint, generate real telemetry, and keep it running long enough for its actual failure modes to show up.</p>
+      <p>ITDR &mdash; identity threat detection and response &mdash; is the specific lane. Most of what an attacker does after landing on a workstation shows up as identity and process behaviour before it shows up anywhere else, and that behaviour is exactly what Sysmon records.</p>
+    </div>
+  </div>
+
+  <div class="spine" id="built">
+    <div class="sg"><span class="sn">What I built</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Two machines and everything between them</h2>
+      <p>An Ubuntu Server 22.04 virtual machine running a Wazuh 4.9.2 all-in-one deployment: indexer, server and dashboard on one host. A Windows 11 Enterprise virtual machine as the monitored endpoint, with Sysmon 15.20 installed and configured against the SwiftOnSecurity ruleset. Both on a Lenovo ThinkPad under VMware Workstation, bridged onto the local network.</p>
+      <p>Phase 1 was complete once the agent enrolled, telemetry reached the indexer, and I could log into the dashboard and watch events from the Windows machine arrive in something close to real time. That sounds like a small milestone. Getting there took four separate failures.</p>
+
+      <div class="diagram">
+        <svg viewBox="0 0 800 200" role="img" aria-labelledby="dgt dgd">
+          <title id="dgt">ITDR home lab architecture</title>
+          <desc id="dgd">A Windows 11 virtual machine running Sysmon and the Wazuh agent ships telemetry to an Ubuntu 22.04 virtual machine, where the Wazuh server analyses events, the indexer stores them, and the dashboard queries them.</desc>
+
+          <rect x="204" y="24" width="586" height="152" rx="2" fill="none" stroke="currentColor" stroke-dasharray="3 4" opacity=".28"/>
+          <text class="dcap" x="212" y="42">UBUNTU SERVER 22.04 — WAZUH 4.9.2 ALL-IN-ONE</text>
+
+          <path class="dpath" d="M146,102 L220,102"/>
+          <path class="dpath" d="M360,102 L430,102"/>
+          <path class="dpath" d="M570,102 L640,102"/>
+          <path class="dpath" d="M146,102 l-6,-4 M146,102 l-6,4" transform="translate(74,0)"/>
+          <path class="dpath" d="M360,102 l-6,-4 M360,102 l-6,4" transform="translate(70,0)"/>
+          <path class="dpath" d="M570,102 l-6,-4 M570,102 l-6,4" transform="translate(70,0)"/>
+
+          <text class="dcap" x="152" y="94">AGENT</text>
+          <text class="dcap" x="366" y="94">INDEX</text>
+          <text class="dcap" x="576" y="94">QUERY</text>
+
+          <rect class="dnode dnode-hot" x="6" y="68" width="140" height="68" rx="2"/>
+          <text class="dlabel" x="18" y="98">Windows 11</text>
+          <text class="dsub" x="18" y="116">SYSMON 15.20 + AGENT</text>
+
+          <rect class="dnode" x="220" y="68" width="140" height="68" rx="2"/>
+          <text class="dlabel" x="232" y="98">Server</text>
+          <text class="dsub" x="232" y="116">DECODERS + RULES</text>
+
+          <rect class="dnode" x="430" y="68" width="140" height="68" rx="2"/>
+          <text class="dlabel" x="442" y="98">Indexer</text>
+          <text class="dsub" x="442" y="116">EVENT STORAGE</text>
+
+          <rect class="dnode" x="640" y="68" width="140" height="68" rx="2"/>
+          <text class="dlabel" x="652" y="98">Dashboard</text>
+          <text class="dsub" x="652" y="116">SEARCH + TRIAGE</text>
+
+          <circle class="dpacket" r="2.5" style="offset-path:path('M146,102 L220,102')"/>
+          <circle class="dpacket p2" r="2.5" style="offset-path:path('M360,102 L430,102')"/>
+          <circle class="dpacket p3" r="2.5" style="offset-path:path('M570,102 L640,102')"/>
+
+          <text class="dcap" x="6" y="164">BRIDGED — 192.168.1.0/24</text>
+          <text class="dcap" x="640" y="164">HTTPS — LOCAL ONLY</text>
+        </svg>
+      </div>
+      <p style="font-size:.9rem;color:var(--ink3);margin-top:-6px">Fig. 1 — where telemetry goes. The endpoint is the only node that generates data; everything to the right of it stores, analyses or presents that data.</p>
+
+      <h3>Component roles, since the naming is not obvious</h3>
+      <div class="tele"><b>Indexer</b>     Elasticsearch-based storage for parsed events
+<b>Server</b>      Analysis engine — decoders, rules, alerting
+<b>Dashboard</b>   Kibana-based interface for search and triage
+<b>Agent</b>       Runs on the endpoint, ships Windows Event Channel data
+<b>Sysmon</b>      Generates the process, network and file telemetry
+             the Windows log does not produce on its own</div>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">What broke</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Four faults, in the order they happened</h2>
+      <p>These are the entries from the build log as they were written, not tidied up afterwards.</p>
+
+      <div class="scroller">
+        <table class="logtable">
+          <thead><tr><th scope="col">Symptom</th><th scope="col">Diagnosis</th><th scope="col">Fix</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="sym">VM storage corrupting</span></td>
+              <td>OneDrive was syncing the directory holding the virtual disks and taking locks on <code>.vmdk</code> files mid-write.</td>
+              <td class="fix">Moved every VM file outside the OneDrive tree. Cloud sync and files that write continuously do not belong in the same folder.</td>
+            </tr>
+            <tr>
+              <td><span class="sym">Server unreachable</span></td>
+              <td>A stale netplan configuration held a static address of <code>192.168.170.10</code>, from a subnet that stopped existing when I changed network adapters. The interface came up; nothing could route to it.</td>
+              <td class="fix">Rewrote netplan against the bridged adapter. Found by comparing the configured address against the adapter&rsquo;s actual subnet instead of debugging the services on top.</td>
+            </tr>
+            <tr>
+              <td><span class="sym">Indexer stalling</span></td>
+              <td>The virtual disk hit 99% of 50&nbsp;GB. The indexer degrades quietly under disk pressure rather than failing loudly, so this presented as a performance problem and wasted an hour before I checked <code>df</code>.</td>
+              <td class="fix">Expanded to 100&nbsp;GB via LVM with no rebuild. Now I size for retention rather than for install.</td>
+            </tr>
+            <tr>
+              <td><span class="sym">SSH dead on NAT</span></td>
+              <td>On NAT networking the host was unreachable over SSH while the agent still enrolled successfully, so the failure looked partial and I spent time on the wrong layer.</td>
+              <td class="fix">Reverted to bridged to get the lab productive. NAT restoration on the correct subnet is documented and queued rather than abandoned.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:24px">The pattern across all four is the same, and it is the thing I actually took away: each one presented as a problem with the layer I was looking at, and was caused by a layer underneath. Storage corruption looked like VMware. Unreachable server looked like Wazuh. Indexer stalling looked like resourcing. Checking the layer below before debugging the layer in front of you is most of the skill.</p>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">What I&rsquo;d change</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>Honest revisions</h2>
+      <ol class="actions">
+        <li><b>Build the detection rules alongside the infrastructure, not after.</b> I treated Phase 1 as plumbing and Phase 2 as the interesting part. That was the wrong split &mdash; without rules there was no way to tell whether the pipeline was actually carrying useful data or just carrying data.</li>
+        <li><b>Size the disk for retention from the start.</b> Fifty gigabytes is enough to install Wazuh and not enough to run it. That was predictable and I did not predict it.</li>
+        <li><b>Generate adversarial telemetry deliberately.</b> Ordinary use produces ordinary events. Atomic Red Team would have given me something to detect on day one rather than waiting for a real anomaly that was never going to arrive on a lab machine.</li>
+        <li><b>Rotate credentials before writing anything public.</b> The initial lab password lived in plaintext in my notes for longer than it should have. It is rotated now, which is the correct outcome and an uncomfortable thing to have learned by nearly publishing it.</li>
+      </ol>
+
+      <h3>Where it goes next</h3>
+      <p>Phase 2 is detection-rule development and incident-response exercises against the endpoint. The lab is currently paused while university assessment and paid work take priority, which is a scheduling decision rather than an abandoned project. The environment still stands.</p>
+    </div>
+  </div>
+
+  <div class="spine">
+    <div class="sg"><span class="sn">Evidence</span><span class="rail" aria-hidden="true"></span></div>
+    <div>
+      <h2>What backs this up</h2>
+      <p class="lede">Screenshots are pending redaction of hostnames and internal addressing. Ask if you want the build notes in full before then.</p>
+      <ul class="evidence">
+        <li><a href="../../#detection"><span class="et">The detection walkthrough, on the home page</span><span class="eu">Rule 100210</span></a></li>
+        <li><a href="mailto:barry.sampath@outlook.com?subject=ITDR%20lab%20build%20notes"><span class="et">Phase 1 build notes, on request</span><span class="eu">Email</span></a></li>
+        <li><a href="https://github.com/bharath-blazecode"><span class="et">GitHub profile</span><span class="eu">bharath-blazecode</span></a></li>
+      </ul>
+    </div>
+  </div>
+
+  <nav class="nextprev" aria-label="Other case studies">
+    <a href="../../#work">&larr; All work</a>
+    <a href="../classquest/">ClassQuest &rarr;</a>
+  </nav>
+</div>
+</main>
+
+<footer>
+  <div class="shell">
+    <span>Barry Sampath &middot; Brisbane, QLD</span>
+    <span><a href="mailto:barry.sampath@outlook.com" style="color:inherit">barry.sampath@outlook.com</a></span>
+  </div>
+</footer>
+
+<script src="../../js/site.js"></script>
+</body>
+</html>

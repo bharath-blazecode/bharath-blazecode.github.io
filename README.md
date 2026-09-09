@@ -1,38 +1,93 @@
-# Barry Sampath — Cybersecurity Portfolio
+# bharath-blazecode.github.io
 
-Personal portfolio for a QUT Bachelor of IT student in cybersecurity and artificial intelligence, based in Brisbane.
+Personal portfolio for Barry Sampath — cybersecurity and IT automation.
+Live at <https://bharath-blazecode.github.io>.
 
-**Site:** https://bharath-blazecode.github.io
+**Version 1.0.2.** A full rebuild. Version 1.0.1 (the previous single-file
+site) is preserved as a zip archive outside this repository and on the
+`main` history prior to this change.
 
-## Content
+## What this is
 
-- ClassQuest: team People’s Choice Award, with playable-demo, frontend foundation, visual-system, cohort-feature, upload-security, debugging, testing and Q&A contributions. A native expandable section links the implementation evidence and works without JavaScript.
-- LUNA robotics collaboration and completed HomeLab infrastructure (further development paused).
-- Experience, education, training and contact details. Expected degree completion: December 2027; Bachelor GPA: 6.091/7.0.
+A hand-written static site. No framework, no build step, no dependencies.
+GitHub Pages serves the files exactly as they are committed.
 
-## Development
+```
+index.html            home — hero, glance strip, about, detection, work,
+                      experience, skills, background, hello world, off shift
+work/homelab/         case study — ITDR home lab
+work/classquest/      case study — ClassQuest
+work/luna/            case study — LUNA robot
+css/site.css          the whole design system
+js/site.js            progressive enhancement only
+404.html              not-found page
+resume/               resume PDF
+favicon.svg
+```
 
-Static HTML/CSS/JavaScript; no build step or dependencies. Serve this folder with a local static HTTP server or open index.html. GitHub Pages serves the default branch.
+## Design
 
-Core content and navigation remain available without JavaScript. JavaScript provides a mobile navigation disclosure, theme persistence and a static decorative grid. Motion is suppressed for reduced-motion preferences; there are no continuous animation loops.
+Two materials. Editorial print for everything that is read; console
+telemetry for everything that is evidence.
 
-The existing resume PDF is retained as an earlier artifact. Contact Barry for a current resume; the site does not promote an unreviewed export as the latest version.
+- **Type** — Archivo (display), Source Serif 4 (body), IBM Plex Mono (data)
+- **Colour** — paper and ink, with a single signal colour reserved strictly
+  for severity. If the accent appears, something is being flagged.
+- **Day shift / night shift** — a SOC runs around the clock, so the theme
+  states are named for the shifts. The switch wipes the page as a circle
+  expanding from the button, via the View Transitions API.
 
-## Content evidence
+## Two reading speeds
 
-ClassQuest evidence reviewed 8 September 2026:
+The **glance strip** directly under the hero answers who / doing now /
+built / proof in about twenty seconds, without scrolling far. The
+**Skim / Read** control in the header compresses the page further by
+collapsing `.detail-only` sections — the walkthrough, the failure log,
+the role bullets — roughly a 30% reduction in page length. Read is the
+default, so with JavaScript off nothing is ever hidden.
 
-| Contribution | Merged PR evidence |
+## hello, world
+
+Every field has a first line everybody recognises. The band near the
+footer cycles through security's: the EICAR test string, `nmap -sV
+scanme.nmap.org`, `' OR '1'='1'`, `whoami`, "It depends." for GRC, and
+one about MFA. Cycles on a timer, advances on click.
+
+## Motion policy
+
+Every animation reveals information. Nothing moves for decoration.
+
+| Effect | What it shows |
 |---|---|
-| Playable learning demo, overfitting fixtures and backend test expectations | [#5](https://github.com/MikePineda/class-quest/pull/5) |
-| Sign-in, registration, session restoration, onboarding, server creation/join and recovery using existing APIs | [#11](https://github.com/MikePineda/class-quest/pull/11) |
-| Generated upload storage names, bounded reads, regression tests and security baseline | [#12](https://github.com/MikePineda/class-quest/pull/12) |
-| Implementation of the team's visual system | [#14](https://github.com/MikePineda/class-quest/pull/14) |
-| Asynchronous cohort practice and hub readiness, with tests | [#20](https://github.com/MikePineda/class-quest/pull/20), [#21](https://github.com/MikePineda/class-quest/pull/21) |
-| Validated local learning preferences and storage fallbacks | [#23](https://github.com/MikePineda/class-quest/pull/23) |
-| Starting-path iteration, removal of forced modes and dependent-card fix | [#24](https://github.com/MikePineda/class-quest/pull/24), [#25](https://github.com/MikePineda/class-quest/pull/25) |
-| Universal dashboard entry points | [#26](https://github.com/MikePineda/class-quest/pull/26) |
+| Theme wipe from the button | Causation — you pressed that |
+| Console filling | Telemetry arriving in real time |
+| Section rules drawing | A section beginning |
+| Case-study rail filling | Progress through the page |
+| Cross-document transitions | Continuity between pages |
+| Packets along the lab diagram | The direction telemetry actually flows |
 
-The [initial PR #25 frontend run](https://github.com/MikePineda/class-quest/actions/runs/32612320767) failed typechecking; the [follow-up](https://github.com/MikePineda/class-quest/actions/runs/32612642846) passed typecheck, lint, tests and build after the obsolete mode-dependent component was removed. The actor-filtered history contains 52 workflow runs (50 successful, two failed), not 52 authored commits. Three additional PRs (#3, #4, #13) were integration/synchronization work, not independent ownership of all changes they carried.
+## Accessibility and resilience
 
-These are historical contributions; the starting card was removed and teammates subsequently extended the app. Backend APIs, later security controls and the complete generated-world player are not attributed to Barry by these changes. Award and Q&A contribution are confirmed by Barry; Miguel Pineda led the technical build and team credit remains shared. This evidence review does not certify the entire application's security or current deployment. The ClassQuest test suite was not rerun for this portfolio-content update.
+- Works with JavaScript disabled: role list renders as plain text, every
+  walkthrough panel renders stacked, theme follows the operating system.
+- `prefers-reduced-motion` honoured throughout.
+- `prefers-color-scheme` respected by default; an explicit choice is stored
+  in `localStorage`, wrapped so blocked storage cannot break the page.
+- Skip link, semantic landmarks, visible focus, keyboard-operable tabs
+  (arrow keys, Home, End).
+- Print stylesheet produces a clean summary.
+
+## Local development
+
+Any static server works:
+
+```bash
+python3 -m http.server 8000
+```
+
+## To do
+
+- Replace the portrait placeholder in `index.html` with `assets/barry.jpg`
+- Add redacted Wazuh screenshots to the home lab case study
+- Swap the sample Sysmon event and rule for sanitised real ones
+- Add `/writing/` once the first posts are drafted

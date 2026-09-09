@@ -1,0 +1,824 @@
+/* ============================================================
+   Barry Sampath — portfolio v1.0.2
+   "Ink and telemetry": editorial print as the chrome,
+   console telemetry where the evidence lives.
+   ============================================================ */
+
+/* ── 1. TOKENS ─────────────────────────────────────────────
+   Light is the base set. Dark is redefined twice: once for
+   the OS preference (when no explicit choice is stamped) and
+   once for an explicit choice, so the toggle wins both ways.
+   ------------------------------------------------------- */
+:root{
+  --paper:#EAECED;
+  --raise:#F7F8F9;
+  --sink:#DEE2E4;
+  --ink:#131619;
+  --ink2:#4D575F;
+  --ink3:#7C868F;
+  --rule:#C4CACF;
+  --hair:#D7DCE0;
+
+  --sig:#A63A1E;              /* critical — the only accent  */
+  --sig-bg:rgba(166,58,30,.09);
+  --warn:#8A5A08;
+  --warn-bg:rgba(138,90,8,.11);
+  --go:#1F5C4A;
+  --go-bg:rgba(31,92,74,.10);
+
+  /* off-shift: warm sepia world, only rendered after dark */
+  --off-bg:#EDE7DE;
+  --off-raise:#F6F1E9;
+  --off-rule:#D6CCBD;
+  --off-ink:#2A2118;
+  --off-ink2:#6B5B49;
+  --off-sig:#9A5A24;
+
+  --grain:.055;
+  --glow:none;
+
+  --f-disp:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --f-body:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Consolas,monospace;
+
+  --shell:1160px;
+  --pad:32px;
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#111416; --raise:#1A1E22; --sink:#0B0D0F;
+    --ink:#E4E7E9; --ink2:#97A1A9; --ink3:#6A747C;
+    --rule:#2A3137; --hair:#20262B;
+    --sig:#E4714F; --sig-bg:rgba(228,113,79,.13);
+    --warn:#D3A03A; --warn-bg:rgba(211,160,58,.13);
+    --go:#57AC8E; --go-bg:rgba(87,172,142,.13);
+    --off-bg:#100C07; --off-raise:#1B140C; --off-rule:#2E2317;
+    --off-ink:#D8C7B0; --off-ink2:#9A8871; --off-sig:#C8823E;
+    --grain:.03;
+    --glow:0 0 22px rgba(228,113,79,.16);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111416; --raise:#1A1E22; --sink:#0B0D0F;
+  --ink:#E4E7E9; --ink2:#97A1A9; --ink3:#6A747C;
+  --rule:#2A3137; --hair:#20262B;
+  --sig:#E4714F; --sig-bg:rgba(228,113,79,.13);
+  --warn:#D3A03A; --warn-bg:rgba(211,160,58,.13);
+  --go:#57AC8E; --go-bg:rgba(87,172,142,.13);
+  --off-bg:#100C07; --off-raise:#1B140C; --off-rule:#2E2317;
+  --off-ink:#D8C7B0; --off-ink2:#9A8871; --off-sig:#C8823E;
+  --grain:.03;
+  --glow:0 0 22px rgba(228,113,79,.16);
+}
+
+/* ── 2. BASE ─────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Materiality: a real grain over everything. Paper by day,
+   finer by night. One rule, no performance cost.          */
+body::after{
+  content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
+  opacity:var(--grain);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+p{margin:0 0 17px;max-width:64ch}
+a{color:var(--sig)}
+img{max-width:100%;height:auto;display:block}
+:focus-visible{outline:2px solid var(--sig);outline-offset:3px;border-radius:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.skip{
+  position:absolute;left:-9999px;top:0;z-index:200;
+  background:var(--ink);color:var(--paper);padding:12px 18px;
+  font-family:var(--f-mono);font-size:12px;text-decoration:none;
+}
+.skip:focus{left:12px;top:12px}
+
+.shell{max-width:var(--shell);margin:0 auto;padding:0 var(--pad)}
+/* the two deliberate container breaks */
+.bleed{width:100%}
+
+strong,b{font-weight:600}
+code,kbd{
+  font-family:var(--f-mono);font-size:.85em;
+  background:var(--sink);padding:1px 5px;border-radius:2px;color:var(--ink);
+}
+
+/* ── 3. TYPE SCALE ───────────────────────────────────────── */
+h1,h2,h3,h4,h5{font-family:var(--f-disp);text-wrap:balance;margin:0}
+h1{
+  font-weight:900;font-size:clamp(2.5rem,7vw,5.2rem);
+  line-height:.93;letter-spacing:-.042em;
+}
+h2{
+  font-weight:800;font-size:clamp(1.6rem,3.7vw,2.5rem);
+  line-height:1.06;letter-spacing:-.03em;max-width:20ch;
+}
+h3{font-weight:700;font-size:1.14rem;letter-spacing:-.014em}
+h4{
+  font-family:var(--f-mono);font-weight:600;font-size:10.5px;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);
+}
+.lede{font-size:1.08rem;color:var(--ink2);max-width:58ch}
+.mono{font-family:var(--f-mono)}
+
+/* ── 4. TOP BAR ──────────────────────────────────────────── */
+.bar{
+  position:sticky;top:0;z-index:80;
+  background:var(--paper);border-bottom:1px solid var(--rule);
+}
+.bar .shell{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px 24px;padding-top:14px;padding-bottom:14px;flex-wrap:wrap;
+}
+.mark{
+  font-family:var(--f-disp);font-weight:800;font-size:15px;
+  letter-spacing:-.015em;text-decoration:none;color:var(--ink);
+}
+.mark span{color:var(--ink3);font-weight:500}
+.barright{display:flex;align-items:center;gap:8px 22px;flex-wrap:wrap}
+.barnav{display:flex;gap:22px;flex-wrap:wrap;list-style:none;margin:0;padding:0}
+.barnav a{
+  font-family:var(--f-mono);font-size:11.5px;letter-spacing:.04em;
+  color:var(--ink2);text-decoration:none;padding-bottom:2px;
+  border-bottom:1px solid transparent;
+}
+.barnav a:hover,.barnav a:focus-visible{color:var(--ink);border-bottom-color:var(--sig)}
+
+#shiftBtn{
+  font-family:var(--f-mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.11em;text-transform:uppercase;
+  background:transparent;color:var(--ink);
+  border:1px solid var(--rule);border-radius:3px;
+  padding:8px 13px;cursor:pointer;
+  display:flex;align-items:center;gap:9px;
+}
+#shiftBtn:hover{border-color:var(--sig)}
+#shiftBtn .sw{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--ink);display:inline-block;flex:none;
+}
+
+/* ── 5. SECTION FURNITURE ────────────────────────────────── */
+section{padding:78px 0}
+.sec-rule{border-top:1px solid var(--rule)}
+.slab{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink3);
+  margin:0 0 16px;display:flex;align-items:center;gap:14px;
+}
+/* Mechanical motion: the rule draws as the section enters.
+   Pure CSS scroll-driven animation, no library, no observer. */
+.slab::after{
+  content:'';flex:1;height:1px;background:var(--sig);
+  transform:scaleX(1);transform-origin:left;
+}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .slab::after{
+      animation:drawrule linear both;
+      animation-timeline:view();
+      animation-range:entry 0% entry 45%;
+    }
+  }
+}
+@keyframes drawrule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ── 6. HERO ─────────────────────────────────────────────── */
+.hero{padding:84px 0 70px}
+.hero .shell{
+  display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.85fr);
+  gap:56px;align-items:start;
+}
+.status{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink3);
+  margin:0 0 26px;display:flex;align-items:center;gap:9px;
+}
+.status .live{
+  width:6px;height:6px;border-radius:50%;background:var(--go);
+  display:inline-block;flex:none;
+}
+.hero h1{margin-bottom:26px}
+.hero h1 em{font-style:normal;color:var(--ink3)}
+
+/* rotating role line — kept, because it disambiguates */
+.roles{
+  font-family:var(--f-mono);font-size:13px;letter-spacing:.03em;
+  color:var(--ink2);margin:0 0 28px;
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+}
+.roles .rlab{
+  font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);
+}
+.rlist{display:flex;flex-wrap:wrap}
+.rlist span{color:var(--ink)}
+.rlist span:not(:last-child)::after{content:'\00a0·\00a0';color:var(--rule)}
+.rlist.rotating{position:relative;display:block;height:1.5em;overflow:hidden}
+.rlist.rotating span{
+  position:absolute;left:0;top:0;white-space:nowrap;padding-left:15px;
+  opacity:0;transform:translateY(.45em);
+  transition:opacity .42s ease,transform .42s cubic-bezier(.2,.8,.3,1);
+}
+.rlist.rotating span::after{content:none}
+.rlist.rotating span.on{opacity:1;transform:translateY(0)}
+.rlist.rotating span.out{opacity:0;transform:translateY(-.45em)}
+.rlist.rotating span.on::before{
+  content:'';position:absolute;left:0;top:.56em;
+  width:6px;height:1px;background:var(--sig);
+}
+
+.herolede{font-size:1.06rem;color:var(--ink2);max-width:50ch;margin:0 0 32px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 38px}
+.cta a{
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;
+  text-decoration:none;padding:12px 18px;border:1px solid var(--ink);color:var(--ink);
+  transition:background .18s,color .18s;
+}
+.cta a.solid{background:var(--ink);color:var(--paper)}
+.cta a.solid:hover{background:transparent;color:var(--ink)}
+.cta a.ghost:hover{background:var(--ink);color:var(--paper)}
+
+.proof{border-top:1px solid var(--hair);padding-top:20px;display:grid;gap:14px;max-width:54ch}
+.proof li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:12px;align-items:baseline}
+.proof{list-style:none;margin:0;padding-left:0;padding-top:20px}
+.proof .pn{font-family:var(--f-mono);font-size:10px;color:var(--sig)}
+.proof p{margin:0;font-size:.94rem;color:var(--ink2)}
+/* informative hover: the link tells you where it goes */
+.proof a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule);position:relative}
+.proof a:hover,.proof a:focus-visible{border-bottom-color:var(--sig)}
+.proof a[data-to]:hover::after{
+  content:attr(data-to);
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;
+  color:var(--ink3);margin-left:8px;white-space:nowrap;
+}
+
+.portrait{border:1px solid var(--rule);background:var(--raise);overflow:hidden}
+.portrait img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.portrait .empty{
+  aspect-ratio:4/5;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;text-align:center;padding:26px;
+}
+.portrait .empty b{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink3);font-weight:600;
+}
+.portrait .empty span{font-size:.9rem;color:var(--ink3);max-width:22ch}
+.figcap{
+  font-family:var(--f-mono);font-size:10.5px;color:var(--ink3);
+  margin:10px 0 0;line-height:1.65;
+}
+
+/* ── 7. CONSOLE BAND — full bleed, dense, the signature ──── */
+.band{
+  background:var(--sink);
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  padding:64px 0;
+}
+.band .shell{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:48px;align-items:center}
+.band h2{margin-bottom:16px}
+.band p{color:var(--ink2);font-size:.98rem}
+.console{
+  font-family:var(--f-mono);font-size:11.5px;line-height:1.95;
+  background:var(--paper);border:1px solid var(--rule);
+  padding:16px 18px;height:250px;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;
+}
+.console .ln{color:var(--ink3);white-space:pre;overflow:hidden;text-overflow:ellipsis}
+.console .ln.fresh{animation:lnin .34s ease both}
+@keyframes lnin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.console .ln.hit{color:var(--sig);font-weight:500}
+.console .ln.hit::before{content:'▌';margin-right:5px}
+.console .alertln{
+  border-left:3px solid var(--sig);background:var(--sig-bg);color:var(--ink);
+  padding:8px 11px;margin-top:8px;font-weight:500;white-space:normal;
+  box-shadow:var(--glow);animation:lnin .4s ease both;
+}
+.creplay{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  background:transparent;border:1px solid var(--rule);color:var(--ink2);
+  padding:8px 13px;border-radius:3px;cursor:pointer;margin-top:16px;
+}
+.creplay:hover{border-color:var(--sig);color:var(--ink)}
+
+/* ── 8. TABBED WALKTHROUGH ───────────────────────────────── */
+.steps{display:flex;flex-wrap:wrap;border:1px solid var(--rule);border-bottom:0}
+.steps button{
+  flex:1 1 140px;background:var(--raise);border:0;
+  border-right:1px solid var(--rule);
+  padding:14px 15px;text-align:left;cursor:pointer;
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.05em;color:var(--ink3);
+}
+.steps button:last-child{border-right:0}
+.steps button b{
+  display:block;font-size:9.5px;letter-spacing:.14em;
+  color:var(--ink3);margin-bottom:5px;font-weight:600;
+}
+.steps button:hover{color:var(--ink)}
+.steps button[aria-selected="true"]{background:var(--paper);color:var(--ink)}
+.steps button[aria-selected="true"] b{color:var(--sig)}
+.panels{border:1px solid var(--rule)}
+.panel{padding:26px;border-bottom:1px solid var(--rule)}
+.panel:last-child{border-bottom:0}
+.panel h3{margin:0 0 10px}
+.panel p{font-size:.95rem;color:var(--ink2);margin:0 0 15px}
+.panel p:last-child{margin-bottom:0}
+.js-on .panel{display:none;border-bottom:0}
+.js-on .panel.live{display:block}
+
+.tele{
+  font-family:var(--f-mono);font-size:11.5px;line-height:1.85;
+  background:var(--sink);border-left:2px solid var(--rule);
+  padding:15px 17px;margin:0 0 15px;overflow-x:auto;
+  white-space:pre;color:var(--ink2);
+}
+.tele b{color:var(--ink);font-weight:500}
+.tele u{text-decoration:none;color:var(--sig);font-weight:500}
+
+.alertcard{border:1px solid var(--rule);background:var(--raise);margin:0 0 15px}
+.alertcard .ah{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:13px 17px;border-bottom:1px solid var(--hair);border-left:3px solid var(--sig);
+}
+.alertcard .lv{
+  font-family:var(--f-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;background:var(--sig-bg);color:var(--sig);
+  padding:3px 8px;border-radius:2px;
+}
+.alertcard .at{font-family:var(--f-disp);font-weight:700;font-size:.95rem}
+.alertcard .ts{font-family:var(--f-mono);font-size:10.5px;color:var(--ink3);margin-left:auto}
+.arows{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0;margin:0}
+.arows dt{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink3);padding:10px 20px 10px 17px;
+  border-bottom:1px solid var(--hair);white-space:nowrap;
+}
+.arows dd{
+  font-family:var(--f-mono);font-size:11.5px;color:var(--ink);margin:0;
+  padding:10px 17px 10px 0;border-bottom:1px solid var(--hair);overflow-wrap:anywhere;
+}
+.arows dt:last-of-type,.arows dd:last-of-type{border-bottom:0}
+ol.actions{margin:0;padding-left:20px;max-width:58ch}
+ol.actions li{font-size:.95rem;color:var(--ink2);margin-bottom:9px}
+ol.actions li b{color:var(--ink)}
+
+/* ── 9. PULL QUOTE — the sparse beat ─────────────────────── */
+.pull{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:76px 0;margin:0}
+.pull p{
+  font-family:var(--f-disp);font-weight:800;
+  font-size:clamp(1.7rem,5.2vw,3.3rem);line-height:1.04;
+  letter-spacing:-.035em;max-width:20ch;margin:0;
+}
+.pull p em{font-style:normal;color:var(--sig)}
+.pull .src{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink3);margin:24px 0 0;
+}
+
+/* ── 10. FAILURE LOG — the dense beat ────────────────────── */
+.scroller{overflow-x:auto}
+.logtable{width:100%;border-collapse:collapse;font-size:.93rem;margin-top:6px}
+.logtable th{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink3);text-align:left;font-weight:600;
+  padding:0 18px 10px 0;border-bottom:1px solid var(--rule);
+}
+.logtable td{
+  padding:16px 18px 16px 0;border-bottom:1px solid var(--hair);
+  vertical-align:top;color:var(--ink2);
+}
+.logtable td:last-child{padding-right:0}
+.logtable .sym{
+  font-family:var(--f-disp);font-weight:700;font-size:.94rem;
+  color:var(--ink);display:block;margin-bottom:4px;
+}
+.logtable .fix{color:var(--ink)}
+
+/* ── 11. WORK CARDS ──────────────────────────────────────── */
+.cards{display:grid;gap:0;border:1px solid var(--rule);margin-top:8px}
+.card{
+  display:grid;grid-template-columns:minmax(0,1fr) 260px;
+  border-bottom:1px solid var(--hair);text-decoration:none;color:inherit;
+}
+.card:last-child{border-bottom:0}
+.card:hover{background:var(--raise)}
+.cbody{padding:30px}
+.cbody h3{margin:0 0 5px;font-size:1.3rem;letter-spacing:-.018em}
+.cmeta{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;
+  color:var(--ink3);margin:0 0 15px;
+}
+.cbody p{font-size:.95rem;color:var(--ink2);margin:0 0 14px}
+.ctags{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px}
+.ctags span{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink3);border:1px solid var(--hair);padding:4px 8px;
+}
+.cgo{
+  font-family:var(--f-mono);font-size:11.5px;color:var(--ink);
+  border-bottom:1px solid var(--sig);padding-bottom:2px;
+  display:inline-block;margin-top:20px;
+}
+.cthumb{
+  background:var(--sink);border-left:1px solid var(--hair);
+  display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;
+}
+.cthumb span{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink3);line-height:2;
+}
+.cbadge{
+  font-family:var(--f-mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;padding:3px 8px;border-radius:2px;
+  background:var(--warn-bg);color:var(--warn);display:inline-block;margin-bottom:12px;
+}
+.cbadge.done{background:var(--go-bg);color:var(--go)}
+.cbadge.pause{background:var(--sink);color:var(--ink3)}
+
+/* ── 12. APPENDIX ────────────────────────────────────────── */
+.appx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--rule);margin-top:8px}
+.appx>div{padding:22px 24px;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.appx h4{margin:0 0 11px}
+.appx ul{margin:0;padding:0;list-style:none}
+.appx li{font-size:.9rem;color:var(--ink2);margin-bottom:7px;line-height:1.55}
+.appx li b{color:var(--ink);font-weight:600}
+.appx a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule)}
+.appx a:hover{border-bottom-color:var(--sig)}
+
+/* ── 13. OFF SHIFT — the after-dark section ──────────────── */
+#offshift{display:none;background:var(--off-bg);color:var(--off-ink);padding:84px 0}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #offshift{display:block}
+  :root:not([data-theme="light"]) .night-only{display:inline}
+  :root:not([data-theme="light"]) .day-only{display:none}
+}
+:root[data-theme="dark"] #offshift{display:block}
+:root[data-theme="dark"] .night-only{display:inline}
+:root[data-theme="dark"] .day-only{display:none}
+.night-only{display:none}
+.day-only{display:inline}
+
+#offshift .slab{color:var(--off-ink2)}
+#offshift .slab::after{background:var(--off-sig)}
+#offshift h2{color:var(--off-ink)}
+#offshift .lede{color:var(--off-ink2)}
+.offgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--off-rule);margin-top:30px}
+.offgrid>div{padding:24px;border-right:1px solid var(--off-rule);border-bottom:1px solid var(--off-rule);background:var(--off-raise)}
+.offgrid h3{color:var(--off-ink);font-size:1.02rem;margin:0 0 8px}
+.offgrid .oi{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--off-sig);margin:0 0 9px;
+}
+.offgrid p{font-size:.92rem;color:var(--off-ink2);margin:0;max-width:none}
+.offnote{
+  font-family:var(--f-mono);font-size:10.5px;color:var(--off-ink2);
+  margin-top:26px;letter-spacing:.03em;
+}
+
+/* ── 14. CONTACT + FOOTER ────────────────────────────────── */
+.contact .shell{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+.clist{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.clist li{border-bottom:1px solid var(--hair)}
+.clist a{
+  display:flex;align-items:baseline;gap:16px;padding:15px 0;
+  text-decoration:none;color:var(--ink);
+}
+.clist .ck{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink3);width:78px;flex:none;
+}
+.clist .cv{font-family:var(--f-mono);font-size:12.5px;overflow-wrap:anywhere}
+.clist a:hover .cv{color:var(--sig)}
+
+footer{border-top:1px solid var(--rule);padding:34px 0 80px}
+footer .shell{
+  display:flex;gap:10px 28px;flex-wrap:wrap;
+  font-family:var(--f-mono);font-size:11px;color:var(--ink3);
+}
+.hint{color:var(--ink3);font-style:italic;font-family:var(--f-body);font-size:12.5px}
+
+/* ── 15. CASE-STUDY PAGE FURNITURE ───────────────────────── */
+.casehead{padding:70px 0 46px}
+.crumb{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;
+  color:var(--ink3);margin:0 0 22px;
+}
+.crumb a{color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--rule)}
+.crumb a:hover{color:var(--ink);border-bottom-color:var(--sig)}
+.casehead h1{font-size:clamp(2.2rem,6.2vw,4.2rem);margin-bottom:20px}
+.casemeta{
+  display:flex;gap:10px 26px;flex-wrap:wrap;
+  font-family:var(--f-mono);font-size:11px;color:var(--ink3);
+  border-top:1px solid var(--rule);padding-top:16px;margin-top:26px;
+}
+.casemeta b{color:var(--ink2);font-weight:500}
+
+/* the five-part spine, with a gutter rail that fills on scroll */
+.spine{
+  display:grid;grid-template-columns:150px minmax(0,1fr);
+  gap:0 40px;padding:46px 0;border-top:1px solid var(--rule);
+}
+.spine .sg{position:relative}
+.spine .sg .sn{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink3);display:block;
+}
+.spine .sg .rail{
+  display:block;width:1px;background:var(--hair);
+  height:calc(100% - 34px);margin-top:14px;position:relative;overflow:hidden;
+}
+.spine .sg .rail::before{
+  content:'';position:absolute;inset:0;background:var(--sig);
+  transform:scaleY(1);transform-origin:top;
+}
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .spine .sg .rail::before{
+      animation:fillrail linear both;
+      animation-timeline:view();
+      animation-range:entry 15% cover 55%;
+    }
+  }
+}
+@keyframes fillrail{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.spine h2{font-size:clamp(1.4rem,3vw,1.95rem);margin-bottom:16px}
+
+.evidence{list-style:none;margin:8px 0 0;padding:0;border-top:1px solid var(--rule)}
+.evidence li{border-bottom:1px solid var(--hair)}
+.evidence a{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;
+  padding:14px 0;text-decoration:none;color:var(--ink);align-items:baseline;
+}
+.evidence .et{font-size:.95rem}
+.evidence .eu{font-family:var(--f-mono);font-size:10.5px;color:var(--ink3);white-space:nowrap}
+.evidence a:hover .et{color:var(--sig)}
+.evidence a:hover .eu{color:var(--ink2)}
+
+.nextprev{
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  border-top:1px solid var(--rule);padding:30px 0 0;margin-top:20px;
+}
+.nextprev a{
+  font-family:var(--f-mono);font-size:11.5px;text-decoration:none;color:var(--ink);
+  border-bottom:1px solid var(--sig);padding-bottom:2px;
+}
+
+/* ── 16. VIEW TRANSITIONS ────────────────────────────────── */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+::view-transition-old(root){z-index:1}
+::view-transition-new(root){z-index:9999}
+
+/* ── 17. LOAD CHOREOGRAPHY — once, never repeats ─────────── */
+@media (prefers-reduced-motion:no-preference){
+  .intro>*{animation:rise .62s cubic-bezier(.2,.8,.3,1) both}
+  .intro>*:nth-child(1){animation-delay:.04s}
+  .intro>*:nth-child(2){animation-delay:.10s}
+  .intro>*:nth-child(3){animation-delay:.16s}
+  .intro>*:nth-child(4){animation-delay:.22s}
+  .intro>*:nth-child(5){animation-delay:.28s}
+  .intro>*:nth-child(6){animation-delay:.34s}
+  .intro>*:nth-child(7){animation-delay:.40s}
+}
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+
+/* ── 18. RESPONSIVE ──────────────────────────────────────── */
+@media (max-width:960px){
+  .appx,.offgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero .shell{grid-template-columns:1fr;gap:38px}
+  .band .shell{grid-template-columns:1fr;gap:32px}
+  .card{grid-template-columns:1fr}
+  .cthumb{border-left:0;border-top:1px solid var(--hair);min-height:150px}
+  .contact .shell{grid-template-columns:1fr;gap:32px}
+  .spine{grid-template-columns:1fr;gap:0}
+  .spine .sg{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .spine .sg .rail{width:60px;height:1px;margin-top:0}
+  .spine .sg .rail::before{transform:scaleX(1);transform-origin:left}
+  @supports (animation-timeline:view()){
+    .spine .sg .rail::before{animation:none;transform:scaleX(1)}
+  }
+}
+@media (max-width:640px){
+  :root{--pad:20px}
+  .appx,.offgrid{grid-template-columns:1fr}
+  body{font-size:16px}
+  section{padding:56px 0}
+  .hero{padding:52px 0 46px}
+  .band{padding:48px 0}
+  .pull{padding:52px 0}
+  .arows{grid-template-columns:1fr}
+  .arows dt{border-bottom:0;padding-bottom:2px}
+  .arows dd{padding-left:17px}
+  .logtable td:first-child{width:auto}
+  .clist .ck{width:64px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+}
+@media print{
+  .bar,.console,.creplay,.steps,#offshift,.portrait,.cthumb,footer{display:none !important}
+  body{background:#fff;color:#000;font-size:11pt}
+  body::after{display:none}
+  section{padding:14pt 0;border-top:1px solid #999}
+  .panel{display:block !important;border:0;padding:8pt 0}
+  a{color:#000;text-decoration:underline}
+  h1{font-size:26pt}
+  h2{font-size:14pt}
+}
+
+/* ============================================================
+   19. SKIM / READ MODES
+   The page is skimmable by default because of the glance
+   strip. This control compresses it further: detail sections
+   collapse, the summary stays. Read mode is the default so
+   that with JavaScript off nothing is ever hidden.
+   ============================================================ */
+.modectl{display:flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.modectl button{
+  font-family:var(--f-mono);font-size:10px;font-weight:500;
+  letter-spacing:.11em;text-transform:uppercase;
+  background:transparent;color:var(--ink3);border:0;
+  border-right:1px solid var(--rule);padding:8px 12px;cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.modectl button:last-child{border-right:0}
+.modectl button:hover{color:var(--ink)}
+.modectl button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+:root[data-mode="skim"] .detail-only{display:none !important}
+.skimnote{display:none}
+:root[data-mode="skim"] .skimnote{
+  display:block;font-family:var(--f-mono);font-size:11px;
+  color:var(--ink3);border-left:2px solid var(--rule);
+  padding:9px 14px;margin:14px 0 0;
+}
+
+/* ============================================================
+   20. AT A GLANCE — the 20-second tier
+   ============================================================ */
+.glance{background:var(--raise);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:0}
+.glance .shell{padding-top:0;padding-bottom:0}
+.gwrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.gcell{padding:26px 26px 26px 0;border-right:1px solid var(--hair)}
+.gcell:first-child{padding-left:0}
+.gcell:last-child{border-right:0;padding-right:0}
+.gcell h4{margin:0 0 12px}
+.gcell .big{
+  font-family:var(--f-disp);font-weight:800;font-size:1.5rem;
+  letter-spacing:-.025em;line-height:1.1;margin:0 0 6px;color:var(--ink);
+}
+.gcell p{font-size:.88rem;color:var(--ink2);margin:0;max-width:none;line-height:1.55}
+.gcell ul{margin:0;padding:0;list-style:none}
+.gcell li{font-size:.88rem;color:var(--ink2);margin-bottom:6px;line-height:1.5}
+.gcell li b{color:var(--ink);font-weight:600}
+.gcell a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule)}
+.gcell a:hover{border-bottom-color:var(--sig)}
+
+/* ============================================================
+   21. ABOUT — moved up, kept short
+   ============================================================ */
+.about .shell{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:52px;align-items:start}
+.about p{font-size:1.02rem}
+.aside{border-left:1px solid var(--rule);padding-left:26px}
+.aside dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:0}
+.aside dt{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink3);padding:11px 18px 11px 0;border-bottom:1px solid var(--hair);white-space:nowrap;
+}
+.aside dd{
+  margin:0;font-size:.92rem;color:var(--ink);
+  padding:11px 0;border-bottom:1px solid var(--hair);
+}
+.aside dt:last-of-type,.aside dd:last-of-type{border-bottom:0}
+
+/* ============================================================
+   22. EXPERIENCE — restored from v1, set as a record
+   ============================================================ */
+.roles-list{list-style:none;margin:8px 0 0;padding:0;border-top:1px solid var(--rule)}
+.role{
+  display:grid;grid-template-columns:190px minmax(0,1fr);
+  gap:0 40px;padding:28px 0;border-bottom:1px solid var(--hair);
+}
+.role .when{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;
+  color:var(--ink3);line-height:1.8;
+}
+.role .when b{display:block;color:var(--ink2);font-weight:500}
+.role h3{margin:0 0 3px}
+.role .org{
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.05em;
+  color:var(--ink3);margin:0 0 14px;
+}
+.role ul{margin:0;padding-left:19px;max-width:62ch}
+.role li{font-size:.94rem;color:var(--ink2);margin-bottom:8px}
+.role .rtags{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.role .rtags span{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink3);border:1px solid var(--hair);padding:4px 8px;
+}
+
+/* ============================================================
+   23. SKILLS
+   ============================================================ */
+.skills{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--rule);margin-top:8px}
+.skills>div{padding:22px 24px;border-right:1px solid var(--hair)}
+.skills>div:last-child{border-right:0}
+.skills h4{margin:0 0 13px}
+.skills .tags{display:flex;gap:7px;flex-wrap:wrap}
+.skills .tags span{
+  font-family:var(--f-mono);font-size:10.5px;color:var(--ink2);
+  border:1px solid var(--hair);padding:5px 9px;
+}
+
+/* ============================================================
+   24. HELLO, WORLD — the field's own first lines
+   ============================================================ */
+.hw{border-top:1px solid var(--rule);background:var(--sink);padding:62px 0}
+.hw .shell{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;align-items:center}
+.hw h2{margin-bottom:14px}
+.hw p{color:var(--ink2);font-size:.97rem}
+.hwbox{border:1px solid var(--rule);background:var(--paper)}
+.hwline{padding:22px 24px;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.hwcode{
+  font-family:var(--f-mono);font-size:12.5px;line-height:1.7;color:var(--sig);
+  overflow-wrap:anywhere;margin:0;
+}
+.hwcode::before{content:'$ ';color:var(--ink3)}
+.hwcode.nocmd::before{content:'» ';color:var(--ink3)}
+.hwgloss{font-size:.95rem;color:var(--ink2);margin:0;max-width:52ch}
+.hwbar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  border-top:1px solid var(--hair);padding:11px 16px 11px 24px;
+}
+.hwdots{display:flex;gap:6px}
+.hwdots i{width:5px;height:5px;border-radius:50%;background:var(--rule);display:block}
+.hwdots i.on{background:var(--sig)}
+.hwnext{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;
+  background:transparent;border:1px solid var(--rule);color:var(--ink2);
+  padding:7px 12px;border-radius:3px;cursor:pointer;
+}
+.hwnext:hover{border-color:var(--sig);color:var(--ink)}
+
+/* ============================================================
+   25. LAB DIAGRAM
+   ============================================================ */
+.diagram{border:1px solid var(--rule);background:var(--raise);padding:28px 24px;margin:8px 0 18px;overflow-x:auto}
+.diagram svg{display:block;min-width:560px;width:100%;height:auto}
+.dnode{fill:var(--paper);stroke:var(--rule);stroke-width:1}
+.dnode-hot{fill:var(--sig-bg);stroke:var(--sig)}
+.dlabel{font-family:var(--f-disp);font-size:12px;font-weight:700;fill:var(--ink)}
+.dsub{font-family:var(--f-mono);font-size:9px;fill:var(--ink3);letter-spacing:.08em}
+.dpath{stroke:var(--rule);stroke-width:1;fill:none}
+.dcap{font-family:var(--f-mono);font-size:8.5px;fill:var(--ink3);letter-spacing:.09em}
+.dpacket{fill:var(--sig)}
+@media (prefers-reduced-motion:no-preference){
+  .dpacket{animation:flow 3.4s linear infinite}
+  .dpacket.p2{animation-delay:1.1s}
+  .dpacket.p3{animation-delay:2.2s}
+}
+@keyframes flow{
+  0%{offset-distance:0%;opacity:0}
+  8%{opacity:1}
+  92%{opacity:1}
+  100%{offset-distance:100%;opacity:0}
+}
+
+@media (max-width:960px){
+  .gwrap{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gcell{padding:22px 22px 22px 0}
+  .gcell:nth-child(2n){border-right:0;padding-right:0}
+  .gcell:nth-child(2n+1){padding-left:0}
+  .gcell:nth-child(-n+2){border-bottom:1px solid var(--hair)}
+  .about .shell{grid-template-columns:1fr;gap:32px}
+  .aside{border-left:0;border-top:1px solid var(--rule);padding-left:0;padding-top:8px}
+  .role{grid-template-columns:1fr;gap:0}
+  .role .when{margin-bottom:12px}
+  .skills{grid-template-columns:1fr}
+  .skills>div{border-right:0;border-bottom:1px solid var(--hair)}
+  .skills>div:last-child{border-bottom:0}
+  .hw .shell{grid-template-columns:1fr;gap:28px}
+}
+@media (max-width:640px){
+  .gwrap{grid-template-columns:1fr}
+  .gcell{border-right:0;border-bottom:1px solid var(--hair);padding:20px 0}
+  .gcell:last-child{border-bottom:0}
+}
+@media print{
+  .glance{background:none}
+  .hw,.modectl{display:none !important}
+}
