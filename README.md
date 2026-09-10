@@ -3,11 +3,11 @@
 Personal portfolio for Barry Sampath — cybersecurity and IT automation.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.0.5.** Spacing fix in the glance strip: the column dividers
-now sit centred in their gutters instead of hard against the next
-column's text. Versions 1.0.1 (the original single-file site), 1.0.2
-(the rebuild), 1.0.3 and 1.0.4 are preserved as zip archives outside this
-repository, and in the branch history.
+**Version 1.0.6.** The detection console now loops on its own instead of
+needing Replay, and freezes whenever it is not worth running. Versions
+1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
+and 1.0.5 are preserved as zip archives outside this repository, and in
+the branch history.
 
 ## What this is
 
@@ -72,6 +72,22 @@ The input is `hidden` in the markup and unhidden by script, so with
 JavaScript off there is no form to submit and the card still reads
 correctly on its own. Every response is written with `textContent`, which
 is why the `xss` and `sqli` answers are inert text rather than markup.
+
+## The detection console
+
+Runs a nine-event sequence at roughly real speed, fires the alert, holds
+for nine seconds so the card can be read, then wipes and goes again.
+
+It only runs when running is worth it — on screen, not hovered, not
+keyboard-focused, tab in front, and not paused by hand. Any of those
+going false freezes it exactly where it is; it resumes from that point
+rather than restarting behind the reader's back. Two controls sit under
+the copy: **Pause / Resume**, which is also what satisfies WCAG 2.2.2
+for motion that starts on its own, and **Restart** for anyone who missed
+the moment.
+
+Under `prefers-reduced-motion` the whole sequence prints at once and the
+controls are removed, since there is nothing left to pause.
 
 ## Shared-element transitions
 

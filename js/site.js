@@ -115,12 +115,19 @@
   /* ---------------------------------------------------------
      3. The console
      Ordinary endpoint noise arriving in real time until one
-     event is not ordinary. Starts when scrolled into view,
-     runs once, replays on request. Under reduced-motion the
-     whole sequence is printed at once.
+     event is not ordinary, then a hold on the fired alert, then
+     it starts over.
+
+     It only ever runs when it is worth running: on screen, not
+     hovered, not focused, tab in front, and not paused by hand.
+     Anything else freezes it exactly where it is and it picks up
+     from there — nothing restarts behind your back. Under
+     reduced-motion the whole sequence prints at once and the
+     controls come off, since there is nothing to pause.
      --------------------------------------------------------- */
-  var con = document.getElementById('console');
-  var replay = document.getElementById('replay');
+  var con        = document.getElementById('console');
+  var conPause   = document.getElementById('conPause');
+  var conRestart = document.getElementById('conRestart');
 
   var FEED = [
     ['11:42:04', 'EventID 1   svchost.exe    ← services.exe'],
@@ -134,58 +141,143 @@
     ['11:42:18', 'EventID 1   powershell.exe ← WINWORD.EXE  -nop -w hidden -enc', true]
   ];
 
-  var timer = null;
-
-  function trim() {
-    while (con.children.length > 10) { con.removeChild(con.firstChild); }
-  }
-
-  function addLine(row) {
-    var d = document.createElement('div');
-    d.className = 'ln fresh' + (row[2] ? ' hit' : '');
-    d.textContent = row[0] + '  ' + row[1];
-    con.appendChild(d);
-    trim();
-  }
-
-  function addAlert() {
-    var d = document.createElement('div');
-    d.className = 'alertln';
-    d.textContent = '▲  LEVEL 12  ·  rule 100210  ·  ' +
-                    'Office application spawned PowerShell  ·  T1059.001';
-    con.appendChild(d);
-    trim();
-  }
-
-  function runConsole() {
-    if (!con) { return; }
-    clearTimeout(timer);
-    con.textContent = '';
-    if (reduce) {
-      FEED.forEach(addLine);
-      addAlert();
-      return;
-    }
-    var i = 0;
-    (function step() {
-      if (i >= FEED.length) { timer = setTimeout(addAlert, 430); return; }
-      addLine(FEED[i]);
-      i += 1;
-      timer = setTimeout(step, i >= FEED.length - 1 ? 920 : 560);
-    })();
-  }
+  var LINE_GAP = 560;   /* between ordinary events            */
+  var LAST_GAP = 900;   /* beat before the one that matters   */
+  var ALERT_GAP = 430;  /* event to alert card                */
+  var HOLD = 9000;      /* time to read the alert before loop */
 
   if (con) {
-    if (replay) { replay.addEventListener('click', runConsole); }
-    if ('IntersectionObserver' in window) {
-      var started = false;
-      new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting && !started) { started = true; runConsole(); }
-        });
-      }, { threshold: 0.2 }).observe(con);
+    var cTimer = null;
+    var cIndex = 0;
+    var cPhase = 'lines';          /* lines -> alert -> hold   */
+    var onScreen = false;
+    var hovered = false;
+    var byHand = false;            /* paused with the button   */
+
+    var trim = function () {
+      while (con.children.length > 10) { con.removeChild(con.firstChild); }
+    };
+
+    var addLine = function (row) {
+      var d = document.createElement('div');
+      d.className = 'ln fresh' + (row[2] ? ' hit' : '');
+      d.textContent = row[0] + '  ' + row[1];
+      con.appendChild(d);
+      trim();
+    };
+
+    var addAlert = function () {
+      var d = document.createElement('div');
+      d.className = 'alertln';
+      d.textContent = '▲  LEVEL 12  ·  rule 100210  ·  ' +
+                      'Office application spawned PowerShell  ·  T1059.001';
+      con.appendChild(d);
+      trim();
+    };
+
+    var canRun = function () {
+      return onScreen && !hovered && !byHand && !document.hidden;
+    };
+
+    var halt = function () { clearTimeout(cTimer); cTimer = null; };
+
+    var step = function () {
+      cTimer = null;
+      if (!canRun()) { return; }
+
+      if (cPhase === 'lines') {
+        if (cIndex < FEED.length) {
+          addLine(FEED[cIndex]);
+          cIndex += 1;
+          cTimer = setTimeout(step, cIndex >= FEED.length ? LAST_GAP : LINE_GAP);
+          return;
+        }
+        cPhase = 'alert';
+        cTimer = setTimeout(step, ALERT_GAP);
+        return;
+      }
+
+      if (cPhase === 'alert') {
+        addAlert();
+        cPhase = 'hold';
+        cTimer = setTimeout(step, HOLD);
+        return;
+      }
+
+      /* hold is over — wipe and go again */
+      con.textContent = '';
+      cIndex = 0;
+      cPhase = 'lines';
+      cTimer = setTimeout(step, 320);
+    };
+
+    var resume = function () {
+      if (cTimer || !canRun()) { return; }
+      cTimer = setTimeout(step, 200);
+    };
+
+    /* Freeze or continue, whichever the current conditions call
+       for. Called by every input that can change them. */
+    var sync = function () {
+      if (canRun()) { resume(); } else { halt(); }
+    };
+
+    var restart = function () {
+      halt();
+      con.textContent = '';
+      cIndex = 0;
+      cPhase = 'lines';
+      sync();
+    };
+
+    var setByHand = function (state) {
+      byHand = state;
+      if (conPause) {
+        conPause.textContent = state ? 'Resume' : 'Pause';
+        conPause.setAttribute('aria-pressed', String(state));
+      }
+      sync();
+    };
+
+    if (reduce) {
+      /* No motion: print the whole sequence once and drop the
+         controls, because there is no longer anything to pause. */
+      FEED.forEach(addLine);
+      addAlert();
+      var ctl = document.querySelector('.cctl');
+      if (ctl) { ctl.hidden = true; }
     } else {
-      runConsole();
+      con.textContent = '';
+
+      if (conPause) {
+        conPause.addEventListener('click', function () { setByHand(!byHand); });
+      }
+      if (conRestart) {
+        conRestart.addEventListener('click', function () {
+          if (byHand) { setByHand(false); }
+          restart();
+        });
+      }
+
+      /* Hover and keyboard focus hold it still so nobody loses
+         the line they were reading. */
+      con.addEventListener('mouseenter', function () { hovered = true; sync(); });
+      con.addEventListener('mouseleave', function () { hovered = false; sync(); });
+      con.addEventListener('focusin',   function () { hovered = true; sync(); });
+      con.addEventListener('focusout',  function () { hovered = false; sync(); });
+
+      /* A background tab should not be animating. */
+      document.addEventListener('visibilitychange', sync);
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) { onScreen = en.isIntersecting; });
+          sync();
+        }, { threshold: 0.2 }).observe(con);
+      } else {
+        onScreen = true;
+        sync();
+      }
     }
   }
 

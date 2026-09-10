@@ -156,9 +156,12 @@
       <p class="slab">From the home lab</p>
       <h2>What happens when Word spawns PowerShell</h2>
       <p>A busy endpoint produces thousands of process-creation events a day. Almost all of them are boring, which is the point: you cannot recognise the one that matters without knowing what ordinary looks like.</p>
-      <p>This is that stream, playing at real speed. Wait for it.</p>
+      <p>This is that stream, playing at real speed. It loops while it is on screen, and pauses if you hover it or scroll away.</p>
       <p style="font-family:var(--f-mono);font-size:11px;color:var(--ink3);letter-spacing:.04em">One of three projects &middot; <a href="work/homelab/" style="color:var(--ink)">ITDR home lab &rarr;</a></p>
-      <button type="button" class="creplay" id="replay">Replay</button>
+      <div class="cctl">
+        <button type="button" class="creplay" id="conPause" aria-pressed="false">Pause</button>
+        <button type="button" class="creplay" id="conRestart">Restart</button>
+      </div>
     </div>
     <div>
       <div class="console" id="console" role="img" aria-label="A simulated endpoint event stream: routine process and network events, ending with PowerShell launched by Microsoft Word and a level 12 alert.">
