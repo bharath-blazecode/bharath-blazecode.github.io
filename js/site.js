@@ -61,6 +61,9 @@
         Math.max(y, window.innerHeight - y)
       );
 
+      /* The class scopes the root-animation override to this one
+         transition, so page navigations keep their own cross-fade. */
+      root.classList.add('theme-wipe');
       var vt = document.startViewTransition(apply);
       vt.ready.then(function () {
         root.animate(
@@ -75,6 +78,9 @@
           }
         );
       }).catch(function () { /* transition unavailable — theme still applied */ });
+      vt.finished
+        .catch(function () {})
+        .then(function () { root.classList.remove('theme-wipe'); });
     });
   }
 
@@ -291,14 +297,18 @@
     }
   ];
 
-  var hwCode = document.getElementById('hwCode');
+  var hwCode  = document.getElementById('hwCode');
   var hwGloss = document.getElementById('hwGloss');
-  var hwNext = document.getElementById('hwNext');
-  var hwDots = document.getElementById('hwDots');
+  var hwNext  = document.getElementById('hwNext');
+  var hwDots  = document.getElementById('hwDots');
+  var hwOut   = document.getElementById('hwOut');
+  var hwForm  = document.getElementById('hwForm');
+  var hwInput = document.getElementById('hwInput');
 
   if (hwCode && hwGloss) {
     var hi = 0;
     var hTimer = null;
+    var interactive = false;
     var reduceMotion = window.matchMedia &&
                        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -323,14 +333,172 @@
 
     var restart = function () {
       clearInterval(hTimer);
-      if (!reduceMotion) { hTimer = setInterval(advance, 7000); }
+      if (!reduceMotion && !interactive) { hTimer = setInterval(advance, 7000); }
     };
 
     paint(0);
     restart();
 
     if (hwNext) {
-      hwNext.addEventListener('click', function () { advance(); restart(); });
+      hwNext.addEventListener('click', function () {
+        if (interactive) { leaveInteractive(); return; }
+        advance();
+        restart();
+      });
+    }
+
+    /* -------------------------------------------------------
+       Typing.
+       The panel already says everything it has to say on its
+       own. Typing is an extra, so nothing is hidden behind it,
+       and the input only exists once this script has run.
+       Every response is written with textContent, so the XSS
+       and SQL strings below are inert text, not markup.
+       ------------------------------------------------------- */
+    var EICAR = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+
+    var COMMANDS = {
+      help: function () {
+        return [['Commands: whoami, nmap, eicar, sqli, xss, grc, mfa, ls, ' +
+                 'resume, contact, sudo, clear.'],
+                ['Nothing here touches your machine. It is a static page ' +
+                 'on GitHub Pages and it has no idea what you are running.']];
+      },
+      whoami: function () {
+        return [['barry', 1],
+                ['Bharath Sampath. QUT cybersecurity and AI student in Brisbane. ' +
+                 'Also the first command anyone runs after landing on a box, ' +
+                 'and one a decent detection rule notices.']];
+      },
+      nmap: function () {
+        return [['nmap -sV scanme.nmap.org', 1],
+                ['Everyone’s first scan, against the one host on the internet ' +
+                 'that explicitly asks to be scanned. Point it anywhere else ' +
+                 'without permission and the lesson changes.']];
+      },
+      eicar: function () {
+        return [[EICAR, 1],
+                ['Sixty-eight harmless characters that every antivirus on earth ' +
+                 'agrees to flag, so you can prove your scanner works without ' +
+                 'touching real malware. The closest thing security has to Hello World.']];
+      },
+      sqli: function () {
+        return [["' OR '1'='1", 1],
+                ['The first thing anybody learns to break, and the reason ' +
+                 'parameterised queries exist. Still turning up in production in 2026.']];
+      },
+      xss: function () {
+        return [['<script>alert(1)</script>', 1],
+                ['And the second. This one is printed as text, which is exactly ' +
+                 'the fix.']];
+      },
+      grc: function () {
+        return [['It depends.', 1],
+                ['The technically correct answer to almost every GRC question. ' +
+                 'The follow-up is always “on what?”, and that is where ' +
+                 'the actual work is.']];
+      },
+      mfa: function () {
+        return [['Have you tried turning MFA on?', 1],
+                ['Unglamorous, unfashionable, and still the single control that ' +
+                 'removes most of the incidents you would otherwise be writing up.']];
+      },
+      ls: function () {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+                   (!document.documentElement.getAttribute('data-theme') &&
+                    window.matchMedia &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches);
+        return [['about  work  experience  skills  background' +
+                 (dark ? '  off-shift' : ''), 1],
+                [dark ? 'All of it. You are on the night shift.'
+                      : 'That is everything the day shift shows.']];
+      },
+      resume: function () {
+        return [['resume/Barry_Sampath_Resume.pdf', 1],
+                ['One page. The link is in the header and at the bottom of the page.']];
+      },
+      contact: function () {
+        return [['barry.sampath@outlook.com', 1],
+                ['Also on LinkedIn at /in/barrysampath and GitHub as bharath-blazecode.']];
+      },
+      sudo: function () {
+        return [['Nice try.', 1],
+                ['This is a static page. There is no shell, no server and nothing ' +
+                 'to escalate to. Which is its own small security lesson.']];
+      }
+    };
+
+    var enterInteractive = function () {
+      if (interactive) { return; }
+      interactive = true;
+      clearInterval(hTimer);
+      hwOut.textContent = '';
+      hwOut.classList.add('live');
+      if (hwNext) { hwNext.textContent = 'Back'; }
+      write(null, [['Type help for the list.']]);
+    };
+
+    var leaveInteractive = function () {
+      interactive = false;
+      hwOut.classList.remove('live');
+      hwOut.textContent = '';
+      hwOut.appendChild(hwCode);
+      hwOut.appendChild(hwGloss);
+      if (hwNext) { hwNext.textContent = 'Next'; }
+      paint(hi);
+      restart();
+    };
+
+    function write(echo, rows) {
+      if (echo !== null) {
+        var e = document.createElement('p');
+        e.className = 'hwecho';
+        e.textContent = echo;
+        hwOut.appendChild(e);
+      }
+      rows.forEach(function (row) {
+        var r = document.createElement('p');
+        r.className = 'hwreply' + (row[1] ? ' mono' : '');
+        r.textContent = row[0];
+        hwOut.appendChild(r);
+      });
+      hwOut.scrollTop = hwOut.scrollHeight;
+    }
+
+    if (hwForm && hwInput && hwOut) {
+      hwForm.hidden = false;
+      var history = [];
+      var hpos = -1;
+
+      hwInput.addEventListener('focus', enterInteractive);
+
+      hwInput.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') { return; }
+        if (!history.length) { return; }
+        e.preventDefault();
+        if (e.key === 'ArrowUp') { hpos = Math.min(hpos + 1, history.length - 1); }
+        else { hpos = Math.max(hpos - 1, -1); }
+        hwInput.value = hpos < 0 ? '' : history[hpos];
+      });
+
+      hwForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var raw = hwInput.value.trim();
+        hwInput.value = '';
+        if (!raw) { return; }
+        enterInteractive();
+        history.unshift(raw);
+        hpos = -1;
+
+        var cmd = raw.toLowerCase().split(/\s+/)[0];
+        if (cmd === 'clear') { hwOut.textContent = ''; return; }
+        if (cmd === 'exit' || cmd === 'q') { leaveInteractive(); return; }
+
+        var fn = COMMANDS[cmd];
+        write(raw, fn ? fn()
+                      : [['command not found: ' + cmd, 1],
+                         ['Try help.']]);
+      });
     }
   }
 })();

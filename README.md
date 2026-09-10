@@ -3,9 +3,10 @@
 Personal portfolio for Barry Sampath — cybersecurity and IT automation.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.0.2.** A full rebuild. Version 1.0.1 (the previous single-file
-site) is preserved as a zip archive outside this repository and on the
-`main` history prior to this change.
+**Version 1.0.3.** Adds shared-element page transitions, kinetic type on
+the hero, and a typeable hello-world terminal. Versions 1.0.1 (the
+original single-file site) and 1.0.2 (the rebuild) are preserved as zip
+archives outside this repository, and in the `main` history.
 
 ## What this is
 
@@ -53,6 +54,15 @@ footer cycles through security's: the EICAR test string, `nmap -sV
 scanme.nmap.org`, `' OR '1'='1'`, `whoami`, "It depends." for GRC, and
 one about MFA. Cycles on a timer, advances on click.
 
+It is also typeable. `help` lists what it knows: `whoami`, `nmap`,
+`eicar`, `sqli`, `xss`, `grc`, `mfa`, `ls`, `resume`, `contact`, `sudo`,
+`clear`, `exit`. Arrow keys walk the history. The panel says everything
+it has to say untouched, so typing is additive rather than a gate — and
+the input element is `hidden` in the markup and unhidden by script, so
+with JavaScript off there is no form to submit. Every response is written
+with `textContent`, which is why the `xss` and `sqli` answers are inert
+text rather than markup.
+
 ## Motion policy
 
 Every animation reveals information. Nothing moves for decoration.
@@ -64,7 +74,26 @@ Every animation reveals information. Nothing moves for decoration.
 | Section rules drawing | A section beginning |
 | Case-study rail filling | Progress through the page |
 | Cross-document transitions | Continuity between pages |
+| Card expanding into a page header | Which card you came from |
+| Hero headline shedding weight | Distance travelled from the top |
 | Packets along the lab diagram | The direction telemetry actually flows |
+
+## Shared-element transitions
+
+Each project card title and the matching case-study `h1` carry the same
+`view-transition-name` via `data-vt`, so clicking a card expands it into
+the page header. A name must be unique per document, which holds: three
+cards on the home page, one `h1` on each case-study page. The theme wipe's
+override of the root animation is scoped to a `.theme-wipe` class the
+script adds for that one transition, so navigation keeps its own root
+cross-fade.
+
+## Kinetic type
+
+Archivo is loaded on the `wght@400..900` variable axis. The hero headline
+sheds weight from 900 to 620 as it exits the viewport, scroll-linked
+rather than timed. Ignored where the variable font did not load, skipped
+under reduced-motion.
 
 ## Accessibility and resilience
 
