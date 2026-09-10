@@ -508,22 +508,24 @@
       <p class="slab">hello, world</p>
       <h2>Every field has a first line</h2>
       <p>Programming has <code>print("Hello, world")</code>. Security has a handful, and knowing them is a bit like knowing the words to a song everyone in the room already knows.</p>
-      <p style="font-size:.9rem;color:var(--ink3)">Cycles on its own. Click for the next one, or type into it &mdash; <code>help</code> lists what it knows.</p>
+      <p style="font-size:.9rem;color:var(--ink3)">Cycles on its own. Click for the next one, or type into it &mdash; <code>help</code> lists what it knows, <code>cards</code> prints all six of these at once.</p>
     </div>
     <div class="hwbox">
-      <div class="hwout" id="hwOut" aria-live="polite">
+      <div class="hwcard" id="hwCard">
         <p class="hwcode" id="hwCode">nmap -sV scanme.nmap.org</p>
         <p class="hwgloss" id="hwGloss">Everyone&rsquo;s first scan, run against the one host on the internet that explicitly asks to be scanned.</p>
       </div>
+      <div class="hwlog" id="hwLog" aria-live="polite" hidden></div>
       <form class="hwform" id="hwForm" hidden>
         <label class="sr" for="hwInput">Type a command</label>
         <span class="hwprompt" aria-hidden="true">$</span>
         <input id="hwInput" type="text" autocomplete="off" autocapitalize="off"
-               spellcheck="false" placeholder="type help">
+               spellcheck="false" placeholder="type help, or cards for all six">
         <span class="hwhint">Enter</span>
       </form>
       <div class="hwbar">
         <div class="hwdots" id="hwDots" aria-hidden="true"></div>
+        <span class="hwstate" id="hwState" hidden>Paused</span>
         <button type="button" class="hwnext" id="hwNext">Next</button>
       </div>
     </div>

@@ -3,10 +3,11 @@
 Personal portfolio for Barry Sampath — cybersecurity and IT automation.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.0.3.** Adds shared-element page transitions, kinetic type on
-the hero, and a typeable hello-world terminal. Versions 1.0.1 (the
-original single-file site) and 1.0.2 (the rebuild) are preserved as zip
-archives outside this repository, and in the `main` history.
+**Version 1.0.5.** Spacing fix in the glance strip: the column dividers
+now sit centred in their gutters instead of hard against the next
+column's text. Versions 1.0.1 (the original single-file site), 1.0.2
+(the rebuild), 1.0.3 and 1.0.4 are preserved as zip archives outside this
+repository, and in the branch history.
 
 ## What this is
 
@@ -49,34 +50,28 @@ default, so with JavaScript off nothing is ever hidden.
 
 ## hello, world
 
-Every field has a first line everybody recognises. The band near the
-footer cycles through security's: the EICAR test string, `nmap -sV
-scanme.nmap.org`, `' OR '1'='1'`, `whoami`, "It depends." for GRC, and
-one about MFA. Cycles on a timer, advances on click.
+Every field has a first line everybody recognises. The card near the
+footer cycles through security's six: the EICAR test string, `nmap -sV
+scanme.nmap.org`, `' OR '1'='1'`, `whoami`, "It depends." for GRC, and one
+about MFA. It cycles on a timer and advances on Next.
 
-It is also typeable. `help` lists what it knows: `whoami`, `nmap`,
-`eicar`, `sqli`, `xss`, `grc`, `mfa`, `ls`, `resume`, `contact`, `sudo`,
-`clear`, `exit`. Arrow keys walk the history. The panel says everything
-it has to say untouched, so typing is additive rather than a gate — and
-the input element is `hidden` in the markup and unhidden by script, so
-with JavaScript off there is no form to submit. Every response is written
-with `textContent`, which is why the `xss` and `sqli` answers are inert
-text rather than markup.
+Below it is a terminal. **The card and the terminal are two parts of one
+panel, not two modes** — typing appends to a log underneath the card and
+never replaces it, so nothing a visitor was part-way through reading
+disappears. Focusing the input pauses the cycle (the bar shows `Paused`)
+so the text does not change mid-sentence; leaving the box empty resumes
+it. `Next` still advances the card while the log is open, and `clear`
+empties the log without touching the card.
 
-## Motion policy
+`help` lists the commands: `whoami`, `nmap`, `eicar`, `sqli`, `xss`,
+`grc`, `mfa`, `cards`, `ls`, `resume`, `contact`, `sudo`, `clear`, `exit`.
+`cards` prints all six card lines at once. `ls` includes `off-shift` only
+when the night shift is on. Arrow keys walk the history.
 
-Every animation reveals information. Nothing moves for decoration.
-
-| Effect | What it shows |
-|---|---|
-| Theme wipe from the button | Causation — you pressed that |
-| Console filling | Telemetry arriving in real time |
-| Section rules drawing | A section beginning |
-| Case-study rail filling | Progress through the page |
-| Cross-document transitions | Continuity between pages |
-| Card expanding into a page header | Which card you came from |
-| Hero headline shedding weight | Distance travelled from the top |
-| Packets along the lab diagram | The direction telemetry actually flows |
+The input is `hidden` in the markup and unhidden by script, so with
+JavaScript off there is no form to submit and the card still reads
+correctly on its own. Every response is written with `textContent`, which
+is why the `xss` and `sqli` answers are inert text rather than markup.
 
 ## Shared-element transitions
 
