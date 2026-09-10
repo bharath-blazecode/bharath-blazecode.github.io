@@ -3,10 +3,11 @@
 Personal portfolio for Barry Sampath — cybersecurity and IT automation.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.0.4.** The hello-world card and the terminal now coexist
-instead of one replacing the other. Versions 1.0.1 (the original
-single-file site), 1.0.2 (the rebuild) and 1.0.3 are preserved as zip
-archives outside this repository, and in the branch history.
+**Version 1.0.5.** Spacing fix in the glance strip: the column dividers
+now sit centred in their gutters instead of hard against the next
+column's text. Versions 1.0.1 (the original single-file site), 1.0.2
+(the rebuild), 1.0.3 and 1.0.4 are preserved as zip archives outside this
+repository, and in the branch history.
 
 ## What this is
 
