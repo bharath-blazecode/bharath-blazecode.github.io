@@ -301,14 +301,15 @@
   var hwGloss = document.getElementById('hwGloss');
   var hwNext  = document.getElementById('hwNext');
   var hwDots  = document.getElementById('hwDots');
-  var hwOut   = document.getElementById('hwOut');
+  var hwState = document.getElementById('hwState');
+  var hwLog   = document.getElementById('hwLog');
   var hwForm  = document.getElementById('hwForm');
   var hwInput = document.getElementById('hwInput');
 
   if (hwCode && hwGloss) {
     var hi = 0;
     var hTimer = null;
-    var interactive = false;
+    var paused = false;
     var reduceMotion = window.matchMedia &&
                        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -316,6 +317,11 @@
       LINES.forEach(function () { hwDots.appendChild(document.createElement('i')); });
     }
 
+    /* ---------------------------------------------------------
+       The card. Always visible, always the same six lines.
+       Typing never replaces it — it only pauses the cycle so the
+       text does not change out from under someone mid-sentence.
+       --------------------------------------------------------- */
     var paint = function (n) {
       hi = (n + LINES.length) % LINES.length;
       var L = LINES[hi];
@@ -331,38 +337,46 @@
 
     var advance = function () { paint(hi + 1); };
 
-    var restart = function () {
+    var startCycle = function () {
       clearInterval(hTimer);
-      if (!reduceMotion && !interactive) { hTimer = setInterval(advance, 7000); }
+      if (!reduceMotion && !paused) { hTimer = setInterval(advance, 7000); }
+    };
+
+    var setPaused = function (state) {
+      paused = state;
+      if (hwState) { hwState.hidden = !state; }
+      startCycle();
     };
 
     paint(0);
-    restart();
+    startCycle();
 
     if (hwNext) {
-      hwNext.addEventListener('click', function () {
-        if (interactive) { leaveInteractive(); return; }
-        advance();
-        restart();
-      });
+      hwNext.addEventListener('click', function () { advance(); startCycle(); });
     }
 
-    /* -------------------------------------------------------
-       Typing.
-       The panel already says everything it has to say on its
-       own. Typing is an extra, so nothing is hidden behind it,
-       and the input only exists once this script has run.
-       Every response is written with textContent, so the XSS
-       and SQL strings below are inert text, not markup.
-       ------------------------------------------------------- */
+    /* ---------------------------------------------------------
+       The terminal. Appends below the card, never over it.
+       Every response is written with textContent, so the xss and
+       sqli answers below are inert text rather than markup.
+       --------------------------------------------------------- */
     var EICAR = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
 
     var COMMANDS = {
       help: function () {
-        return [['Commands: whoami, nmap, eicar, sqli, xss, grc, mfa, ls, ' +
-                 'resume, contact, sudo, clear.'],
-                ['Nothing here touches your machine. It is a static page ' +
-                 'on GitHub Pages and it has no idea what you are running.']];
+        return [['Commands: whoami, nmap, eicar, sqli, xss, grc, mfa, cards, ' +
+                 'ls, resume, contact, sudo, clear.'],
+                ['cards prints all six of the lines above at once. Nothing here ' +
+                 'touches your machine — this is a static page and it has no idea ' +
+                 'what you are running.']];
+      },
+      cards: function () {
+        var rows = [['All six, in order:']];
+        LINES.forEach(function (L) {
+          rows.push([L.cmd, 1]);
+          rows.push([L.gloss]);
+        });
+        return rows;
       },
       whoami: function () {
         return [['barry', 1],
@@ -428,49 +442,34 @@
       }
     };
 
-    var enterInteractive = function () {
-      if (interactive) { return; }
-      interactive = true;
-      clearInterval(hTimer);
-      hwOut.textContent = '';
-      hwOut.classList.add('live');
-      if (hwNext) { hwNext.textContent = 'Back'; }
-      write(null, [['Type help for the list.']]);
-    };
-
-    var leaveInteractive = function () {
-      interactive = false;
-      hwOut.classList.remove('live');
-      hwOut.textContent = '';
-      hwOut.appendChild(hwCode);
-      hwOut.appendChild(hwGloss);
-      if (hwNext) { hwNext.textContent = 'Next'; }
-      paint(hi);
-      restart();
-    };
-
     function write(echo, rows) {
+      hwLog.hidden = false;
       if (echo !== null) {
         var e = document.createElement('p');
         e.className = 'hwecho';
         e.textContent = echo;
-        hwOut.appendChild(e);
+        hwLog.appendChild(e);
       }
       rows.forEach(function (row) {
         var r = document.createElement('p');
         r.className = 'hwreply' + (row[1] ? ' mono' : '');
         r.textContent = row[0];
-        hwOut.appendChild(r);
+        hwLog.appendChild(r);
       });
-      hwOut.scrollTop = hwOut.scrollHeight;
+      hwLog.scrollTop = hwLog.scrollHeight;
     }
 
-    if (hwForm && hwInput && hwOut) {
+    if (hwForm && hwInput && hwLog) {
       hwForm.hidden = false;
       var history = [];
       var hpos = -1;
 
-      hwInput.addEventListener('focus', enterInteractive);
+      /* Focus pauses the card. Leaving an empty box resumes it.
+         The card itself is never cleared. */
+      hwInput.addEventListener('focus', function () { setPaused(true); });
+      hwInput.addEventListener('blur', function () {
+        if (!hwInput.value.trim()) { setPaused(false); }
+      });
 
       hwInput.addEventListener('keydown', function (e) {
         if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') { return; }
@@ -486,13 +485,23 @@
         var raw = hwInput.value.trim();
         hwInput.value = '';
         if (!raw) { return; }
-        enterInteractive();
         history.unshift(raw);
         hpos = -1;
 
         var cmd = raw.toLowerCase().split(/\s+/)[0];
-        if (cmd === 'clear') { hwOut.textContent = ''; return; }
-        if (cmd === 'exit' || cmd === 'q') { leaveInteractive(); return; }
+
+        if (cmd === 'clear') {
+          hwLog.textContent = '';
+          hwLog.hidden = true;
+          return;
+        }
+        if (cmd === 'exit' || cmd === 'q') {
+          hwLog.textContent = '';
+          hwLog.hidden = true;
+          hwInput.blur();
+          setPaused(false);
+          return;
+        }
 
         var fn = COMMANDS[cmd];
         write(raw, fn ? fn()
