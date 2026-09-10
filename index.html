@@ -14,7 +14,7 @@
 <meta property="og:description" content="Blue-team detection, identity and access management, IT automation. Brisbane, QLD.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
 <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
@@ -259,7 +259,7 @@
       <a class="card" href="work/classquest/">
         <div class="cbody">
           <span class="cbadge done">People&rsquo;s Choice Award</span>
-          <h3>ClassQuest</h3>
+          <h3 data-vt="classquest">ClassQuest</h3>
           <p class="cmeta">Code Network Winter Hackathon &middot; Aug 2026 &middot; Team of four</p>
           <p>A learning site that turns lecture material into playable quests. I worked from the playable demo and frontend foundation through to upload security, cohort challenges and the judging Q&amp;A. Ten merged pull requests, each linked.</p>
           <p class="detail-only">The upload handler is the part worth reading. Accepting student-supplied files into a site other students load is most of the attack surface in one function.</p>
@@ -272,7 +272,7 @@
       <a class="card" href="work/homelab/">
         <div class="cbody">
           <span class="cbadge pause">Phase 1 complete &middot; paused</span>
-          <h3>ITDR Home Lab</h3>
+          <h3 data-vt="homelab">ITDR Home Lab</h3>
           <p class="cmeta">Personal project &middot; from June 2026</p>
           <p>A Wazuh 4.9.2 server, an enrolled Windows endpoint and Sysmon telemetry, built on a laptop and documented as it went. Detection-rule development is the next phase.</p>
           <p class="detail-only">The build notes are the substance here, faults included. Four separate failures before the first dashboard login.</p>
@@ -285,7 +285,7 @@
       <a class="card" href="work/luna/">
         <div class="cbody">
           <span class="cbadge done">Completed</span>
-          <h3>LUNA &mdash; TurboPi robot</h3>
+          <h3 data-vt="luna">LUNA &mdash; TurboPi robot</h3>
           <p class="cmeta">QUT university project &middot; Jul&ndash;Nov 2025 &middot; With Zhirui Lu</p>
           <p>A Raspberry Pi robot integrating computer vision, offline voice, wireless control and PID-tuned movement into one platform that had to keep working while all four ran at once.</p>
           <p class="detail-only">Where I learned that hardware tells you immediately when your logic is wrong, and where the habit of documenting decisions in real time started.</p>
@@ -508,13 +508,20 @@
       <p class="slab">hello, world</p>
       <h2>Every field has a first line</h2>
       <p>Programming has <code>print("Hello, world")</code>. Security has a handful, and knowing them is a bit like knowing the words to a song everyone in the room already knows.</p>
-      <p style="font-size:.9rem;color:var(--ink3)">Cycles on its own. Click for the next one.</p>
+      <p style="font-size:.9rem;color:var(--ink3)">Cycles on its own. Click for the next one, or type into it &mdash; <code>help</code> lists what it knows.</p>
     </div>
     <div class="hwbox">
-      <div class="hwline">
+      <div class="hwout" id="hwOut" aria-live="polite">
         <p class="hwcode" id="hwCode">nmap -sV scanme.nmap.org</p>
         <p class="hwgloss" id="hwGloss">Everyone&rsquo;s first scan, run against the one host on the internet that explicitly asks to be scanned.</p>
       </div>
+      <form class="hwform" id="hwForm" hidden>
+        <label class="sr" for="hwInput">Type a command</label>
+        <span class="hwprompt" aria-hidden="true">$</span>
+        <input id="hwInput" type="text" autocomplete="off" autocapitalize="off"
+               spellcheck="false" placeholder="type help">
+        <span class="hwhint">Enter</span>
+      </form>
       <div class="hwbar">
         <div class="hwdots" id="hwDots" aria-hidden="true"></div>
         <button type="button" class="hwnext" id="hwNext">Next</button>

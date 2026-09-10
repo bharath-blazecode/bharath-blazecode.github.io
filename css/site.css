@@ -575,9 +575,54 @@ footer .shell{
 
 /* ── 16. VIEW TRANSITIONS ────────────────────────────────── */
 @view-transition{navigation:auto}
-::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
-::view-transition-old(root){z-index:1}
-::view-transition-new(root){z-index:9999}
+
+/* The theme wipe replaces the root cross-fade with a clip-path
+   circle, so its override is scoped to the class the script adds
+   for that one transition. Navigation transitions keep the
+   browser's own root cross-fade underneath the shared elements. */
+:root.theme-wipe::view-transition-old(root),
+:root.theme-wipe::view-transition-new(root){animation:none;mix-blend-mode:normal}
+:root.theme-wipe::view-transition-old(root){z-index:1}
+:root.theme-wipe::view-transition-new(root){z-index:9999}
+
+/* Shared elements across documents: the project card title and the
+   case-study h1 carry the same name, so the browser interpolates
+   one into the other and the card expands into the page header.
+   A name must be unique per document, which it is: three cards on
+   the home page, one h1 on each case-study page. */
+@media (prefers-reduced-motion:no-preference){
+  [data-vt="classquest"]{view-transition-name:vt-classquest}
+  [data-vt="homelab"]{view-transition-name:vt-homelab}
+  [data-vt="luna"]{view-transition-name:vt-luna}
+}
+::view-transition-group(vt-classquest),
+::view-transition-group(vt-homelab),
+::view-transition-group(vt-luna){
+  animation-duration:420ms;
+  animation-timing-function:cubic-bezier(.2,.8,.3,1);
+}
+
+/* ── 16b. KINETIC TYPE ───────────────────────────────────────
+   Archivo is loaded as a variable font, so the hero headline
+   sheds weight as it leaves the viewport. Scroll-linked, so it
+   tracks the scroll position rather than running on a timer.
+   Ignored where the variable font did not load, and skipped
+   entirely under reduced-motion.
+   ------------------------------------------------------- */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .hero h1{
+      animation:shedweight linear both;
+      animation-timeline:view();
+      animation-range:exit 0% exit 90%;
+      will-change:font-variation-settings;
+    }
+  }
+}
+@keyframes shedweight{
+  from{font-variation-settings:'wght' 900}
+  to{font-variation-settings:'wght' 620}
+}
 
 /* ── 17. LOAD CHOREOGRAPHY — once, never repeats ─────────── */
 @media (prefers-reduced-motion:no-preference){
@@ -821,4 +866,52 @@ footer .shell{
 @media print{
   .glance{background:none}
   .hw,.modectl{display:none !important}
+}
+
+/* ============================================================
+   26. hello, world — the typeable panel
+   The band reads correctly untouched: it cycles on its own and
+   every line is visible. Typing is additive, never a gate. The
+   input is hidden until the script unhides it, so with no
+   JavaScript there is no form to submit.
+   ============================================================ */
+.hwout{
+  padding:20px 24px;height:186px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:12px;justify-content:center;
+  scrollbar-width:thin;
+}
+.hwout.live{justify-content:flex-start;gap:10px}
+.hwecho{
+  font-family:var(--f-mono);font-size:12px;color:var(--ink3);margin:0;
+  overflow-wrap:anywhere;
+}
+.hwecho::before{content:'$ ';color:var(--sig)}
+.hwreply{
+  font-size:.93rem;color:var(--ink2);margin:0 0 4px;max-width:54ch;
+  overflow-wrap:anywhere;
+}
+.hwreply.mono{
+  font-family:var(--f-mono);font-size:11.5px;color:var(--sig);line-height:1.7;
+}
+.hwform{
+  display:flex;align-items:center;gap:9px;
+  border-top:1px solid var(--hair);padding:0 24px;
+}
+.hwform[hidden]{display:none}
+.hwprompt{font-family:var(--f-mono);font-size:12.5px;color:var(--sig);flex:none}
+#hwInput{
+  flex:1;background:transparent;border:0;outline:none;
+  font-family:var(--f-mono);font-size:12.5px;color:var(--ink);
+  padding:13px 0;min-width:0;
+}
+#hwInput::placeholder{color:var(--ink3);opacity:1}
+#hwInput:focus-visible{outline:none}
+.hwform:focus-within{background:var(--sink)}
+.hwhint{
+  font-family:var(--f-mono);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink3);flex:none;
+}
+@media (max-width:560px){
+  .hwhint{display:none}
+  .hwout{height:210px}
 }
