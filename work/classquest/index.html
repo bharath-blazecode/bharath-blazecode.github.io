@@ -73,6 +73,21 @@
       <h3>Frontend foundation and the visual system</h3>
       <p>Connected sign-in and registration to the existing API, restored sessions on return, and built the onboarding and server create/join flows with loading and error recovery. Applied the team&rsquo;s visual system across those screens and the demo.</p>
 
+      <div class="case-gallery" aria-label="ClassQuest interface evidence">
+        <figure class="case-media wide">
+          <img src="../../assets/projects/classquest-gameplay.jpg" alt="ClassQuest game world with a player character, learning portals and a concept-progress panel" width="1280" height="720" loading="lazy">
+          <figcaption>Fig. 1 — the playable learning world, with concept progression kept visible beside the game.</figcaption>
+        </figure>
+        <figure class="case-media">
+          <img src="../../assets/projects/classquest-learning-hub.jpg" alt="ClassQuest learning hub with challenge, server and progress options" width="1256" height="1280" loading="lazy">
+          <figcaption>Fig. 2 — the learning hub and shared-world entry points.</figcaption>
+        </figure>
+        <figure class="case-media">
+          <img src="../../assets/projects/classquest-sign-in.jpg" alt="ClassQuest sign-in screen with a demo-world option" width="1280" height="663" loading="lazy">
+          <figcaption>Fig. 3 — sign-in, account creation and a direct route into the demo world.</figcaption>
+        </figure>
+      </div>
+
       <h3>Upload security and regression tests</h3>
       <p>This is the piece I would want asked about in an interview. The original handler used client-supplied filenames as storage paths and read uploads without a bound.</p>
       <p>Two problems in one function. A client-controlled filename means a caller can choose where the file lands, which is path traversal in the ordinary case and file overwrite in the worse one. An unbounded read means one request can exhaust memory or disk.</p>
