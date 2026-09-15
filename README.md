@@ -3,11 +3,14 @@
 Personal portfolio for Barry Sampath, a QUT cybersecurity and AI student.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.1.0.** The homepage now opens with a scroll-linked pixel incident
+**Version 1.1.1.** The homepage now opens with a scroll-linked pixel incident
 response scene. The responder detects and contains a hostile signal, follows
 the trace beside the page on wide screens, scans the project evidence and
 points visitors to the terminal. The sequence uses local sprite sheets only,
-with a static reduced-motion fallback and no runtime dependency. Versions
+with a static reduced-motion fallback and no runtime dependency. The 1.1.1
+prototype increases the character and attack visibility, enables the travelling
+sequence on ordinary laptop widths and gives the terminal a stable inline
+handoff rather than relying on an outer gutter. Versions
 1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
 and 1.0.5 are preserved as zip archives outside this repository, and in
 the branch history.
@@ -116,15 +119,17 @@ under reduced-motion.
 
 The old portrait placeholder is now a small secure workspace. Scrolling steps
 the scene through monitoring, alert, containment, recovery and an authorised
-exit. After the exit, a separate sprite stays in the outer reading gutter on
-wide screens: it walks between sections, scans while the selected work is in
-view, then points east toward the terminal with a short `type help` label.
+exit. After the exit, a separate sprite follows the right-side reading rail on
+screens 900 pixels wide and above: it walks between sections and scans while
+the selected work is in view. At the terminal it hands off to a larger inline
+pointing pose, so the final action remains visible even without an outer gutter.
 
 The six animations are prebuilt transparent PNG sprite sheets. CSS controls
 their frame timing with stepped background positions; a
 `requestAnimationFrame`-throttled scroll handler changes state and position. The guide has
-`pointer-events: none`, is hidden below 1280 pixels, and never becomes part of
-the page's reading order. Reduced-motion users see the completed, contained
+`pointer-events: none`, is hidden below 900 pixels, and never becomes part of
+the page's reading order. Smaller screens retain the enlarged hero sequence
+and inline terminal handoff. Reduced-motion users see the completed, contained
 hero scene with no travelling guide.
 
 ## Accessibility and resilience
