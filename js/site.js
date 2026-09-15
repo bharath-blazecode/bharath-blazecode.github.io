@@ -320,8 +320,8 @@
 
 /* ============================================================
    Incident responder prototype
-   The hero scene is scroll-stepped; the guide only occupies the
-   outer reading gutter on wide screens. PixelLab frames remain
+   The hero scene is scroll-stepped; the guide uses an edge rail
+   on laptop and desktop screens. PixelLab frames remain
    transparent sprite sheets, so no generated video is required.
    ============================================================ */
 (function () {
@@ -332,7 +332,6 @@
   var hero = document.querySelector('.hero');
   var work = document.getElementById('work');
   var terminal = document.getElementById('helloworld');
-  var terminalBox = terminal && terminal.querySelector('.hwbox');
   var stageSprite = stage && stage.querySelector('.responder-sprite');
   var guideSprite = guide && guide.querySelector('.responder-sprite');
   var stageLabel = document.getElementById('incidentState');
@@ -376,17 +375,12 @@
     if (guideLabel) { guideLabel.textContent = note; }
   }
 
-  function placeGuide(zone) {
+  function placeGuide() {
     var shell = Math.min(1160, window.innerWidth - 64);
-    var gutter = Math.max(8, (window.innerWidth - shell) / 2 - 92);
-    var x = window.innerWidth - 128 - gutter;
-    var y = window.innerHeight - 156;
-
-    if (zone === 'terminal' && terminalBox) {
-      var box = terminalBox.getBoundingClientRect();
-      x = Math.max(12, box.left - 112);
-      y = Math.max(92, Math.min(window.innerHeight - 138, box.top + 12));
-    }
+    var gutter = Math.max(0, (window.innerWidth - shell) / 2);
+    var x = window.innerWidth < 1280 ? window.innerWidth - 136 :
+            window.innerWidth - 128 - Math.max(8, gutter - 94);
+    var y = window.innerHeight - 174;
 
     guide.style.setProperty('--guide-x', Math.round(x) + 'px');
     guide.style.setProperty('--guide-y', Math.round(y) + 'px');
@@ -395,42 +389,40 @@
   function render() {
     ticking = false;
     var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-    var span = Math.max(460, hero.offsetHeight * 0.92);
+    var span = Math.max(320, hero.offsetHeight * 0.64);
     var progress = Math.max(0, Math.min(1, scrollY / span));
 
     if (reduced) {
       setStage('clear');
       guide.classList.remove('is-visible');
+      if (terminal) { terminal.classList.add('responder-arrived'); }
       return;
     }
 
-    if (progress < 0.10) { setStage('idle'); }
-    else if (progress < 0.28) { setStage('alert'); }
-    else if (progress < 0.55) { setStage('contain'); }
-    else if (progress < 0.76) { setStage('clear'); }
+    if (progress < 0.03) { setStage('idle'); }
+    else if (progress < 0.25) { setStage('alert'); }
+    else if (progress < 0.56) { setStage('contain'); }
+    else if (progress < 0.78) { setStage('clear'); }
     else { setStage('exit'); }
 
     var terminalRect = terminal && terminal.getBoundingClientRect();
     var workRect = work && work.getBoundingClientRect();
     var terminalActive = terminalRect &&
-      terminalRect.top < window.innerHeight * 0.74 && terminalRect.bottom > 80;
+      terminalRect.top < window.innerHeight * 0.82 && terminalRect.bottom > 80;
     var workActive = workRect &&
       workRect.top < window.innerHeight * 0.62 && workRect.bottom > window.innerHeight * 0.28;
-    var journeyActive = progress >= 0.74 && (!terminalRect || terminalRect.bottom > 0);
+    var journeyActive = progress >= 0.68 && (!terminalRect || terminalRect.bottom > 0);
 
-    guide.classList.toggle('is-visible', journeyActive);
-    if (!journeyActive) { return; }
+    guide.classList.toggle('is-visible', journeyActive && !terminalActive);
+    if (terminal) { terminal.classList.toggle('responder-arrived', journeyActive && terminalActive); }
+    if (!journeyActive || terminalActive) { return; }
 
-    if (terminalActive) {
-      setGuide('point', 'type help');
-      placeGuide('terminal');
-    } else if (workActive) {
+    if (workActive) {
       setGuide('scan', 'checking evidence');
-      placeGuide('gutter');
     } else {
       setGuide('walk', 'following trace');
-      placeGuide('gutter');
     }
+    placeGuide();
   }
 
   function queueRender() {
