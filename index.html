@@ -4,44 +4,73 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Barry Sampath — Cybersecurity &amp; IT Automation</title>
-<meta name="description" content="Barry Sampath — QUT cybersecurity and AI student in Brisbane. Blue-team detection, identity and access management, IT automation. Wazuh and Sysmon home lab, ClassQuest, LUNA.">
+<title>Barry Sampath | Cybersecurity student portfolio</title>
+<meta name="description" content="Barry Sampath is a QUT cybersecurity and AI student in Brisbane, building practical experience in blue-team detection, identity security and IT automation.">
 <link rel="canonical" href="https://bharath-blazecode.github.io/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bharath-blazecode.github.io/">
-<meta property="og:title" content="Barry Sampath — Cybersecurity &amp; IT Automation">
-<meta property="og:description" content="Blue-team detection, identity and access management, IT automation. Brisbane, QLD.">
+<meta property="og:title" content="Barry Sampath | Cybersecurity student portfolio">
+<meta property="og:description" content="QUT cybersecurity and AI student building practical experience in detection, identity security and IT automation.">
+<meta property="og:image" content="https://bharath-blazecode.github.io/assets/og-portfolio.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Barry Sampath cybersecurity student portfolio">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Barry Sampath | Cybersecurity student portfolio">
+<meta name="twitter:description" content="QUT cybersecurity and AI student building practical experience in detection, identity security and IT automation.">
+<meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/og-portfolio.jpg">
+<meta name="twitter:image:alt" content="Barry Sampath cybersecurity student portfolio">
+<script>
+  document.documentElement.classList.add('js');
+  try {
+    if ((localStorage.getItem('bs-mode') || 'skim') === 'skim') {
+      document.documentElement.setAttribute('data-mode', 'skim');
+    }
+  } catch (e) {
+    document.documentElement.setAttribute('data-mode', 'skim');
+  }
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
 <link rel="stylesheet" href="css/site.css">
 </head>
-<body>
+<body class="home">
 
 <a class="skip" href="#glance">Skip to the summary</a>
 
 <!-- ══════════ BAR ══════════ -->
 <div class="bar">
   <div class="shell">
-    <a class="mark" href="#top">Barry Sampath<span> / security</span></a>
+    <a class="mark" href="#top">Barry Sampath<span> / cybersecurity student</span></a>
     <div class="barright">
       <nav aria-label="Sections">
         <ul class="barnav">
           <li><a href="#about">About</a></li>
           <li><a href="#work">Work</a></li>
           <li><a href="#experience">Experience</a></li>
-          <li><a href="#background">Background</a></li>
+          <li><a href="#helloworld">Terminal</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
       <div class="modectl" role="group" aria-label="Reading mode">
-        <button type="button" data-mode="skim" aria-pressed="false">Skim</button>
-        <button type="button" data-mode="read" aria-pressed="true">Read</button>
+        <button type="button" data-mode="skim" aria-pressed="true">Skim</button>
+        <button type="button" data-mode="read" aria-pressed="false">Read</button>
       </div>
       <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
         <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
       </button>
+      <details class="mobile-nav">
+        <summary>Menu</summary>
+        <nav aria-label="Mobile sections">
+          <a href="#about">About</a>
+          <a href="#work">Work</a>
+          <a href="#experience">Experience</a>
+          <a href="#helloworld">Terminal</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </details>
     </div>
   </div>
 </div>
@@ -54,19 +83,19 @@
     <div class="intro">
       <p class="status"><span class="live" aria-hidden="true"></span> Brisbane, QLD &middot; open to 2027 internships</p>
 
-      <h1>I build the detection side, <em>and I keep the notes on what broke.</em></h1>
+      <h1>Learning security <em>by building it.</em></h1>
 
       <p class="roles">
-        <span class="rlab">Working toward</span>
+        <span class="rlab">Interested in</span>
         <span class="rlist" id="roleList">
           <span>Blue team</span><span>SOC analyst</span><span>Identity &amp; access</span><span>GRC</span><span>IT automation</span>
         </span>
       </p>
 
-      <p class="herolede">Second-year Cybersecurity and AI student at QUT, working part-time as a security and automation analyst, and building the practical side in a home lab and in competition.</p>
+      <p class="herolede">I am a second-year Cybersecurity and AI student at QUT in Brisbane. This site collects the projects, lab notes and work experience behind the direction I am taking.</p>
 
       <div class="cta">
-        <a class="solid" href="#work">Three projects &rarr;</a>
+        <a class="solid" href="#work">See the projects &rarr;</a>
         <a class="ghost" href="resume/Barry_Sampath_Resume.pdf">Resume &middot; PDF</a>
       </div>
     </div>
@@ -80,7 +109,7 @@
             <span>Drop a 4:5 image at assets/barry.jpg and swap this block for an img tag.</span>
           </div>
         </div>
-        <figcaption class="figcap">Fig. 1 &mdash; Brisbane, 2026.</figcaption>
+        <figcaption class="figcap">Fig. 1: Brisbane, 2026.</figcaption>
       </figure>
     </div>
   </div>
@@ -93,22 +122,22 @@
       <div class="gcell">
         <h4>Who</h4>
         <p class="big">Barry Sampath</p>
-        <p>Bharath Sampath. QUT Bachelor of IT, Cybersecurity &amp; AI, second year. GPA 6.091 / 7.000, finishing December 2027. Grew up in the UAE, based in Brisbane.</p>
+        <p>My given name is Bharath; I use Barry professionally. Second-year QUT Bachelor of IT student. GPA 6.09 / 7.00, finishing December 2027.</p>
       </div>
       <div class="gcell">
         <h4>Doing now</h4>
         <ul>
-          <li><b>ScienceGears</b> — Cybersecurity &amp; IT Automation Analyst, paid contract</li>
-          <li><b>Code Network</b> — Engagement Officer</li>
-          <li><b>Coles Group</b> — Customer Service Supervisor</li>
+          <li><b>ScienceGears</b><br>Cybersecurity &amp; IT Automation Analyst, paid contract</li>
+          <li><b>Code Network</b><br>Engagement Officer</li>
+          <li><b>Coles Group</b><br>Customer Service Supervisor</li>
         </ul>
       </div>
       <div class="gcell">
         <h4>Built</h4>
         <ul>
-          <li><a href="work/homelab/"><b>ITDR home lab</b></a> — Wazuh SIEM, Sysmon telemetry</li>
-          <li><a href="work/classquest/"><b>ClassQuest</b></a> — 10 merged PRs, People&rsquo;s Choice Award</li>
-          <li><a href="work/luna/"><b>LUNA</b></a> — Raspberry Pi robot, vision and voice</li>
+          <li><a href="work/homelab/"><b>ITDR home lab</b></a>: Wazuh SIEM and Sysmon telemetry</li>
+          <li><a href="work/classquest/"><b>ClassQuest</b></a>: 10 merged PRs and the People&rsquo;s Choice Award</li>
+          <li><a href="work/luna/"><b>LUNA</b></a>: Raspberry Pi robot with vision and voice</li>
         </ul>
       </div>
       <div class="gcell">
@@ -116,7 +145,6 @@
         <ul>
           <li><b>3rd place</b> CIMCTF 2026, team SushiShield</li>
           <li><b>People&rsquo;s Choice</b> Winter Hackathon 2026</li>
-          <li>Google Cybersecurity &middot; CBA Data Science</li>
           <li><a href="resume/Barry_Sampath_Resume.pdf">Resume, one page</a></li>
         </ul>
       </div>
@@ -129,17 +157,16 @@
   <div class="shell">
     <div>
       <p class="slab">About</p>
-      <h2>The short version</h2>
-      <p>I am a cybersecurity and AI student at QUT with a specific interest in the defensive side: blue-team detection, identity and access management, and the governance work that decides which controls are worth having in the first place.</p>
-      <p>I grew up in the UAE, near Dubai, and moved to Brisbane to study. That move is most of why I am comfortable starting from nothing inside an unfamiliar system and working out how it fits together, which turns out to be the job.</p>
-      <p>My work splits three ways. There is paid consulting at ScienceGears, where I run identity controls and automation on a live Microsoft 365 tenant. There is university and the projects that come out of it. And there is the practical side I build myself, because SIEM experience lives inside companies and the only way to have any as a student is to run one.</p>
-      <p class="detail-only">I would rather show a failure log than a polished screenshot. The home lab section below is written that way on purpose, and it is the part of this site I would most like to be asked about.</p>
-      <p class="skimnote">Skim mode is on. Switch to Read for the full detail, including the detection walkthrough, the failure log and the role bullets.</p>
+      <h2>A little about me</h2>
+      <p>I grew up in the UAE and moved to Brisbane for university. Starting again in a new country made me comfortable asking basic questions and working through unfamiliar systems one piece at a time.</p>
+      <p>At QUT, I have been drawn to blue-team detection, identity and access, and the decisions behind security controls. I learn best when I can build something and keep useful notes on what happened.</p>
+      <p class="detail-only">Alongside study, I work on identity controls and automation for a live Microsoft 365 tenant at ScienceGears. My home lab gives me somewhere to practise the detection work that is difficult to access as a student.</p>
+      <p class="skimnote">You are viewing the shorter version. Read mode adds the detection walkthrough and detailed role bullets.</p>
     </div>
     <div class="aside">
       <dl>
         <dt>Studying</dt><dd>B. Information Technology, Cybersecurity &amp; AI, QUT</dd>
-        <dt>GPA</dt><dd>6.091 / 7.000 &middot; Diploma 6.250</dd>
+        <dt>GPA</dt><dd>6.09 / 7.00 &middot; Diploma 6.25 / 7.00</dd>
         <dt>Finishing</dt><dd>December 2027</dd>
         <dt>Based</dt><dd>Brisbane, QLD &middot; from the UAE</dd>
         <dt>Focus</dt><dd>Blue team &middot; SOC &middot; IAM &middot; GRC</dd>
@@ -199,7 +226,7 @@
 <u>CommandLine</u>  powershell.exe -nop -w hidden -enc SQBFAFgAKABOAGUAdw...
 <b>User</b>         DESKTOP-••••••••\barry
 <b>Hashes</b>       SHA256=1B2F4C9A...E77D</div>
-        <p>Two fields carry the whole detection. A document is not supposed to start a shell, and an encoded command in a hidden window is not how anyone runs PowerShell on purpose.</p>
+        <p>The parent process and command line make this event suspicious. Word starts PowerShell, which then requests a hidden window and an encoded command.</p>
       </div>
 
       <div class="panel" role="tabpanel" id="p2" aria-labelledby="t2">
@@ -214,7 +241,7 @@
     &lt;mitre&gt;&lt;id&gt;<u>T1059.001</u>&lt;/id&gt;&lt;/mitre&gt;
   &lt;/rule&gt;
 &lt;/group&gt;</div>
-        <p>The MITRE mapping matters more than it looks. It means the alert arrives carrying a name any responder already knows, rather than a description only its author understands.</p>
+        <p>The MITRE mapping gives the alert a standard technique name that another responder can recognise.</p>
       </div>
 
       <div class="panel" role="tabpanel" id="p3" aria-labelledby="t3">
@@ -234,7 +261,7 @@
             <dt>Decoder</dt><dd>windows_eventchannel</dd>
           </dl>
         </div>
-        <p>Severity is the only colour on this page that is not ink or paper. It is reserved for exactly this, which is why it reads as urgent when it appears.</p>
+        <p>The severity colour is reserved for alerts, so it stays noticeable against the otherwise neutral interface.</p>
       </div>
 
       <div class="panel" role="tabpanel" id="p4" aria-labelledby="t4">
@@ -243,7 +270,7 @@
           <li><b>Decode the payload.</b> Base64 out of the encoded block first, because everything after this depends on what it was trying to do.</li>
           <li><b>Establish the document.</b> Which file Word had open, where it came from, who else received it.</li>
           <li><b>Pull sibling events.</b> Network connections and registry writes from the same process GUID inside the following minute.</li>
-          <li><b>Contain or clear.</b> Isolate the endpoint if the payload reached out. If it turns out to be a macro someone wrote in-house, the rule needs an exception, not the user a lecture.</li>
+          <li><b>Contain or clear.</b> Isolate the endpoint if the payload reached out. If an approved internal macro caused the alert, document and test an exception.</li>
           <li><b>Write it down.</b> Every tuning decision goes in the log, or the next person inherits a rule nobody can explain.</li>
         </ol>
       </div>
@@ -255,8 +282,8 @@
 <section id="work" class="sec-rule">
   <div class="shell">
     <p class="slab">Selected work</p>
-    <h2>Three projects, one structure</h2>
-    <p class="lede">Each page runs the same five parts: context, what I built, what broke, what I would change, and the evidence for all of it.</p>
+    <h2>Three projects I can explain</h2>
+    <p class="lede">Each case study covers the context, my contribution, the problems I hit and the evidence behind the result.</p>
 
     <div class="cards">
       <a class="card" href="work/classquest/">
@@ -264,8 +291,8 @@
           <span class="cbadge done">People&rsquo;s Choice Award</span>
           <h3 data-vt="classquest">ClassQuest</h3>
           <p class="cmeta">Code Network Winter Hackathon &middot; Aug 2026 &middot; Team of four</p>
-          <p>A learning site that turns lecture material into playable quests. I worked from the playable demo and frontend foundation through to upload security, cohort challenges and the judging Q&amp;A. Ten merged pull requests, each linked.</p>
-          <p class="detail-only">The upload handler is the part worth reading. Accepting student-supplied files into a site other students load is most of the attack surface in one function.</p>
+          <p>A learning site that turns lecture material into playable quests. I contributed ten merged pull requests across the playable demo, frontend, upload security and cohort challenges.</p>
+          <p class="detail-only">The upload handler is the part I would start with. Student-supplied files create most of the site&rsquo;s attack surface in one function.</p>
           <div class="ctags"><span>React</span><span>TypeScript</span><span>FastAPI</span><span>Python</span><span>SQLite</span></div>
           <span class="cgo">Read the case study &rarr;</span>
         </div>
@@ -279,8 +306,8 @@
           <span class="cbadge pause">Phase 1 complete &middot; paused</span>
           <h3 data-vt="homelab">ITDR Home Lab</h3>
           <p class="cmeta">Personal project &middot; from June 2026</p>
-          <p>A Wazuh 4.9.2 server, an enrolled Windows endpoint and Sysmon telemetry, built on a laptop and documented as it went. Detection-rule development is the next phase.</p>
-          <p class="detail-only">The build notes are the substance here, faults included. Four separate failures before the first dashboard login.</p>
+          <p>A Wazuh 4.9.2 server, Windows endpoint and Sysmon telemetry running on my laptop. The case study includes the four failures I hit before the first dashboard login.</p>
+          <p class="detail-only">Phase 1 is complete. Detection-rule development is the next phase when I return to the project.</p>
           <div class="ctags"><span>Wazuh 4.9.2</span><span>Sysmon</span><span>Ubuntu</span><span>VMware</span></div>
           <span class="cgo">Read the case study &rarr;</span>
         </div>
@@ -292,10 +319,10 @@
       <a class="card" href="work/luna/">
         <div class="cbody">
           <span class="cbadge done">Completed</span>
-          <h3 data-vt="luna">LUNA &mdash; TurboPi robot</h3>
-          <p class="cmeta">QUT university project &middot; Jul&ndash;Nov 2025 &middot; With Zhirui Lu</p>
-          <p>A Raspberry Pi robot integrating computer vision, offline voice, wireless control and PID-tuned movement into one platform that had to keep working while all four ran at once.</p>
-          <p class="detail-only">Where I learned that hardware tells you immediately when your logic is wrong, and where the habit of documenting decisions in real time started.</p>
+          <h3 data-vt="luna">LUNA: TurboPi robot</h3>
+          <p class="cmeta">QUT university project &middot; Jul to Nov 2025 &middot; With Zhirui Lu</p>
+          <p>A Raspberry Pi robot combining computer vision, offline voice, wireless control and PID-tuned movement on one platform.</p>
+          <p class="detail-only">This project taught me how quickly hardware exposes bad assumptions. It is also where I started documenting decisions while I worked.</p>
           <div class="ctags"><span>Python</span><span>OpenCV</span><span>Flask</span><span>Raspberry Pi</span></div>
           <span class="cgo">Read the case study &rarr;</span>
         </div>
@@ -307,84 +334,35 @@
   </div>
 </section>
 
-<!-- ══════════ PULL QUOTE ══════════ -->
-<div class="pull bleed detail-only">
-  <div class="shell">
-    <p>A lab that came up first try would <em>tell you nothing</em> about how I work.</p>
-    <p class="src">HomeLab ITDR &middot; Phase 1 build notes</p>
-  </div>
-</div>
-
-<!-- ══════════ FAILURE LOG ══════════ -->
-<section id="log" class="detail-only">
-  <div class="shell">
-    <p class="slab">Failure log</p>
-    <h2>Four things that broke, and what fixed them</h2>
-    <p class="lede">Real entries from the Phase 1 build. Anyone can post a screenshot of a working dashboard.</p>
-
-    <div class="scroller">
-      <table class="logtable">
-        <caption class="sr">Faults encountered building the ITDR home lab, with diagnosis and resolution.</caption>
-        <thead>
-          <tr><th scope="col">Symptom</th><th scope="col">Diagnosis</th><th scope="col">Fix</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="sym">VM storage corrupting</span></td>
-            <td>OneDrive was syncing the VM directory and holding locks on open <code>.vmdk</code> files mid-write.</td>
-            <td class="fix">Moved every VM file outside the OneDrive tree. Now a standing rule for anything that writes continuously.</td>
-          </tr>
-          <tr>
-            <td><span class="sym">Server unreachable</span></td>
-            <td>A stale netplan config held a static address of <code>192.168.170.10</code>, from a subnet that stopped existing when the adapter changed.</td>
-            <td class="fix">Rewrote netplan against the bridged adapter. Found by comparing the configured address to the adapter&rsquo;s actual subnet rather than debugging the service on top.</td>
-          </tr>
-          <tr>
-            <td><span class="sym">Indexer stalling</span></td>
-            <td>Virtual disk at 99% of 50&nbsp;GB. The indexer degrades quietly rather than failing loudly, so it presented as a performance problem first.</td>
-            <td class="fix">Expanded to 100&nbsp;GB via LVM without a rebuild. Sized for retention from then on instead of for install.</td>
-          </tr>
-          <tr>
-            <td><span class="sym">SSH dead on NAT</span></td>
-            <td>NAT networking left the host unreachable while the agent still enrolled, so the failure looked partial rather than total.</td>
-            <td class="fix">Reverted to bridged to get the lab productive. NAT restoration on the correct subnet is documented and queued, not abandoned.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
 <!-- ══════════ EXPERIENCE ══════════ -->
 <section id="experience" class="sec-rule">
   <div class="shell">
     <p class="slab">Experience</p>
-    <h2>Four roles, held alongside full-time study</h2>
+    <h2>Work alongside full-time study</h2>
 
     <ul class="roles-list">
       <li class="role">
-        <div class="when"><b>Apr 2026 — present</b>Brisbane, QLD<br>Paid contract</div>
+        <div class="when"><b>Apr 2026 to present</b>Brisbane, QLD<br>Paid contract</div>
         <div>
           <h3>Cybersecurity &amp; IT Automation Analyst</h3>
           <p class="org">ScienceGears</p>
           <ul class="detail-only">
-            <li>Conducted risk assessments across identity security posture and access governance, producing prioritised remediation reports with client-facing guidance.</li>
-            <li>Deployed and managed Zero Trust controls in Microsoft Entra ID: MFA enforcement, Conditional Access compliance policies and role-based access governance.</li>
-            <li>Built an AI-assisted email triage system that classifies and validates incoming correspondence and generates structured draft replies, cutting manual processing time.</li>
-            <li>Automated IT operational workflows in Python, improving how consistently security controls are applied across client operations.</li>
+            <li>Reviewed identity security and access governance, then wrote prioritised remediation guidance.</li>
+            <li>Managed MFA, Conditional Access and role-based access controls in Microsoft Entra ID.</li>
+            <li>Built email-triage and IT workflow automations using AI-assisted processing and Python.</li>
           </ul>
           <div class="rtags"><span>Zero Trust</span><span>Entra ID</span><span>Conditional Access</span><span>Risk assessment</span><span>Python</span></div>
         </div>
       </li>
 
       <li class="role">
-        <div class="when"><b>Mar 2026 — present</b>Brisbane, QLD<br>Volunteer committee</div>
+        <div class="when"><b>Mar 2026 to present</b>Brisbane, QLD<br>Volunteer committee</div>
         <div>
           <h3>Engagement Officer</h3>
           <p class="org">Code Network</p>
           <ul class="detail-only">
-            <li>Coordinated end-to-end logistics for university technology events, covering venue bookings, scheduling and attendee coordination for up to 40 participants per event.</li>
-            <li>Managed communication across stakeholders, volunteers and attendees so events ran consistently.</li>
+            <li>Coordinated venues, schedules and attendees for university technology events with up to 40 participants.</li>
+            <li>Managed communication between stakeholders, volunteers and attendees.</li>
             <li>Promoted from Event Officer at the September 2026 AGM.</li>
           </ul>
           <div class="rtags"><span>Event delivery</span><span>Stakeholder comms</span><span>Community</span></div>
@@ -392,28 +370,26 @@
       </li>
 
       <li class="role">
-        <div class="when"><b>Apr — May 2026</b>Brisbane, QLD<br>Program placement</div>
+        <div class="when"><b>Apr to May 2026</b>Brisbane, QLD<br>Program placement</div>
         <div>
-          <h3>Technology Consultant — Power Platform</h3>
+          <h3>Technology Consultant: Power Platform</h3>
           <p class="org">DynamX Institute</p>
           <ul class="detail-only">
-            <li>Designed and delivered a working Power Platform business system for a real client scenario, from requirements analysis through to final submission.</li>
-            <li>Mapped business processes and modelled solution architecture, iterating through several structured feedback cycles.</li>
-            <li>Presented findings and design rationale to program assessors.</li>
+            <li>Built a Power Platform business system for a client scenario after analysing its requirements and processes.</li>
+            <li>Presented the solution and its design choices to program assessors.</li>
           </ul>
           <div class="rtags"><span>Power Platform</span><span>Business analysis</span><span>Solution design</span></div>
         </div>
       </li>
 
       <li class="role">
-        <div class="when"><b>May 2025 — present</b>Brisbane, QLD<br>Part-time</div>
+        <div class="when"><b>May 2025 to present</b>Brisbane, QLD<br>Part-time</div>
         <div>
           <h3>Customer Service Supervisor</h3>
           <p class="org">Coles Group</p>
           <ul class="detail-only">
-            <li>Supervised customer service operations across a high-volume retail team, holding service standards under pressure.</li>
-            <li>Trained and onboarded more than 20 team members on point-of-sale procedures, refunds and customer communication standards.</li>
-            <li>Resolved escalated complaints during peak trading periods.</li>
+            <li>Supervised customer service operations and resolved escalated complaints during peak periods.</li>
+            <li>Trained more than 20 team members on point-of-sale procedures, refunds and customer communication.</li>
           </ul>
           <div class="rtags"><span>Team leadership</span><span>Training</span><span>Operations</span></div>
         </div>
@@ -459,51 +435,37 @@
 <section id="background" class="sec-rule">
   <div class="shell">
     <p class="slab">Background</p>
-    <h2>Education, training and community</h2>
+    <h2>Education and selected training</h2>
 
-    <div class="appx">
+    <div class="appx background-grid">
       <div>
         <h4>Education</h4>
         <ul>
-          <li><b>Bachelor of Information Technology</b> — QUT, Cybersecurity &amp; AI. Feb 2026 to Dec 2027 expected. GPA 6.091 / 7.000</li>
-          <li><b>Diploma of Information Technology</b> — QUT, Feb to Nov 2025. GPA 6.250 / 7.000</li>
-          <li><b>CBSE Senior Secondary, Science</b> — Habitat Schools, Ajman, UAE. 2019 to 2024</li>
+          <li><b>Bachelor of Information Technology</b>, QUT. Cybersecurity &amp; AI, expected December 2027. GPA 6.09 / 7.00</li>
+          <li><b>Diploma of Information Technology</b>, QUT. Completed November 2025. GPA 6.25 / 7.00</li>
         </ul>
       </div>
-      <div>
-        <h4>Certifications</h4>
+      <div class="detail-only">
+        <h4>Selected training</h4>
         <ul>
-          <li><b>Foundations of Cybersecurity</b> — Google, 2025. Complete</li>
-          <li><b>Introduction to Data Science</b> — Forage × Commonwealth Bank. Complete</li>
-          <li><b>Introduction to Artificial Intelligence</b> — Vedantu, 2021. Complete</li>
-        </ul>
-      </div>
-      <div>
-        <h4>In progress</h4>
-        <ul>
-          <li><b>CompTIA A+</b> — Lumify Learn</li>
-          <li><b>CS50P</b> — Harvard / edX, Python</li>
-          <li><b>SC-900</b> — next in the sequence, ahead of SC-300</li>
+          <li><b>Foundations of Cybersecurity</b>, Google. Completed 2025</li>
+          <li><b>CompTIA A+</b>, Lumify Learn. In progress</li>
+          <li><b>CS50P</b>, Harvard / edX. In progress</li>
+          <li><b>SC-900</b>. Planned next</li>
         </ul>
       </div>
       <div>
         <h4>Competitions</h4>
         <ul>
-          <li><b>CIMCTF 2026</b> — 3rd place with team SushiShield, across identity, web exploitation and OSINT</li>
-          <li><b>Winter Hackathon 2026</b> — People&rsquo;s Choice Award with team ClassQuest</li>
+          <li><b>CIMCTF 2026</b>: 3rd place with team SushiShield</li>
+          <li><b>Winter Hackathon 2026</b>: People&rsquo;s Choice Award with team ClassQuest</li>
         </ul>
       </div>
-      <div>
+      <div class="detail-only">
         <h4>Community</h4>
         <ul>
-          <li><b>Cyber in Motion</b> — CTF events volunteer, from Apr 2026. Supported planning and delivery of Capture the Flag events</li>
-          <li><b>QUT Guild</b> — events and student engagement, Aug to Nov 2025</li>
-        </ul>
-      </div>
-      <div>
-        <h4>Earlier</h4>
-        <ul>
-          <li><b>Student Council</b> — Habitat Schools, Ajman, 2023 to 2024. Contributed to school initiatives and informally tutored classmates in maths</li>
+          <li><b>Cyber in Motion</b>: CTF events volunteer since April 2026</li>
+          <li><b>QUT Guild</b>: events and student engagement, August to November 2025</li>
         </ul>
       </div>
     </div>
@@ -514,10 +476,10 @@
 <div class="hw bleed" id="helloworld">
   <div class="shell">
     <div>
-      <p class="slab">hello, world</p>
-      <h2>Every field has a first line</h2>
-      <p>Programming has <code>print("Hello, world")</code>. Security has a handful, and knowing them is a bit like knowing the words to a song everyone in the room already knows.</p>
-      <p style="font-size:.9rem;color:var(--ink3)">Cycles on its own. Click for the next one, or type into it &mdash; <code>help</code> lists what it knows, <code>cards</code> prints all six of these at once.</p>
+      <p class="slab">Try the terminal</p>
+      <h2>A small, harmless security sandbox</h2>
+      <p>These are common first commands and test strings from security work. The terminal only responds with text already stored on this page; it cannot run anything on your computer.</p>
+      <p class="terminal-start">Type <code>help</code> to begin, or use <code>cards</code> to print all six examples.</p>
     </div>
     <div class="hwbox">
       <div class="hwcard" id="hwCard">
@@ -545,43 +507,33 @@
 <section id="offshift" class="bleed" aria-label="Off shift">
   <div class="shell">
     <p class="slab">Off shift</p>
-    <h2>What I do when the dashboard is someone else&rsquo;s problem</h2>
-    <p class="lede">This part of the page only exists at night. It seemed like the right place for it.</p>
+    <h2>What I do away from study and work</h2>
+    <p class="lede">This section appears in night mode.</p>
 
     <div class="offgrid">
       <div>
         <p class="oi">01</p>
-        <h3>Two countries, counting</h3>
-        <p>Raised in Sharjah, school in Ajman, now Brisbane. Moving countries was less a relocation than a reset, and it is most of why I am comfortable starting from nothing in an unfamiliar system.</p>
+        <h3>From the UAE to Brisbane</h3>
+        <p>I grew up in Sharjah, went to school in Ajman and moved to Brisbane for university.</p>
       </div>
       <div>
         <p class="oi">02</p>
         <h3>Chess</h3>
-        <p>Patience as a strategy rather than a personality flaw. Every game is a system with rules you can reason about and an opponent you cannot, which turns out to be reasonable practice for security.</p>
+        <p>I like the mix of planning and uncertainty. You can understand the rules and still misread the person across the board.</p>
       </div>
       <div>
         <p class="oi">03</p>
         <h3>Badminton and the gym</h3>
-        <p>The two that are actually current. Badminton is a fast sport with faster reflexes and it satisfies a competitive streak that has to go somewhere.</p>
+        <p>These are the two activities I currently keep up with. Badminton also gives my competitive side somewhere useful to go.</p>
       </div>
       <div>
         <p class="oi">04</p>
-        <h3>Guitar, and boxing eventually</h3>
-        <p>Both are honestly interests rather than habits right now. Guitar is early stage. Boxing is on the list for when the timetable allows, and I would rather say that than pretend otherwise.</p>
-      </div>
-      <div>
-        <p class="oi">05</p>
-        <h3>Reading, paused</h3>
-        <p>Shelved until exams are done. It comes back in December.</p>
-      </div>
-      <div>
-        <p class="oi">06</p>
-        <h3>Documenting things</h3>
-        <p>The habit behind the failure log above. It started with a robot that stopped working at 2am and a set of notes that turned out to be the only reason I could fix it.</p>
+        <h3>Learning slowly</h3>
+        <p>Guitar is still at the early stage, and reading is paused until exams are finished.</p>
       </div>
     </div>
 
-    <p class="offnote">You found the night shift. Switch back to day and this section goes home.</p>
+    <p class="offnote">You found the night shift. Switch back to day mode to hide this section.</p>
   </div>
 </section>
 
@@ -590,9 +542,9 @@
   <div class="shell">
     <div>
       <p class="slab">Contact</p>
-      <h2>Open to 2027 internships and graduate roles</h2>
-      <p class="lede">Blue team, SOC, identity and access, GRC or IT automation. Brisbane-based, with working rights within student visa conditions.</p>
-      <p>If you have read this far and want the parts that are not on the site — the full rule set, the lab configs, references — ask and I will send them.</p>
+      <h2>Open to 2027 internships</h2>
+      <p class="lede">I am interested in blue-team, SOC, identity, GRC and IT automation opportunities in Brisbane. My work rights are subject to student visa conditions.</p>
+      <p>Email is the easiest way to reach me. My résumé and public project history are linked here as well.</p>
     </div>
     <div>
       <ul class="clist">
@@ -608,10 +560,19 @@
 
 <footer>
   <div class="shell">
-    <span>Barry Sampath &middot; Brisbane, QLD</span>
-    <span>Built by hand. No framework, no build step.</span>
-    <span class="hint day-only">Some of this page only exists after dark.</span>
-    <span class="hint night-only">Off shift is open above.</span>
+    <div class="footer-id">
+      <strong>Barry Sampath</strong>
+      <span>Bharath personally, Barry professionally. Brisbane, QLD.</span>
+    </div>
+    <nav class="footer-links" aria-label="Footer links">
+      <a href="mailto:barry.sampath@outlook.com">Email</a>
+      <a href="https://www.linkedin.com/in/barrysampath">LinkedIn</a>
+      <a href="https://github.com/bharath-blazecode">GitHub</a>
+      <a href="resume/Barry_Sampath_Resume.pdf">Résumé</a>
+      <a href="#helloworld">Terminal</a>
+    </nav>
+    <span class="hint day-only">Built by hand. Some of the page appears after dark.</span>
+    <span class="hint night-only">Night mode reveals the off-shift section.</span>
   </div>
 </footer>
 

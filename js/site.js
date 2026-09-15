@@ -329,9 +329,8 @@
 
   /* ---------------------------------------------------------
      Skim mode
-     Read is the default, so nothing is ever hidden without a
-     deliberate choice — and with JavaScript off the control
-     is not rendered at all, which is the correct fallback.
+     Skim is the default for a first visit. A saved choice wins.
+     With JavaScript off, CSS leaves every section visible.
      --------------------------------------------------------- */
   var modeBtns = Array.prototype.slice.call(document.querySelectorAll('.modectl button'));
   if (modeBtns.length) {
@@ -342,8 +341,8 @@
         b.setAttribute('aria-pressed', String(b.dataset.mode === m));
       });
     };
-    var startMode = 'read';
-    try { startMode = localStorage.getItem('bs-mode') || 'read'; } catch (e) {}
+    var startMode = 'skim';
+    try { startMode = localStorage.getItem('bs-mode') || 'skim'; } catch (e) {}
     setMode(startMode);
     modeBtns.forEach(function (b) {
       b.addEventListener('click', function () {
@@ -352,6 +351,13 @@
       });
     });
   }
+
+  Array.prototype.slice.call(document.querySelectorAll('.mobile-nav a')).forEach(function (link) {
+    link.addEventListener('click', function () {
+      var menu = link.closest('details');
+      if (menu) { menu.open = false; }
+    });
+  });
 
   /* ---------------------------------------------------------
      hello, world
@@ -362,30 +368,30 @@
     {
       cmd: 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
       raw: true,
-      gloss: 'The EICAR test string. Sixty-eight harmless characters that every antivirus on earth agrees to flag, so you can prove your scanner works without touching real malware. This is the closest thing security has to Hello World.'
+      gloss: 'The EICAR test string is a harmless sample used to check whether antivirus detection is working.'
     },
     {
       cmd: 'nmap -sV scanme.nmap.org',
-      gloss: 'Everyone’s first scan, run against the one host on the internet that explicitly asks to be scanned. Point it anywhere else without permission and the lesson changes.'
+      gloss: 'A common service scan against the test host that explicitly permits it. Scanning another system requires permission.'
     },
     {
       cmd: "' OR '1'='1",
       raw: true,
-      gloss: 'The first thing anybody learns to break, and the reason parameterised queries exist. Still turning up in production in 2026.'
+      gloss: 'A basic SQL injection example that shows why applications should use parameterised queries.'
     },
     {
       cmd: 'whoami',
-      gloss: 'The first command after you land somewhere. Also the first thing a detection rule should notice you running.'
+      gloss: 'Shows the current user. It is useful context for an administrator and a common post-compromise command.'
     },
     {
       cmd: 'It depends.',
       raw: true,
-      gloss: 'The technically correct answer to almost every GRC question, and the reason the follow-up is always "on what?".'
+      gloss: 'A GRC answer depends on the system, the risk and the constraints. The useful follow-up is: on what?'
     },
     {
       cmd: 'Have you tried turning MFA on?',
       raw: true,
-      gloss: 'Unglamorous, unfashionable, and still the single control that removes most of the incidents you would otherwise be writing up.'
+      gloss: 'MFA is a high-impact identity control, although it is only one part of a secure access design.'
     }
   ];
 
@@ -459,7 +465,7 @@
         return [['Commands: whoami, nmap, eicar, sqli, xss, grc, mfa, cards, ' +
                  'ls, resume, contact, sudo, clear.'],
                 ['cards prints all six of the lines above at once. Nothing here ' +
-                 'touches your machine — this is a static page and it has no idea ' +
+                 'touches your machine. This is a static page and it has no idea ' +
                  'what you are running.']];
       },
       cards: function () {
@@ -471,43 +477,39 @@
         return rows;
       },
       whoami: function () {
-        return [['barry', 1],
-                ['Bharath Sampath. QUT cybersecurity and AI student in Brisbane. ' +
-                 'Also the first command anyone runs after landing on a box, ' +
-                 'and one a decent detection rule notices.']];
+        return [['bharath (barry)', 1],
+                ['Bharath is my given name, and I use Barry professionally. ' +
+                 'I am a QUT cybersecurity and AI student in Brisbane.']];
       },
       nmap: function () {
         return [['nmap -sV scanme.nmap.org', 1],
-                ['Everyone’s first scan, against the one host on the internet ' +
-                 'that explicitly asks to be scanned. Point it anywhere else ' +
-                 'without permission and the lesson changes.']];
+                ['A common service scan against the test host that explicitly ' +
+                 'permits it. Scanning another system requires permission.']];
       },
       eicar: function () {
         return [[EICAR, 1],
-                ['Sixty-eight harmless characters that every antivirus on earth ' +
-                 'agrees to flag, so you can prove your scanner works without ' +
-                 'touching real malware. The closest thing security has to Hello World.']];
+                ['A harmless test string used to check whether antivirus ' +
+                 'detection is working without using real malware.']];
       },
       sqli: function () {
         return [["' OR '1'='1", 1],
-                ['The first thing anybody learns to break, and the reason ' +
-                 'parameterised queries exist. Still turning up in production in 2026.']];
+                ['A basic SQL injection example and a reason applications use ' +
+                 'parameterised queries.']];
       },
       xss: function () {
         return [['<script>alert(1)</script>', 1],
-                ['And the second. This one is printed as text, which is exactly ' +
-                 'the fix.']];
+                ['This page prints the example as text, so the browser does not ' +
+                 'interpret it as markup.']];
       },
       grc: function () {
         return [['It depends.', 1],
-                ['The technically correct answer to almost every GRC question. ' +
-                 'The follow-up is always “on what?”, and that is where ' +
-                 'the actual work is.']];
+                ['A GRC answer depends on the system, the risk and the ' +
+                 'constraints. The useful follow-up is: on what?']];
       },
       mfa: function () {
         return [['Have you tried turning MFA on?', 1],
-                ['Unglamorous, unfashionable, and still the single control that ' +
-                 'removes most of the incidents you would otherwise be writing up.']];
+                ['MFA is a high-impact identity control, although it is only one ' +
+                 'part of a secure access design.']];
       },
       ls: function () {
         var dark = document.documentElement.getAttribute('data-theme') === 'dark' ||

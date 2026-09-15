@@ -1,12 +1,12 @@
 # bharath-blazecode.github.io
 
-Personal portfolio for Barry Sampath — cybersecurity and IT automation.
+Personal portfolio for Barry Sampath, a QUT cybersecurity and AI student.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.0.7.** The project placeholders now use real ClassQuest, Wazuh
-and LUNA evidence; the case studies include supporting visuals, and muted
-text meets normal-text contrast in both themes. The detection console still
-loops on its own and freezes whenever it is not worth running. Versions
+**Version 1.0.8.** The homepage now opens in Skim mode for new visitors,
+uses a compact mobile menu, has shorter student-focused copy and links the
+terminal more deliberately. Lower-signal credentials are off the main scan
+path, and the site has a 1200 by 630 social-sharing image. Versions
 1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
 and 1.0.5 are preserved as zip archives outside this repository, and in
 the branch history.
@@ -46,9 +46,10 @@ telemetry for everything that is evidence.
 The **glance strip** directly under the hero answers who / doing now /
 built / proof in about twenty seconds, without scrolling far. The
 **Skim / Read** control in the header compresses the page further by
-collapsing `.detail-only` sections — the walkthrough, the failure log,
-the role bullets — roughly a 30% reduction in page length. Read is the
-default, so with JavaScript off nothing is ever hidden.
+collapsing `.detail-only` sections such as the walkthrough, selected training
+and role bullets. Skim is the default for a new visitor, and the saved choice
+wins on later visits. With JavaScript off, the control is hidden and nothing
+is removed.
 
 ## hello, world
 
