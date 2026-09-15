@@ -3,8 +3,10 @@
 Personal portfolio for Barry Sampath — cybersecurity and IT automation.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.0.6.** The detection console now loops on its own instead of
-needing Replay, and freezes whenever it is not worth running. Versions
+**Version 1.0.7.** The project placeholders now use real ClassQuest, Wazuh
+and LUNA evidence; the case studies include supporting visuals, and muted
+text meets normal-text contrast in both themes. The detection console still
+loops on its own and freezes whenever it is not worth running. Versions
 1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
 and 1.0.5 are preserved as zip archives outside this repository, and in
 the branch history.
@@ -128,6 +130,5 @@ python3 -m http.server 8000
 ## To do
 
 - Replace the portrait placeholder in `index.html` with `assets/barry.jpg`
-- Add redacted Wazuh screenshots to the home lab case study
 - Swap the sample Sysmon event and rule for sanitised real ones
 - Add `/writing/` once the first posts are drafted

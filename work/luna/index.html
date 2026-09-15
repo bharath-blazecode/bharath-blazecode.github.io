@@ -58,6 +58,10 @@
       <h2>A robotics unit that stopped being coursework</h2>
       <p>LUNA is built on the Hiwonder TurboPi platform around a Raspberry Pi 4B: hardware assembly, Python control software, a web interface for wireless operation, computer vision, offline voice interaction over a WonderEcho module, and PID-tuned movement. Built from the ground up with Zhirui Lu.</p>
       <p>It started as an assessment item and became the project I actually wanted to finish. The reason is specific: I wanted to understand how a software decision turns into physical behaviour. A badly tuned control loop does not throw an exception, it makes the robot spin. A missed sensor reading does not log a warning, it ends the demonstration. That feedback is immediate and public and it keeps you honest in a way a failing unit test does not.</p>
+      <figure class="case-media">
+        <img src="../../assets/projects/luna-robot.jpg" alt="LUNA TurboPi robot with mecanum wheels, camera and ultrasonic sensors" width="1600" height="1600" loading="lazy">
+        <figcaption>Fig. 1 — LUNA on the bench, with the camera gimbal and front sonar visible.</figcaption>
+      </figure>
     </div>
   </div>
 
@@ -72,6 +76,11 @@
 <b>Control</b>     Flask web interface for wireless operation
 <b>Movement</b>    PID-tuned drive with mecanum wheels
 <b>Interface</b>   Tkinter for local diagnostics</div>
+
+      <figure class="case-media">
+        <img src="../../assets/projects/luna-system-architecture.svg" alt="LUNA architecture from the Tkinter and voice interfaces through the Raspberry Pi control layer to the motors, camera, gimbal and sonar" width="680" height="506" loading="lazy">
+        <figcaption>Fig. 2 — control paths from the two interfaces through the Raspberry Pi to the feature modules and hardware.</figcaption>
+      </figure>
 
       <p style="margin-top:20px">The integration question was the real one: how do you get independent hardware subsystems to respond reliably under real conditions, when each of them assumes it owns the loop? Most of the work was arbitration, timing and deciding what degrades gracefully when something else takes too long.</p>
     </div>
