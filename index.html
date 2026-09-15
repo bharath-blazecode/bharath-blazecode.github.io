@@ -103,13 +103,35 @@
     <div>
       <figure style="margin:0">
         <div class="portrait">
-          <!-- Replace this block with: <img src="assets/barry.jpg" alt="Barry Sampath"> -->
-          <div class="empty">
-            <b>Photograph</b>
-            <span>Drop a 4:5 image at assets/barry.jpg and swap this block for an img tag.</span>
+          <div class="incident-stage" id="incidentStage" data-incident="idle" role="img" aria-label="A pixel incident responder monitors a secure workspace, contains a hostile signal, and follows its trace.">
+            <div class="threat-field" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <div class="secure-enclave" aria-hidden="true">
+              <div class="enclave-head">
+                <span>SECURE WORKSPACE</span>
+                <i></i>
+              </div>
+              <div class="workbench">
+                <span class="colleague colleague-one"></span>
+                <span class="monitor monitor-one"></span>
+                <span class="monitor monitor-two"></span>
+                <span class="colleague colleague-two"></span>
+              </div>
+              <div class="containment-grid"></div>
+              <div class="quarantine-pocket"><i></i><i></i><i></i></div>
+              <div class="responder-dock">
+                <span class="responder-sprite" data-motion="idle"></span>
+              </div>
+              <div class="exit-seam"></div>
+            </div>
+            <div class="incident-readout" aria-hidden="true">
+              <span>INCIDENT RESPONDER</span>
+              <b id="incidentState">Monitoring</b>
+            </div>
           </div>
         </div>
-        <figcaption class="figcap">Fig. 1: Brisbane, 2026.</figcaption>
+        <figcaption class="figcap">Fig. 1: Contain first. Investigate the trace second.</figcaption>
       </figure>
     </div>
   </div>
@@ -557,6 +579,12 @@
   </div>
 </section>
 </main>
+
+<div class="responder-guide" id="responderGuide" aria-hidden="true">
+  <span class="guide-trace"></span>
+  <span class="responder-sprite" data-motion="walk"></span>
+  <span class="guide-note">following trace</span>
+</div>
 
 <footer>
   <div class="shell">

@@ -319,6 +319,132 @@
 })();
 
 /* ============================================================
+   Incident responder prototype
+   The hero scene is scroll-stepped; the guide only occupies the
+   outer reading gutter on wide screens. PixelLab frames remain
+   transparent sprite sheets, so no generated video is required.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var stage = document.getElementById('incidentStage');
+  var guide = document.getElementById('responderGuide');
+  var hero = document.querySelector('.hero');
+  var work = document.getElementById('work');
+  var terminal = document.getElementById('helloworld');
+  var terminalBox = terminal && terminal.querySelector('.hwbox');
+  var stageSprite = stage && stage.querySelector('.responder-sprite');
+  var guideSprite = guide && guide.querySelector('.responder-sprite');
+  var stageLabel = document.getElementById('incidentState');
+  var guideLabel = guide && guide.querySelector('.guide-note');
+  var reduced = window.matchMedia &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!stage || !guide || !hero || !stageSprite || !guideSprite) { return; }
+
+  var stageStates = {
+    idle:    { motion: 'idle',    label: 'Monitoring' },
+    alert:   { motion: 'alert',   label: 'Signal detected' },
+    contain: { motion: 'contain', label: 'Containment active' },
+    clear:   { motion: 'idle',    label: 'Threat contained' },
+    exit:    { motion: 'walk',    label: 'Trace authorised' }
+  };
+  var currentStage = '';
+  var currentGuide = '';
+  var ticking = false;
+
+  function setMotion(sprite, motion) {
+    if (sprite.getAttribute('data-motion') !== motion) {
+      sprite.setAttribute('data-motion', motion);
+    }
+  }
+
+  function setStage(name) {
+    if (currentStage === name) { return; }
+    currentStage = name;
+    stage.setAttribute('data-incident', name);
+    setMotion(stageSprite, stageStates[name].motion);
+    if (stageLabel) { stageLabel.textContent = stageStates[name].label; }
+  }
+
+  function setGuide(name, note) {
+    if (currentGuide !== name) {
+      currentGuide = name;
+      guide.setAttribute('data-guide', name);
+      setMotion(guideSprite, name);
+    }
+    if (guideLabel) { guideLabel.textContent = note; }
+  }
+
+  function placeGuide(zone) {
+    var shell = Math.min(1160, window.innerWidth - 64);
+    var gutter = Math.max(8, (window.innerWidth - shell) / 2 - 92);
+    var x = window.innerWidth - 128 - gutter;
+    var y = window.innerHeight - 156;
+
+    if (zone === 'terminal' && terminalBox) {
+      var box = terminalBox.getBoundingClientRect();
+      x = Math.max(12, box.left - 112);
+      y = Math.max(92, Math.min(window.innerHeight - 138, box.top + 12));
+    }
+
+    guide.style.setProperty('--guide-x', Math.round(x) + 'px');
+    guide.style.setProperty('--guide-y', Math.round(y) + 'px');
+  }
+
+  function render() {
+    ticking = false;
+    var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var span = Math.max(460, hero.offsetHeight * 0.92);
+    var progress = Math.max(0, Math.min(1, scrollY / span));
+
+    if (reduced) {
+      setStage('clear');
+      guide.classList.remove('is-visible');
+      return;
+    }
+
+    if (progress < 0.10) { setStage('idle'); }
+    else if (progress < 0.28) { setStage('alert'); }
+    else if (progress < 0.55) { setStage('contain'); }
+    else if (progress < 0.76) { setStage('clear'); }
+    else { setStage('exit'); }
+
+    var terminalRect = terminal && terminal.getBoundingClientRect();
+    var workRect = work && work.getBoundingClientRect();
+    var terminalActive = terminalRect &&
+      terminalRect.top < window.innerHeight * 0.74 && terminalRect.bottom > 80;
+    var workActive = workRect &&
+      workRect.top < window.innerHeight * 0.62 && workRect.bottom > window.innerHeight * 0.28;
+    var journeyActive = progress >= 0.74 && (!terminalRect || terminalRect.bottom > 0);
+
+    guide.classList.toggle('is-visible', journeyActive);
+    if (!journeyActive) { return; }
+
+    if (terminalActive) {
+      setGuide('point', 'type help');
+      placeGuide('terminal');
+    } else if (workActive) {
+      setGuide('scan', 'checking evidence');
+      placeGuide('gutter');
+    } else {
+      setGuide('walk', 'following trace');
+      placeGuide('gutter');
+    }
+  }
+
+  function queueRender() {
+    if (ticking) { return; }
+    ticking = true;
+    window.requestAnimationFrame(render);
+  }
+
+  window.addEventListener('scroll', queueRender, { passive: true });
+  window.addEventListener('resize', queueRender);
+  render();
+})();
+
+/* ============================================================
    Skim / Read, and the hello-world panel.
    Appended as a second IIFE so the first stays readable.
    ============================================================ */

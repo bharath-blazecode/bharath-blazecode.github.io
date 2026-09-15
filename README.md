@@ -3,10 +3,11 @@
 Personal portfolio for Barry Sampath, a QUT cybersecurity and AI student.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.0.8.** The homepage now opens in Skim mode for new visitors,
-uses a compact mobile menu, has shorter student-focused copy and links the
-terminal more deliberately. Lower-signal credentials are off the main scan
-path, and the site has a 1200 by 630 social-sharing image. Versions
+**Version 1.1.0.** The homepage now opens with a scroll-linked pixel incident
+response scene. The responder detects and contains a hostile signal, follows
+the trace beside the page on wide screens, scans the project evidence and
+points visitors to the terminal. The sequence uses local sprite sheets only,
+with a static reduced-motion fallback and no runtime dependency. Versions
 1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
 and 1.0.5 are preserved as zip archives outside this repository, and in
 the branch history.
@@ -27,6 +28,8 @@ js/site.js            progressive enhancement only
 404.html              not-found page
 resume/               resume PDF
 favicon.svg
+assets/incident-responder/
+                      six transparent sprite sheets used by the hero sequence
 ```
 
 ## Design
@@ -109,6 +112,21 @@ sheds weight from 900 to 620 as it exits the viewport, scroll-linked
 rather than timed. Ignored where the variable font did not load, skipped
 under reduced-motion.
 
+## Incident responder
+
+The old portrait placeholder is now a small secure workspace. Scrolling steps
+the scene through monitoring, alert, containment, recovery and an authorised
+exit. After the exit, a separate sprite stays in the outer reading gutter on
+wide screens: it walks between sections, scans while the selected work is in
+view, then points east toward the terminal with a short `type help` label.
+
+The six animations are prebuilt transparent PNG sprite sheets. CSS controls
+their frame timing with stepped background positions; a
+`requestAnimationFrame`-throttled scroll handler changes state and position. The guide has
+`pointer-events: none`, is hidden below 1280 pixels, and never becomes part of
+the page's reading order. Reduced-motion users see the completed, contained
+hero scene with no travelling guide.
+
 ## Accessibility and resilience
 
 - Works with JavaScript disabled: role list renders as plain text, every
@@ -130,6 +148,5 @@ python3 -m http.server 8000
 
 ## To do
 
-- Replace the portrait placeholder in `index.html` with `assets/barry.jpg`
 - Swap the sample Sysmon event and rule for sanitised real ones
 - Add `/writing/` once the first posts are drafted
