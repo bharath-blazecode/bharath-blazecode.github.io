@@ -3,7 +3,9 @@
 Personal portfolio for Barry Sampath, a QUT cybersecurity and AI student.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.1.3.** The three case studies now use shorter, more specific copy,
+**Version 1.1.4.** The homepage now lists Code Network Event Officer as the
+current role and records that the Engagement Officer transition begins in October
+2026. Version 1.1.3 shortened the three case studies and used more specific copy,
 compact evidence placement and mobile navigation. ClassQuest records the full
 five-person team, LUNA separates Barry's contribution from the shared build,
 and low-signal evidence links have been removed. Each case study has its own
