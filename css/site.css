@@ -578,6 +578,8 @@ footer .shell{
 .evidence .eu{font-family:var(--f-mono);font-size:10.5px;color:var(--ink3);white-space:nowrap}
 .evidence a:hover .et{color:var(--sig)}
 .evidence a:hover .eu{color:var(--ink2)}
+.evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}
+.evidence-grid li{min-width:0}
 
 .nextprev{
   display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
@@ -669,8 +671,8 @@ footer .shell{
   }
 }
 @media (max-width:760px){
-  .home .barnav{display:none}
-  .home .mobile-nav{display:block}
+  .home .barnav,.case .barnav{display:none}
+  .home .mobile-nav,.case .mobile-nav{display:block}
   .mobile-nav summary{
     list-style:none;cursor:pointer;border:1px solid var(--rule);border-radius:3px;
     padding:8px 10px;font-family:var(--f-mono);font-size:10px;
@@ -696,12 +698,12 @@ footer .shell{
   .appx.background-grid{grid-template-columns:1fr}
   body{font-size:16px}
   section{padding:50px 0}
-  .home .bar .shell{padding-top:10px;padding-bottom:10px;flex-wrap:nowrap;gap:8px}
-  .home .mark span{display:none}
-  .home .barright{gap:6px;flex-wrap:nowrap}
+  .home .bar .shell,.case .bar .shell{padding-top:10px;padding-bottom:10px;flex-wrap:nowrap;gap:8px}
+  .home .mark span,.case .mark span{display:none}
+  .home .barright,.case .barright{gap:6px;flex-wrap:nowrap}
   .home .modectl button{font-size:9px;padding:7px 8px}
-  .home #shiftBtn{width:36px;padding:8px;justify-content:center}
-  .home #shiftLbl{display:none}
+  .home #shiftBtn,.case #shiftBtn{width:36px;padding:8px;justify-content:center}
+  .home #shiftLbl,.case #shiftLbl{display:none}
   .hero{padding:42px 0 40px}
   .hero figure{max-width:280px;margin-left:auto !important;margin-right:auto !important}
   .band{padding:48px 0}
@@ -710,6 +712,7 @@ footer .shell{
   .arows dt{border-bottom:0;padding-bottom:2px}
   .arows dd{padding-left:17px}
   .logtable td:first-child{width:auto}
+  .evidence-grid{grid-template-columns:1fr}
   .clist .ck{width:64px}
   footer .shell{grid-template-columns:1fr}
   .footer-links{justify-content:flex-start}
