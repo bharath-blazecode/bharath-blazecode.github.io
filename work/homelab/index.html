@@ -4,16 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>ITDR Home Lab — Barry Sampath</title>
+<title>ITDR Home Lab | Barry Sampath</title>
 <meta name="description" content="Building a Wazuh 4.9.2 SIEM with a Sysmon-instrumented Windows endpoint: what I built, what broke, and what I would do differently.">
 <link rel="canonical" href="https://bharath-blazecode.github.io/work/homelab/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Barry Sampath portfolio">
+<meta property="og:url" content="https://bharath-blazecode.github.io/work/homelab/">
+<meta property="og:title" content="ITDR Home Lab | Barry Sampath">
+<meta property="og:description" content="A Wazuh and Sysmon home lab, including the infrastructure failures that shaped the build.">
+<meta property="og:image" content="https://bharath-blazecode.github.io/assets/projects/wazuh-dashboard.jpg">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="673">
+<meta property="og:image:alt" content="Wazuh dashboard from the ITDR home lab">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ITDR Home Lab | Barry Sampath">
+<meta name="twitter:description" content="A Wazuh and Sysmon home lab, including the infrastructure failures that shaped the build.">
+<meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/projects/wazuh-dashboard.jpg">
+<meta name="twitter:image:alt" content="Wazuh dashboard from the ITDR home lab">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
 <link rel="stylesheet" href="../../css/site.css">
 </head>
-<body>
+<body class="case">
 
 <a class="skip" href="#built">Skip to what I built</a>
 
@@ -31,6 +45,14 @@
       <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
         <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
       </button>
+      <details class="mobile-nav">
+        <summary>Menu</summary>
+        <nav aria-label="Mobile case studies">
+          <a href="../classquest/">ClassQuest</a>
+          <a href="../luna/">LUNA</a>
+          <a href="../../#contact">Contact</a>
+        </nav>
+      </details>
     </div>
   </div>
 </div>
@@ -55,18 +77,18 @@
   <div class="spine">
     <div class="sg"><span class="sn">Context</span><span class="rail" aria-hidden="true"></span></div>
     <div>
-      <h2>Why build one at all</h2>
-      <p>Every blue-team job description asks for SIEM experience, and no student has it, because SIEMs live inside companies. The way around that is to run one yourself and treat it as infrastructure rather than a tutorial: enroll a real endpoint, generate real telemetry, and keep it running long enough for its actual failure modes to show up.</p>
-      <p>ITDR &mdash; identity threat detection and response &mdash; is the specific lane. Most of what an attacker does after landing on a workstation shows up as identity and process behaviour before it shows up anywhere else, and that behaviour is exactly what Sysmon records.</p>
+      <h2>Why I built the lab</h2>
+      <p>I built a SIEM locally so I could enrol an endpoint, generate telemetry and deal with the infrastructure problems that a guided lab normally hides.</p>
+      <p>I focused on identity and endpoint activity. Sysmon supplies the process, network and file telemetry needed to practise that analysis.</p>
     </div>
   </div>
 
   <div class="spine" id="built">
     <div class="sg"><span class="sn">What I built</span><span class="rail" aria-hidden="true"></span></div>
     <div>
-      <h2>Two machines and everything between them</h2>
+      <h2>Architecture and working milestone</h2>
       <p>An Ubuntu Server 22.04 virtual machine running a Wazuh 4.9.2 all-in-one deployment: indexer, server and dashboard on one host. A Windows 11 Enterprise virtual machine as the monitored endpoint, with Sysmon 15.20 installed and configured against the SwiftOnSecurity ruleset. Both on a Lenovo ThinkPad under VMware Workstation, bridged onto the local network.</p>
-      <p>Phase 1 was complete once the agent enrolled, telemetry reached the indexer, and I could log into the dashboard and watch events from the Windows machine arrive in something close to real time. That sounds like a small milestone. Getting there took four separate failures.</p>
+      <p>Phase 1 was complete once the agent enrolled, telemetry reached the indexer and Windows events appeared in the dashboard. Reaching that point exposed four separate infrastructure faults.</p>
 
       <div class="diagram">
         <svg viewBox="0 0 800 200" role="img" aria-labelledby="dgt dgd">
@@ -113,7 +135,7 @@
       </div>
       <p style="font-size:.9rem;color:var(--ink3);margin-top:-6px">Fig. 1 — where telemetry goes. The endpoint is the only node that generates data; everything to the right of it stores, analyses or presents that data.</p>
 
-      <h3>Component roles, since the naming is not obvious</h3>
+      <h3>Component roles</h3>
       <div class="tele"><b>Indexer</b>     Elasticsearch-based storage for parsed events
 <b>Server</b>      Analysis engine — decoders, rules, alerting
 <b>Dashboard</b>   Kibana-based interface for search and triage
@@ -127,7 +149,7 @@
     <div class="sg"><span class="sn">What broke</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>Four faults, in the order they happened</h2>
-      <p>These are the entries from the build log as they were written, not tidied up afterwards.</p>
+      <p>The build log records the symptom, the layer that caused it and the fix.</p>
 
       <div class="scroller">
         <table class="logtable">
@@ -157,23 +179,23 @@
         </table>
       </div>
 
-      <p style="margin-top:24px">The pattern across all four is the same, and it is the thing I actually took away: each one presented as a problem with the layer I was looking at, and was caused by a layer underneath. Storage corruption looked like VMware. Unreachable server looked like Wazuh. Indexer stalling looked like resourcing. Checking the layer below before debugging the layer in front of you is most of the skill.</p>
+      <p style="margin-top:24px">Each fault appeared one layer above its cause. Storage locks looked like VMware corruption, stale networking looked like a Wazuh outage, and a full disk looked like an indexer performance problem. I now check the underlying storage and network state before changing the service on top.</p>
     </div>
   </div>
 
   <div class="spine">
     <div class="sg"><span class="sn">What I&rsquo;d change</span><span class="rail" aria-hidden="true"></span></div>
     <div>
-      <h2>Honest revisions</h2>
+      <h2>What I would change</h2>
       <ol class="actions">
-        <li><b>Build the detection rules alongside the infrastructure, not after.</b> I treated Phase 1 as plumbing and Phase 2 as the interesting part. That was the wrong split &mdash; without rules there was no way to tell whether the pipeline was actually carrying useful data or just carrying data.</li>
+        <li><b>Build detection rules alongside the infrastructure.</b> I separated the plumbing from the detection work. Without rules, I could confirm that data arrived but not that the pipeline carried the events I needed.</li>
         <li><b>Size the disk for retention from the start.</b> Fifty gigabytes is enough to install Wazuh and not enough to run it. That was predictable and I did not predict it.</li>
         <li><b>Generate adversarial telemetry deliberately.</b> Ordinary use produces ordinary events. Atomic Red Team would have given me something to detect on day one rather than waiting for a real anomaly that was never going to arrive on a lab machine.</li>
         <li><b>Rotate credentials before writing anything public.</b> The initial lab password lived in plaintext in my notes for longer than it should have. It is rotated now, which is the correct outcome and an uncomfortable thing to have learned by nearly publishing it.</li>
       </ol>
 
       <h3>Where it goes next</h3>
-      <p>Phase 2 is detection-rule development and incident-response exercises against the endpoint. The lab is currently paused while university assessment and paid work take priority, which is a scheduling decision rather than an abandoned project. The environment still stands.</p>
+      <p>Phase 2 is detection-rule development and incident-response exercises against the endpoint. The lab is paused while university assessment and paid work take priority. The environment is still available when I return to it.</p>
     </div>
   </div>
 
@@ -183,13 +205,12 @@
       <h2>What backs this up</h2>
       <p class="lede">The Phase 1 dashboard is shown below. Hostnames and internal addresses stay out of the public evidence; the full build notes remain available on request.</p>
       <figure class="case-media">
-        <img src="../../assets/projects/wazuh-dashboard.jpg" alt="Wazuh dashboard overview showing alert severity counters and endpoint-security modules" width="1280" height="673" loading="lazy">
+        <img src="../../assets/projects/wazuh-dashboard.jpg" alt="Wazuh dashboard overview showing alert severity counters and endpoint-security modules" width="1280" height="673" loading="lazy" decoding="async">
         <figcaption>Fig. 2 — the Wazuh overview after the server and endpoint pipeline were running.</figcaption>
       </figure>
       <ul class="evidence">
         <li><a href="../../#detection"><span class="et">The detection walkthrough, on the home page</span><span class="eu">Rule 100210</span></a></li>
         <li><a href="mailto:barry.sampath@outlook.com?subject=ITDR%20lab%20build%20notes"><span class="et">Phase 1 build notes, on request</span><span class="eu">Email</span></a></li>
-        <li><a href="https://github.com/bharath-blazecode"><span class="et">GitHub profile</span><span class="eu">bharath-blazecode</span></a></li>
       </ul>
     </div>
   </div>

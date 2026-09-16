@@ -3,14 +3,12 @@
 Personal portfolio for Barry Sampath, a QUT cybersecurity and AI student.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.1.2.** The homepage now opens with an automatic pixel incident
-response scene. The responder monitors, detects and contains a hostile signal,
-recovers the workspace and investigates the trace before returning to a calm
-idle state. The sequence pauses when it leaves the viewport or the tab is
-hidden, and includes pause and replay controls. It uses local sprite sheets
-only, with a static reduced-motion fallback and no runtime dependency. The
-separate responder beside the terminal remains as the closing invitation;
-the previous scroll-linked travelling guide has been removed. Versions
+**Version 1.1.3.** The three case studies now use shorter, more specific copy,
+compact evidence placement and mobile navigation. ClassQuest records the full
+five-person team, LUNA separates Barry's contribution from the shared build,
+and low-signal evidence links have been removed. Each case study has its own
+Open Graph and Twitter metadata, while project images decode asynchronously.
+The automatic Incident Responder sequence from 1.1.2 remains unchanged. Versions
 1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
 and 1.0.5 are preserved as zip archives outside this repository, and in
 the branch history.
