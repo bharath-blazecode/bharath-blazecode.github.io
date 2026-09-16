@@ -3,14 +3,14 @@
 Personal portfolio for Barry Sampath, a QUT cybersecurity and AI student.
 Live at <https://bharath-blazecode.github.io>.
 
-**Version 1.1.1.** The homepage now opens with a scroll-linked pixel incident
-response scene. The responder detects and contains a hostile signal, follows
-the trace beside the page on wide screens, scans the project evidence and
-points visitors to the terminal. The sequence uses local sprite sheets only,
-with a static reduced-motion fallback and no runtime dependency. The 1.1.1
-prototype increases the character and attack visibility, enables the travelling
-sequence on ordinary laptop widths and gives the terminal a stable inline
-handoff rather than relying on an outer gutter. Versions
+**Version 1.1.2.** The homepage now opens with an automatic pixel incident
+response scene. The responder monitors, detects and contains a hostile signal,
+recovers the workspace and investigates the trace before returning to a calm
+idle state. The sequence pauses when it leaves the viewport or the tab is
+hidden, and includes pause and replay controls. It uses local sprite sheets
+only, with a static reduced-motion fallback and no runtime dependency. The
+separate responder beside the terminal remains as the closing invitation;
+the previous scroll-linked travelling guide has been removed. Versions
 1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
 and 1.0.5 are preserved as zip archives outside this repository, and in
 the branch history.
@@ -117,20 +117,19 @@ under reduced-motion.
 
 ## Incident responder
 
-The old portrait placeholder is now a small secure workspace. Scrolling steps
-the scene through monitoring, alert, containment, recovery and an authorised
-exit. After the exit, a separate sprite follows the right-side reading rail on
-screens 900 pixels wide and above: it walks between sections and scans while
-the selected work is in view. At the terminal it hands off to a larger inline
-pointing pose, so the final action remains visible even without an outer gutter.
+The old portrait placeholder is now a small secure workspace. A timed sequence
+steps through monitoring, alert, containment, recovery and investigation, then
+rests in a calm monitoring state before replaying. Scrolling does not control
+or reverse the story. The sequence pauses while the hero is off-screen or the
+browser tab is hidden, and the visitor can pause or replay it directly. A
+separate inline pointing pose remains beside the terminal as the closing action.
 
 The six animations are prebuilt transparent PNG sprite sheets. CSS controls
-their frame timing with stepped background positions; a
-`requestAnimationFrame`-throttled scroll handler changes state and position. The guide has
-`pointer-events: none`, is hidden below 900 pixels, and never becomes part of
-the page's reading order. Smaller screens retain the enlarged hero sequence
-and inline terminal handoff. Reduced-motion users see the completed, contained
-hero scene with no travelling guide.
+their frame timing with stepped background positions; timers advance the scene
+only while an `IntersectionObserver` reports that it is visible. A pause choice
+is remembered for the browser session. Smaller screens retain the enlarged hero
+sequence and inline terminal handoff. Reduced-motion users see the completed,
+contained hero scene without automatic playback controls.
 
 ## Accessibility and resilience
 

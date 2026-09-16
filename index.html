@@ -24,7 +24,7 @@
 <link rel="preload" href="assets/incident-responder/idle.png" as="image">
 <link rel="preload" href="assets/incident-responder/alert.png" as="image">
 <link rel="preload" href="assets/incident-responder/contain.png" as="image">
-<link rel="preload" href="assets/incident-responder/walk.png" as="image">
+<link rel="preload" href="assets/incident-responder/scan.png" as="image">
 <script>
   document.documentElement.classList.add('js');
   try {
@@ -107,7 +107,7 @@
     <div>
       <figure style="margin:0">
         <div class="portrait">
-          <div class="incident-stage" id="incidentStage" data-incident="idle" role="img" aria-label="A pixel incident responder monitors a secure workspace, contains a hostile signal, and follows its trace.">
+          <div class="incident-stage" id="incidentStage" data-incident="idle" role="img" aria-label="A pixel incident responder automatically monitors a secure workspace, detects and contains a hostile signal, then investigates its trace.">
             <div class="threat-field" aria-hidden="true">
               <i></i><i></i><i></i><i></i>
             </div>
@@ -127,12 +127,15 @@
               <div class="responder-dock">
                 <span class="responder-sprite" data-motion="idle"></span>
               </div>
-              <div class="exit-seam"></div>
             </div>
             <div class="incident-readout" aria-hidden="true">
               <span>INCIDENT RESPONDER</span>
               <b id="incidentState">Monitoring</b>
             </div>
+          </div>
+          <div class="incident-controls" id="incidentControls" hidden>
+            <button type="button" class="creplay" id="incidentPause" aria-pressed="false">Pause animation</button>
+            <button type="button" class="creplay" id="incidentReplay">Replay incident</button>
           </div>
         </div>
         <figcaption class="figcap">Fig. 1: Contain first. Investigate the trace second.</figcaption>
@@ -587,12 +590,6 @@
   </div>
 </section>
 </main>
-
-<div class="responder-guide" id="responderGuide" aria-hidden="true">
-  <span class="guide-trace"></span>
-  <span class="responder-sprite" data-motion="walk"></span>
-  <span class="guide-note">following trace</span>
-</div>
 
 <footer>
   <div class="shell">
