@@ -320,37 +320,49 @@
 
 /* ============================================================
    Incident responder prototype
-   The hero scene is scroll-stepped; the guide uses an edge rail
-   on laptop and desktop screens. PixelLab frames remain
-   transparent sprite sheets, so no generated video is required.
+   A short automatic story plays only while the hero is visible:
+   monitor, detect, contain, recover, investigate, then rest.
+   Scrolling never controls or reverses the sequence.
    ============================================================ */
 (function () {
   'use strict';
 
   var stage = document.getElementById('incidentStage');
-  var guide = document.getElementById('responderGuide');
-  var hero = document.querySelector('.hero');
-  var work = document.getElementById('work');
-  var terminal = document.getElementById('helloworld');
   var stageSprite = stage && stage.querySelector('.responder-sprite');
-  var guideSprite = guide && guide.querySelector('.responder-sprite');
   var stageLabel = document.getElementById('incidentState');
-  var guideLabel = guide && guide.querySelector('.guide-note');
+  var pauseButton = document.getElementById('incidentPause');
+  var replayButton = document.getElementById('incidentReplay');
+  var controls = document.getElementById('incidentControls');
   var reduced = window.matchMedia &&
                 window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (!stage || !guide || !hero || !stageSprite || !guideSprite) { return; }
+  if (!stage || !stageSprite) { return; }
 
   var stageStates = {
-    idle:    { motion: 'idle',    label: 'Monitoring' },
-    alert:   { motion: 'alert',   label: 'Signal detected' },
-    contain: { motion: 'contain', label: 'Containment active' },
-    clear:   { motion: 'idle',    label: 'Threat contained' },
-    exit:    { motion: 'walk',    label: 'Trace authorised' }
+    idle:        { motion: 'idle',    label: 'Monitoring' },
+    alert:       { motion: 'alert',   label: 'Signal detected' },
+    contain:     { motion: 'contain', label: 'Containment active' },
+    clear:       { motion: 'idle',    label: 'System recovered' },
+    investigate: { motion: 'scan',    label: 'Investigating trace' }
   };
+  var sequence = [
+    { name: 'idle', duration: 2200 },
+    { name: 'alert', duration: 2200 },
+    { name: 'contain', duration: 3000 },
+    { name: 'clear', duration: 2200 },
+    { name: 'investigate', duration: 3000 },
+    { name: 'idle', duration: 8000 }
+  ];
   var currentStage = '';
-  var currentGuide = '';
-  var ticking = false;
+  var phase = 0;
+  var timer = null;
+  var phaseStarted = 0;
+  var remaining = sequence[0].duration;
+  var onScreen = false;
+  var pausedByHand = false;
+
+  try { pausedByHand = sessionStorage.getItem('bs-incident-paused') === 'true'; }
+  catch (e) { /* blocked storage: default to playing */ }
 
   function setMotion(sprite, motion) {
     if (sprite.getAttribute('data-motion') !== motion) {
@@ -366,74 +378,80 @@
     if (stageLabel) { stageLabel.textContent = stageStates[name].label; }
   }
 
-  function setGuide(name, note) {
-    if (currentGuide !== name) {
-      currentGuide = name;
-      guide.setAttribute('data-guide', name);
-      setMotion(guideSprite, name);
-    }
-    if (guideLabel) { guideLabel.textContent = note; }
+  function canRun() {
+    return onScreen && !pausedByHand && !document.hidden;
   }
 
-  function placeGuide() {
-    var shell = Math.min(1160, window.innerWidth - 64);
-    var gutter = Math.max(0, (window.innerWidth - shell) / 2);
-    var x = window.innerWidth < 1280 ? window.innerWidth - 136 :
-            window.innerWidth - 128 - Math.max(8, gutter - 94);
-    var y = window.innerHeight - 174;
-
-    guide.style.setProperty('--guide-x', Math.round(x) + 'px');
-    guide.style.setProperty('--guide-y', Math.round(y) + 'px');
+  function halt() {
+    if (!timer) { return; }
+    clearTimeout(timer);
+    timer = null;
+    remaining = Math.max(80, remaining - (Date.now() - phaseStarted));
   }
 
-  function render() {
-    ticking = false;
-    var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-    var span = Math.max(320, hero.offsetHeight * 0.64);
-    var progress = Math.max(0, Math.min(1, scrollY / span));
-
-    if (reduced) {
-      setStage('clear');
-      guide.classList.remove('is-visible');
-      if (terminal) { terminal.classList.add('responder-arrived'); }
-      return;
-    }
-
-    if (progress < 0.03) { setStage('idle'); }
-    else if (progress < 0.25) { setStage('alert'); }
-    else if (progress < 0.56) { setStage('contain'); }
-    else if (progress < 0.78) { setStage('clear'); }
-    else { setStage('exit'); }
-
-    var terminalRect = terminal && terminal.getBoundingClientRect();
-    var workRect = work && work.getBoundingClientRect();
-    var terminalActive = terminalRect &&
-      terminalRect.top < window.innerHeight * 0.82 && terminalRect.bottom > 80;
-    var workActive = workRect &&
-      workRect.top < window.innerHeight * 0.62 && workRect.bottom > window.innerHeight * 0.28;
-    var journeyActive = progress >= 0.68 && (!terminalRect || terminalRect.bottom > 0);
-
-    guide.classList.toggle('is-visible', journeyActive && !terminalActive);
-    if (terminal) { terminal.classList.toggle('responder-arrived', journeyActive && terminalActive); }
-    if (!journeyActive || terminalActive) { return; }
-
-    if (workActive) {
-      setGuide('scan', 'checking evidence');
-    } else {
-      setGuide('walk', 'following trace');
-    }
-    placeGuide();
+  function advance() {
+    timer = null;
+    phase = (phase + 1) % sequence.length;
+    remaining = sequence[phase].duration;
+    setStage(sequence[phase].name);
+    resume();
   }
 
-  function queueRender() {
-    if (ticking) { return; }
-    ticking = true;
-    window.requestAnimationFrame(render);
+  function resume() {
+    if (timer || !canRun()) { return; }
+    phaseStarted = Date.now();
+    timer = setTimeout(advance, remaining);
   }
 
-  window.addEventListener('scroll', queueRender, { passive: true });
-  window.addEventListener('resize', queueRender);
-  render();
+  function sync() {
+    if (canRun()) { resume(); } else { halt(); }
+  }
+
+  function updatePauseButton() {
+    if (!pauseButton) { return; }
+    pauseButton.textContent = pausedByHand ? 'Resume animation' : 'Pause animation';
+    pauseButton.setAttribute('aria-pressed', String(pausedByHand));
+  }
+
+  function setPaused(state) {
+    pausedByHand = state;
+    try { sessionStorage.setItem('bs-incident-paused', String(state)); } catch (e) {}
+    updatePauseButton();
+    sync();
+  }
+
+  function replay() {
+    halt();
+    phase = 0;
+    remaining = sequence[0].duration;
+    setStage(sequence[0].name);
+    if (pausedByHand) { setPaused(false); } else { resume(); }
+  }
+
+  if (reduced) {
+    setStage('clear');
+    if (controls) { controls.hidden = true; }
+    return;
+  }
+
+  if (controls) { controls.hidden = false; }
+  updatePauseButton();
+  setStage(sequence[0].name);
+  if (pauseButton) {
+    pauseButton.addEventListener('click', function () { setPaused(!pausedByHand); });
+  }
+  if (replayButton) { replayButton.addEventListener('click', replay); }
+  document.addEventListener('visibilitychange', sync);
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) { onScreen = entry.isIntersecting; });
+      sync();
+    }, { threshold: 0.2 }).observe(stage);
+  } else {
+    onScreen = true;
+    sync();
+  }
 })();
 
 /* ============================================================

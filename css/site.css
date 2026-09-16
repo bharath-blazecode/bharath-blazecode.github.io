@@ -1004,9 +1004,9 @@ footer .shell{
 }
 
 /* ============================================================
-   27. INCIDENT RESPONDER — scroll-linked prototype
-   The secure workspace replaces the old portrait placeholder.
-   A second instance travels on a laptop-and-desktop edge rail.
+   27. INCIDENT RESPONDER — automatic prototype
+   The secure workspace tells a timed incident-response story.
+   It pauses off-screen; scrolling never controls the sequence.
    ============================================================ */
 .incident-stage{
   position:relative;aspect-ratio:4/5;overflow:hidden;isolation:isolate;
@@ -1072,11 +1072,6 @@ footer .shell{
 .responder-sprite[data-motion="scan"]{background-image:url('../assets/incident-responder/scan.png');--sprite-last:8;--sprite-speed:1.08s}
 .responder-sprite[data-motion="point"]{background-image:url('../assets/incident-responder/point.png');--sprite-last:4;--sprite-speed:.86s}
 @keyframes responder-frames{to{background-position:calc(var(--sprite-last) * -128px) 0}}
-.exit-seam{
-  position:absolute;right:0;top:28px;bottom:0;width:2px;background:#57ac8e;
-  box-shadow:0 0 10px rgba(87,172,142,.7);opacity:.18;transform:scaleY(.08);
-  transition:opacity .25s ease,transform .4s ease;transform-origin:center;
-}
 .threat-field{position:absolute;inset:0;z-index:1;pointer-events:none}
 .threat-field i{
   position:absolute;width:14px;height:6px;border:1px solid #ff7654;background:#481b13;
@@ -1099,42 +1094,30 @@ footer .shell{
 .incident-stage[data-incident="alert"] .threat-field i:nth-child(n+3){animation:hostile-from-left .68s steps(5) infinite}
 .incident-stage[data-incident="alert"] .secure-enclave::after{opacity:1;animation:perimeter-hit .72s steps(2) infinite}
 .incident-stage[data-incident="contain"] .quarantine-pocket,
-.incident-stage[data-incident="clear"] .quarantine-pocket{opacity:1;transform:scale(1)}
+.incident-stage[data-incident="clear"] .quarantine-pocket,
+.incident-stage[data-incident="investigate"] .quarantine-pocket{opacity:1;transform:scale(1)}
 .incident-stage[data-incident="contain"] .threat-field i{animation:packet-quarantined .58s steps(4) infinite}
 .incident-stage[data-incident="clear"]::before{box-shadow:inset 0 0 0 1px rgba(87,172,142,.09),0 0 35px rgba(87,172,142,.16)}
 .incident-stage[data-incident="clear"] .secure-enclave::after{opacity:.7;box-shadow:inset 0 0 20px rgba(87,172,142,.2)}
-.incident-stage[data-incident="exit"] .exit-seam{opacity:1;transform:scaleY(1)}
-.incident-stage[data-incident="exit"] .responder-dock{left:82%;opacity:.25}
+.incident-stage[data-incident="investigate"] .containment-grid{opacity:.48;animation:trace-scan 1.1s steps(4) infinite}
+.incident-stage[data-incident="investigate"] .incident-readout b{color:#86d7bd}
 @keyframes hostile-from-right{from{transform:translateX(20px)}to{transform:translateX(-22px)}}
 @keyframes hostile-from-left{from{transform:translateX(-20px)}to{transform:translateX(22px)}}
 @keyframes packet-quarantined{to{transform:translate(22px,9px) scale(.35);opacity:.15}}
+@keyframes trace-scan{50%{opacity:.85;filter:drop-shadow(0 0 5px rgba(87,172,142,.7))}}
 @keyframes perimeter-hit{
   0%,100%{box-shadow:inset 0 0 0 1px rgba(228,113,79,.18)}
   50%{box-shadow:inset 0 0 18px rgba(228,113,79,.45)}
 }
 
-.responder-guide{
-  --guide-x:calc(100vw - 142px);--guide-y:calc(100vh - 174px);--guide-scale:.92;
-  position:fixed;left:0;top:0;z-index:80;width:128px;height:146px;
-  pointer-events:none;opacity:0;
-  transform:translate3d(var(--guide-x),var(--guide-y),0) scale(var(--guide-scale));
-  transform-origin:bottom center;
-  transition:opacity .22s ease,transform .52s cubic-bezier(.2,.8,.3,1);
-}
-.responder-guide.is-visible{opacity:1}
-.guide-note{
-  position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);white-space:nowrap;
-  padding:3px 6px;border:1px solid var(--rule);background:var(--paper);color:var(--ink3);
-  font:7px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;
-}
-.guide-trace{position:absolute;left:62px;bottom:14px;width:4px;height:4px;border-radius:50%;background:var(--sig);box-shadow:-18px 5px 0 -1px var(--sig),-35px 1px 0 -1px var(--sig);opacity:.62}
-.responder-guide[data-guide="scan"] .guide-trace{background:var(--go);box-shadow:-18px 5px 0 -1px var(--go),-35px 1px 0 -1px var(--go)}
-.responder-guide[data-guide="point"] .guide-trace{display:none}
+.incident-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.incident-controls[hidden]{display:none}
+.incident-controls .creplay{flex:1 1 130px;padding:7px 9px;font-size:9px}
 
 .hw .shell{position:relative}
 .terminal-responder{
   height:118px;margin-top:6px;display:flex;align-items:flex-end;gap:0;
-  opacity:.12;transform:translateX(-14px);transition:opacity .35s ease,transform .5s cubic-bezier(.2,.8,.3,1);
+  opacity:1;transform:none;
 }
 .terminal-responder .responder-sprite{flex:0 0 128px;transform:scale(1.05);transform-origin:bottom center}
 .terminal-responder-note{
@@ -1142,10 +1125,6 @@ footer .shell{
   color:var(--ink3);font:8px/1.6 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;
 }
 .terminal-responder-note b{display:block;color:var(--go);font-weight:600}
-.hw.responder-arrived .terminal-responder{opacity:1;transform:translateX(0)}
-
-@media (min-width:900px) and (max-width:1279px){.responder-guide{--guide-scale:.96}}
-@media (max-width:899px){.responder-guide{display:none}}
 @media (max-width:960px){
   .incident-stage{max-width:360px;margin:0 auto}
 }
@@ -1153,12 +1132,7 @@ footer .shell{
   .responder-dock{transform:translateX(-50%) scale(1.45)}
 }
 @media (prefers-reduced-motion:reduce){
-  .responder-guide{display:none !important}
   .responder-sprite{animation:none !important;background-position:0 0 !important}
   .incident-stage .threat-field{display:none}
   .incident-stage::before{box-shadow:none}
-  .terminal-responder{opacity:1;transform:none}
-}
-@media print{
-  .responder-guide{display:none !important}
 }
