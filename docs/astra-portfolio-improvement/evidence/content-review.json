@@ -1,0 +1,326 @@
+{
+  "checkedAt": "2026-09-17T05:40:38.786Z",
+  "registerCount": 28,
+  "registerChecks": [
+    {
+      "id": "C01",
+      "pass": true
+    },
+    {
+      "id": "C02",
+      "pass": true
+    },
+    {
+      "id": "C03",
+      "pass": true
+    },
+    {
+      "id": "C04",
+      "pass": true
+    },
+    {
+      "id": "C05",
+      "pass": true
+    },
+    {
+      "id": "C06",
+      "pass": true
+    },
+    {
+      "id": "C07",
+      "pass": true
+    },
+    {
+      "id": "C08",
+      "pass": true
+    },
+    {
+      "id": "C09",
+      "pass": true
+    },
+    {
+      "id": "C10",
+      "pass": true
+    },
+    {
+      "id": "C11",
+      "pass": true
+    },
+    {
+      "id": "C12",
+      "pass": true
+    },
+    {
+      "id": "C13",
+      "pass": true
+    },
+    {
+      "id": "C14",
+      "pass": true
+    },
+    {
+      "id": "P01",
+      "pass": true
+    },
+    {
+      "id": "P02",
+      "pass": true
+    },
+    {
+      "id": "P03",
+      "pass": true
+    },
+    {
+      "id": "P04",
+      "pass": true
+    },
+    {
+      "id": "P05",
+      "pass": true
+    },
+    {
+      "id": "P06",
+      "pass": true
+    },
+    {
+      "id": "P07",
+      "pass": true
+    },
+    {
+      "id": "U01",
+      "pass": true
+    },
+    {
+      "id": "U02",
+      "pass": true
+    },
+    {
+      "id": "U03",
+      "pass": true
+    },
+    {
+      "id": "M01",
+      "pass": true
+    },
+    {
+      "id": "M02",
+      "pass": true
+    },
+    {
+      "id": "M03",
+      "pass": true
+    },
+    {
+      "id": "M04",
+      "pass": true
+    }
+  ],
+  "sourceChecks": [
+    {
+      "file": "index.html",
+      "nestedAnchors": [],
+      "anchorBalance": 0,
+      "headingCount": 33,
+      "h1Count": 1,
+      "headingSkips": []
+    },
+    {
+      "file": "404.html",
+      "nestedAnchors": [],
+      "anchorBalance": 0,
+      "headingCount": 1,
+      "h1Count": 1,
+      "headingSkips": []
+    },
+    {
+      "file": "work/classquest/index.html",
+      "nestedAnchors": [],
+      "anchorBalance": 0,
+      "headingCount": 11,
+      "h1Count": 1,
+      "headingSkips": []
+    },
+    {
+      "file": "work/homelab/index.html",
+      "nestedAnchors": [],
+      "anchorBalance": 0,
+      "headingCount": 8,
+      "h1Count": 1,
+      "headingSkips": []
+    },
+    {
+      "file": "work/luna/index.html",
+      "nestedAnchors": [],
+      "anchorBalance": 0,
+      "headingCount": 6,
+      "h1Count": 1,
+      "headingSkips": []
+    }
+  ],
+  "protectedAssets": [
+    {
+      "file": "assets/incident-responder/alert.png",
+      "identical": true
+    },
+    {
+      "file": "assets/incident-responder/contain.png",
+      "identical": true
+    },
+    {
+      "file": "assets/incident-responder/idle.png",
+      "identical": true
+    },
+    {
+      "file": "assets/incident-responder/point.png",
+      "identical": true
+    },
+    {
+      "file": "assets/incident-responder/scan.png",
+      "identical": true
+    },
+    {
+      "file": "assets/incident-responder/walk.png",
+      "identical": true
+    },
+    {
+      "file": "assets/og-portfolio.jpg",
+      "identical": true
+    },
+    {
+      "file": "assets/projects/classquest-gameplay.jpg",
+      "identical": true
+    },
+    {
+      "file": "assets/projects/classquest-learning-hub.jpg",
+      "identical": true
+    },
+    {
+      "file": "assets/projects/classquest-sign-in.jpg",
+      "identical": true
+    },
+    {
+      "file": "assets/projects/luna-robot.jpg",
+      "identical": true
+    },
+    {
+      "file": "assets/projects/luna-system-architecture.svg",
+      "identical": true
+    },
+    {
+      "file": "assets/projects/wazuh-dashboard.jpg",
+      "identical": true
+    },
+    {
+      "file": "resume/Barry_Sampath_Resume.pdf",
+      "identical": true
+    },
+    {
+      "file": "favicon.svg",
+      "identical": true
+    }
+  ],
+  "protectedContent": {
+    "scienceGearsRoleIdentical": true,
+    "scienceGearsParagraphsPreserved": true,
+    "homeProjectSummariesIdentical": true,
+    "caseNarratives": [
+      {
+        "file": "work/classquest/index.html",
+        "mainNarrativeUnchanged": true
+      },
+      {
+        "file": "work/luna/index.html",
+        "mainNarrativeUnchanged": true
+      }
+    ],
+    "baselineCaptionsPreserved": true,
+    "destinations": [
+      {
+        "file": "index.html",
+        "missingBaselineDestinations": []
+      },
+      {
+        "file": "404.html",
+        "missingBaselineDestinations": []
+      },
+      {
+        "file": "work/classquest/index.html",
+        "missingBaselineDestinations": []
+      },
+      {
+        "file": "work/homelab/index.html",
+        "missingBaselineDestinations": []
+      },
+      {
+        "file": "work/luna/index.html",
+        "missingBaselineDestinations": []
+      }
+    ],
+    "homeSections": [
+      {
+        "section": "about",
+        "unchangedExceptApproved": true
+      },
+      {
+        "section": "experience",
+        "unchangedExceptApproved": true
+      },
+      {
+        "section": "skills",
+        "unchangedExceptApproved": true
+      },
+      {
+        "section": "background",
+        "unchangedExceptApproved": true
+      },
+      {
+        "section": "offshift",
+        "unchangedExceptApproved": true
+      },
+      {
+        "section": "contact",
+        "unchangedExceptApproved": true
+      },
+      {
+        "section": "footer",
+        "unchangedExceptApproved": true
+      }
+    ],
+    "itdrBlocks": [
+      {
+        "kind": "paragraphs",
+        "unchangedExceptApproved": true,
+        "missing": [],
+        "added": []
+      },
+      {
+        "kind": "listEntries",
+        "unchangedExceptApproved": true,
+        "missing": [],
+        "added": []
+      },
+      {
+        "kind": "headings",
+        "unchangedExceptApproved": true,
+        "missing": [],
+        "added": []
+      },
+      {
+        "kind": "tableCells",
+        "unchangedExceptApproved": true,
+        "missing": [],
+        "added": []
+      },
+      {
+        "kind": "telemetry",
+        "unchangedExceptApproved": true,
+        "missing": [],
+        "added": []
+      },
+      {
+        "kind": "architectureSvg",
+        "unchangedExceptApproved": true
+      }
+    ]
+  }
+}

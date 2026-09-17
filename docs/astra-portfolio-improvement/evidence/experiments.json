@@ -1,0 +1,44 @@
+[
+  {
+    "name": "grain-original",
+    "route": "",
+    "target": ".hero",
+    "css": "body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.055;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E\")}"
+  },
+  {
+    "name": "grain-background-only",
+    "route": "",
+    "target": ".hero",
+    "css": ".hero{position:relative}.hero::before,.hero::after{content:'';position:absolute;top:0;bottom:0;width:max(0px,calc((100vw - 1200px)/2));pointer-events:none;opacity:.018;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E\")}.hero::before{left:0}.hero::after{right:0}"
+  },
+  {
+    "name": "grain-none",
+    "route": "",
+    "target": ".hero",
+    "css": ""
+  },
+  {
+    "name": "rail-original150",
+    "route": "work/classquest/",
+    "target": ".spine",
+    "css": ".spine{grid-template-columns:150px minmax(0,1fr)}"
+  },
+  {
+    "name": "rail-limited120",
+    "route": "work/classquest/",
+    "target": ".spine",
+    "css": ".spine:not(#built){grid-template-columns:1fr;gap:0}.spine:not(#built) .sg{display:flex;align-items:center;gap:12px;margin-bottom:16px}.spine:not(#built) .sg .rail{width:64px;height:1px;margin-top:0}"
+  },
+  {
+    "name": "evidence-split",
+    "route": "",
+    "target": ".cards",
+    "css": ""
+  },
+  {
+    "name": "evidence-wide",
+    "route": "",
+    "target": ".cards",
+    "css": ".cards .card:first-child{grid-template-columns:1fr}.cards .card:first-child .cbody{max-width:72ch}.cards .card:first-child .cvisual{max-width:none}"
+  }
+]

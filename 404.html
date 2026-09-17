@@ -14,11 +14,12 @@
 <body>
 <div class="bar">
   <div class="shell">
-    <a class="mark" href="/">Barry Sampath<span> / security</span></a>
+    <a class="mark" href="/">Barry Sampath<span> / cybersecurity &amp; automation</span></a>
     <div class="barright">
-      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
-        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
-      </button>
+      <div class="themectl" role="group" aria-label="Colour mode">
+        <button type="button" data-theme-choice="light" aria-pressed="true">Day</button>
+        <button type="button" data-theme-choice="dark" aria-pressed="false">Night</button>
+      </div>
     </div>
   </div>
 </div>

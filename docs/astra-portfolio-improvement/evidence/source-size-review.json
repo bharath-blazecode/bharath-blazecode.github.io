@@ -1,0 +1,126 @@
+{
+  "captured_at": "2026-09-17T06:18:57.116Z",
+  "baseline_commit": "a07bdfcdeead1697975fc146c884b9d4ccef2ba7",
+  "method": "Raw file bytes and gzip level 9 for each source file separately. Current working-tree line endings are counted as saved. No browser/network measurement; not a performance audit. Excludes images, fonts, PDF and HTTP headers.",
+  "files": [
+    {
+      "file": "index.html",
+      "baseline": {
+        "raw_bytes": 30942,
+        "gzip_bytes": 9171
+      },
+      "current": {
+        "raw_bytes": 32750,
+        "gzip_bytes": 9422
+      },
+      "delta": {
+        "raw_bytes": 1808,
+        "gzip_bytes": 251
+      }
+    },
+    {
+      "file": "404.html",
+      "baseline": {
+        "raw_bytes": 1533,
+        "gzip_bytes": 773
+      },
+      "current": {
+        "raw_bytes": 1653,
+        "gzip_bytes": 794
+      },
+      "delta": {
+        "raw_bytes": 120,
+        "gzip_bytes": 21
+      }
+    },
+    {
+      "file": "work/classquest/index.html",
+      "baseline": {
+        "raw_bytes": 12584,
+        "gzip_bytes": 3904
+      },
+      "current": {
+        "raw_bytes": 13400,
+        "gzip_bytes": 4011
+      },
+      "delta": {
+        "raw_bytes": 816,
+        "gzip_bytes": 107
+      }
+    },
+    {
+      "file": "work/homelab/index.html",
+      "baseline": {
+        "raw_bytes": 14073,
+        "gzip_bytes": 4872
+      },
+      "current": {
+        "raw_bytes": 14847,
+        "gzip_bytes": 4945
+      },
+      "delta": {
+        "raw_bytes": 774,
+        "gzip_bytes": 73
+      }
+    },
+    {
+      "file": "work/luna/index.html",
+      "baseline": {
+        "raw_bytes": 9939,
+        "gzip_bytes": 3509
+      },
+      "current": {
+        "raw_bytes": 10539,
+        "gzip_bytes": 3594
+      },
+      "delta": {
+        "raw_bytes": 600,
+        "gzip_bytes": 85
+      }
+    },
+    {
+      "file": "css/site.css",
+      "baseline": {
+        "raw_bytes": 51754,
+        "gzip_bytes": 12064
+      },
+      "current": {
+        "raw_bytes": 51422,
+        "gzip_bytes": 11589
+      },
+      "delta": {
+        "raw_bytes": -332,
+        "gzip_bytes": -475
+      }
+    },
+    {
+      "file": "js/site.js",
+      "baseline": {
+        "raw_bytes": 26493,
+        "gzip_bytes": 7724
+      },
+      "current": {
+        "raw_bytes": 29972,
+        "gzip_bytes": 8342
+      },
+      "delta": {
+        "raw_bytes": 3479,
+        "gzip_bytes": 618
+      }
+    }
+  ],
+  "totals": {
+    "baseline": {
+      "raw_bytes": 147318,
+      "gzip_bytes": 42017
+    },
+    "current": {
+      "raw_bytes": 154583,
+      "gzip_bytes": 42697
+    },
+    "delta": {
+      "raw_bytes": 7265,
+      "gzip_bytes": 680
+    }
+  }
+}
