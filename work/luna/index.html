@@ -1,86 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>LUNA robot | Barry Sampath</title>
-<meta name="description" content="LUNA is a Raspberry Pi TurboPi robot combining computer vision, offline voice, wireless control and PID-tuned movement.">
-<link rel="canonical" href="https://bharath-blazecode.github.io/work/luna/">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Barry Sampath portfolio">
-<meta property="og:url" content="https://bharath-blazecode.github.io/work/luna/">
-<meta property="og:title" content="LUNA robot | Barry Sampath">
-<meta property="og:description" content="A Raspberry Pi robot combining voice control, computer vision and PID-tuned movement.">
-<meta property="og:image" content="https://bharath-blazecode.github.io/assets/og-portfolio.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Barry Sampath cybersecurity student portfolio">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="LUNA robot | Barry Sampath">
-<meta name="twitter:description" content="A Raspberry Pi robot combining voice control, computer vision and PID-tuned movement.">
-<meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/og-portfolio.jpg">
-<meta name="twitter:image:alt" content="Barry Sampath cybersecurity student portfolio">
-<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
-<link rel="stylesheet" href="../../css/site.css">
-</head>
-<body class="case">
-
-<a class="skip" href="#built">Skip to what I built</a>
-
-<div class="bar">
-  <div class="shell">
-    <a class="mark" href="../../">Barry Sampath<span> / security</span></a>
-    <div class="barright">
-      <nav aria-label="Sections">
-        <ul class="barnav">
-          <li><a href="../homelab/">Home lab</a></li>
-          <li><a href="../classquest/">ClassQuest</a></li>
-          <li><a href="../../#contact">Contact</a></li>
-        </ul>
-      </nav>
-      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
-        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
-      </button>
-      <details class="mobile-nav">
-        <summary>Menu</summary>
-        <nav aria-label="Mobile case studies">
-          <a href="../homelab/">Home lab</a>
-          <a href="../classquest/">ClassQuest</a>
-          <a href="../../#contact">Contact</a>
-        </nav>
-      </details>
-    </div>
-  </div>
-</div>
-
-<main>
-<header class="casehead">
-  <div class="shell intro">
-    <p class="crumb"><a href="../../">Barry Sampath</a> &nbsp;/&nbsp; Work &nbsp;/&nbsp; LUNA</p>
-    <h1 data-vt="luna">LUNA</h1>
-    <p class="lede">A Raspberry Pi robot where computer vision, offline voice, wireless control and PID-tuned movement all had to run at once without breaking each other.</p>
-    <div class="casemeta">
-      <span><b>When</b> Jul&ndash;Nov 2025</span>
-      <span><b>Where</b> QUT university project</span>
-      <span><b>With</b> Zhirui Lu</span>
-      <span><b>Stack</b> Python · OpenCV · Flask · NumPy · Tkinter · Raspberry Pi 4B</span>
-    </div>
-  </div>
-</header>
-
-<div class="shell">
-
-  <div class="spine">
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>LUNA | Barry Sampath</title><meta name="description" content="A small robot with several ways to listen, see and move — and a practical lesson in making those parts work together."><link rel="canonical" href="https://bharath-blazecode.github.io/work/luna/"><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><meta property="og:type" content="article"><meta property="og:site_name" content="Barry Sampath"><meta property="og:title" content="LUNA | Barry Sampath"><meta property="og:description" content="A small robot with several ways to listen, see and move — and a practical lesson in making those parts work together."><meta property="og:url" content="https://bharath-blazecode.github.io/work/luna/"><meta property="og:image" content="https://bharath-blazecode.github.io/assets/projects/luna-robot.jpg"><meta property="og:image:alt" content="LUNA TurboPi robot with mecanum wheels, camera and ultrasonic sensors"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="LUNA | Barry Sampath"><meta name="twitter:description" content="A small robot with several ways to listen, see and move — and a practical lesson in making those parts work together."><meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/projects/luna-robot.jpg"><meta name="twitter:image:alt" content="LUNA TurboPi robot with mecanum wheels, camera and ultrasonic sensors"><link rel="preload" href="../../assets/fonts/archivo-900.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../../assets/fonts/source-serif-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="../../css/site.css"><script src="../../js/theme.js"></script></head><body class="case-page" id="top"><a class="skip" href="#main">Skip to content</a><header class="masthead"><div class="shell mast-inner"><a class="brand" href="../../" aria-label="Barry Sampath, home"><span class="brand-mark" aria-hidden="true">b.</span><span>Barry Sampath<span class="brand-sub">Security &amp; automation</span></span></a><nav class="desktop-nav" aria-label="Main"><a href="../../#work">Work</a><a href="../../#experience">Experience</a><a href="../../#about">About</a><a href="../../#contact">Say hello <span aria-hidden="true">↗</span></a></nav><div class="preferences"><button class="theme-toggle" id="theme-toggle" type="button" hidden>Night</button><button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="false" hidden>Pause motion</button><details class="mobile-menu"><summary>Menu</summary><nav aria-label="Mobile"><a href="../../#work">Work</a><a href="../../#experience">Experience</a><a href="../../#about">About</a><a href="../../#contact">Say hello</a></nav></details></div></div></header><main id="main"><header class="case-head shell"><p class="crumb"><a href="../../#work">Selected work</a> <span aria-hidden="true">/</span> LUNA</p><p class="eyebrow">03 / Physical systems / Shared university project</p><h1>LUNA</h1><p class="case-dek">A small robot with several ways to listen, see and move — and a practical lesson in making those parts work together.</p><div class="case-overview"><div><span class="eyebrow">In a minute</span><p>A Raspberry Pi 4B robot built with Zhirui Lu at QUT, July–November 2025. LUNA combines computer vision, offline voice commands, wireless control and tuned movement on the Hiwonder TurboPi platform.</p></div><div><span class="eyebrow">My contribution</span><p>I integrated WonderEcho voice control and voice-triggered line following, maintained and repaired the hardware, supported Flask command routing, and refined PID tuning after Zhirui’s initial implementation. We shared final integration and documentation.</p></div><div><span class="eyebrow">Status &amp; scope</span><p>Completed with Zhirui Lu, November 2025</p></div></div><nav class="case-index" aria-label="On this page"><a href="#context">Context</a><a href="#built">The work</a><a href="#lessons">What broke</a><a href="#evidence">Evidence</a></nav></header><div class="shell case-body">  <div class="spine" id="context">
     <div class="sg"><span class="sn">Context</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>From software decisions to physical behaviour</h2>
       <p>LUNA is built on the Hiwonder TurboPi platform around a Raspberry Pi 4B. Zhirui Lu and I combined Python control software, a wireless interface, computer vision, offline voice interaction and PID-tuned movement.</p>
-      <p>A badly tuned control loop does not throw an exception; it makes the robot spin. A missed sensor reading can end a demonstration. That immediate physical feedback made this more useful to me than an isolated coursework exercise.</p>
-      <p>My work covered hardware setup and maintenance, Raspberry Pi hardware integration, WonderEcho voice control, the line-following controller, hands-on troubleshooting, Flask command-routing support, PID fine-tuning after Zhirui&rsquo;s initial implementation, and project documentation.</p>
+      <p>Software decisions became visible in the robot&rsquo;s movement. Camera conditions, repeated voice commands and physical hardware faults all affected how it behaved, so testing at the bench was as important as reviewing the code.</p>
+      <p>My work covered hardware setup and repair, Raspberry Pi hardware integration, WonderEcho voice-command handling, and a controller that starts and stops the line-following routine through voice commands. I also supported Flask command routing, refined the PID tuning after Zhirui&rsquo;s initial implementation, and contributed documentation. Zhirui developed the Flask control workflow, ball tracking and initial PID implementation; final integration was shared.</p>
       <figure class="case-media">
         <img src="../../assets/projects/luna-robot.jpg" alt="LUNA TurboPi robot with mecanum wheels, camera and ultrasonic sensors" width="1600" height="1600" loading="lazy" decoding="async">
         <figcaption>Fig. 1 — LUNA on the bench, with the camera gimbal and front sonar visible.</figcaption>
@@ -92,7 +16,7 @@
     <div class="sg"><span class="sn">What I built</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>Subsystems sharing one Raspberry Pi</h2>
-      <p>The individual features were not the hard part. Line following works. Colour tracking works. A Flask interface serving control commands works. Voice recognition over I&sup2;C works. The difficulty was making all four coexist on one Pi, sharing a camera, a bus and a control loop, without any one of them starving the others.</p>
+      <p>The integration challenge was connecting manual control, voice commands, line following and ball tracking through a shared movement system. WonderEcho communicates over I&sup2;C; the camera supplies visual input; Flask exposes wireless control. Python, OpenCV, NumPy and Tkinter support the control and diagnostic tools.</p>
 
       <div class="tele"><b>Vision</b>      OpenCV — line following, colour tracking, tag detection
 <b>Voice</b>       WonderEcho over I²C, offline recognition, no network
@@ -105,62 +29,44 @@
         <figcaption>Fig. 2 — control paths from the two interfaces through the Raspberry Pi to the feature modules and hardware.</figcaption>
       </figure>
 
-      <p style="margin-top:20px">The integration work centred on arbitration and timing. Each subsystem assumed it owned the loop, so we had to decide which command took priority and how the robot should respond when a camera frame or bus read took too long.</p>
+      <p style="margin-top:20px">The integration work centred on command routing and physical response. My WonderEcho handler maps recognised command IDs to actions and uses debounce logic to reduce repeated triggering. The voice controller starts and stops the existing line-following routine; it does not claim authorship of the underlying vendor routine.</p>
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="lessons">
     <div class="sg"><span class="sn">What broke</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>Physical failure modes</h2>
       <ol class="actions">
-        <li><b>Control loop tuning made it spin.</b> PID values that looked reasonable produced overcorrection that compounded. There is no stack trace for this; you watch it and reason backwards from the behaviour.</li>
-        <li><b>Missed sensor reads ended demonstrations.</b> A dropped frame or a bus timeout that a desktop program would shrug off becomes a robot driving into a wall, so every read needed a defined behaviour for the case where it returns nothing.</li>
-        <li><b>Subsystems starved each other.</b> Vision processing at full rate left nothing for voice. Both wanted to be the thing that decided what happened next.</li>
+        <li><b>Movement needed practical tuning.</b> Camera-based tracking can jitter or overcorrect. Zhirui implemented the initial PID control, and I refined the settings through physical testing.</li>
+        <li><b>A hardware fault interrupted development.</b> A motor problem and damaged wheel affected movement. I inspected the hardware and reworked available motor parts so the robot could continue operating.</li>
+        <li><b>Voice commands needed more than recognition.</b> The handler had to map command IDs, manage repeated input and trigger the intended movement. Repeated command testing checked the robot&rsquo;s response.</li>
       </ol>
       <p>This project taught me to record decisions while debugging instead of reconstructing them afterwards. I carried that habit into the HomeLab build log.</p>
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="reflection">
     <div class="sg"><span class="sn">What I&rsquo;d change</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>What I would change</h2>
       <ol class="actions">
-        <li><b>Design the arbitration first.</b> We built four subsystems and then worked out how they would share resources. The order should have been the reverse, and roughly half the integration pain came from that one decision.</li>
-        <li><b>Instrument it from the start.</b> There was no timing telemetry, so diagnosing starvation meant guessing and re-testing. Logging loop durations from day one would have turned a week of that into an afternoon.</li>
-        <li><b>Define degradation explicitly.</b> "What should this do when the camera returns nothing" is a design question, and we kept answering it accidentally, in whichever way the code happened to fall through.</li>
+        <li><b>Design the arbitration first.</b> I would define how manual, voice and autonomous commands share control before building each feature. Clear priorities and stop behaviour would make integration easier to reason about.</li>
+        <li><b>Instrument it from the start.</b> I would record command and processing timings earlier so that integration problems could be investigated with observations rather than repeated guesses.</li>
+        <li><b>Define degradation explicitly.</b> I would specify what the robot should do when a camera frame, sensor value or voice command is missing, before implementing the normal path.</li>
       </ol>
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="evidence">
     <div class="sg"><span class="sn">Evidence</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>Code and documentation</h2>
       <ul class="evidence">
         <li><a href="https://github.com/bharath-blazecode/luna-turbopi-intelligent-robot"><span class="et">Repository, source and documentation</span><span class="eu">GitHub</span></a></li>
-        <li><a href="https://youtu.be/RrAcwlQjl2Y"><span class="et">Robot demonstration</span><span class="eu">Video</span></a></li>
+        <li><a href="https://github.com/bharath-blazecode/luna-turbopi-intelligent-robot/blob/main/docs/contribution-statement.md"><span class="et">Individual and shared contribution statement</span><span class="eu">Attribution</span></a></li><li><a href="https://github.com/bharath-blazecode/luna-turbopi-intelligent-robot/blob/main/docs/challenges-and-solutions.md"><span class="et">Hardware and integration challenges</span><span class="eu">Build notes</span></a></li><li><a href="https://youtu.be/RrAcwlQjl2Y"><span class="et">Robot demonstration</span><span class="eu">Video</span></a></li>
         <li><a href="mailto:barry.sampath@outlook.com?subject=LUNA%20project"><span class="et">Build notes and demonstration video, on request</span><span class="eu">Email</span></a></li>
       </ul>
       <p style="margin-top:22px">Zhirui Lu and I completed the project together. The repository documents the individual and shared contributions.</p>
     </div>
-  </div>
-
-  <nav class="nextprev" aria-label="Other case studies">
-    <a href="../../#work">&larr; All work</a>
-    <a href="../homelab/">ITDR Home Lab &rarr;</a>
-  </nav>
-</div>
-</main>
-
-<footer>
-  <div class="shell">
-    <span>Barry Sampath &middot; Brisbane, QLD</span>
-    <span>Built with Zhirui Lu.</span>
-  </div>
-</footer>
-
-<script src="../../js/site.js"></script>
-</body>
-</html>
+  </div><nav class="next-case" aria-label="Continue exploring"><a href="../../#work">← All work</a><a href="../homelab/">Next: ITDR Home Lab ↗</a></nav><aside class="case-contact"><h2>Let’s compare notes.</h2><a href="mailto:barry.sampath@outlook.com">barry.sampath@outlook.com ↗</a></aside></div></main><footer class="footer"><div class="shell"><a class="footer-name" href="../../">Barry Sampath<span aria-hidden="true">.</span></a><div class="footer-row"><span>Bharath personally. Barry professionally.<br>Brisbane, Queensland.</span><nav aria-label="Footer"><a href="mailto:barry.sampath@outlook.com">Email</a><a href="https://www.linkedin.com/in/barrysampath">LinkedIn</a><a href="https://github.com/bharath-blazecode">GitHub</a><a href="#top">Back to top ↑</a></nav><span class="small">Field notes / 2026<br>Made to be explored.</span></div></div></footer><script src="../../js/site.js"></script></body></html>

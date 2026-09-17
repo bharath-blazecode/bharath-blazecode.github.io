@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bharath-blazecode.github.io/sitemap.xml

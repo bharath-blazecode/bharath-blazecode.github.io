@@ -1,85 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>ITDR Home Lab | Barry Sampath</title>
-<meta name="description" content="Building a Wazuh 4.9.2 SIEM with a Sysmon-instrumented Windows endpoint: what I built, what broke, and what I would do differently.">
-<link rel="canonical" href="https://bharath-blazecode.github.io/work/homelab/">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Barry Sampath portfolio">
-<meta property="og:url" content="https://bharath-blazecode.github.io/work/homelab/">
-<meta property="og:title" content="ITDR Home Lab | Barry Sampath">
-<meta property="og:description" content="A Wazuh and Sysmon home lab, including the infrastructure failures that shaped the build.">
-<meta property="og:image" content="https://bharath-blazecode.github.io/assets/projects/wazuh-dashboard.jpg">
-<meta property="og:image:width" content="1280">
-<meta property="og:image:height" content="673">
-<meta property="og:image:alt" content="Wazuh dashboard from the ITDR home lab">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ITDR Home Lab | Barry Sampath">
-<meta name="twitter:description" content="A Wazuh and Sysmon home lab, including the infrastructure failures that shaped the build.">
-<meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/projects/wazuh-dashboard.jpg">
-<meta name="twitter:image:alt" content="Wazuh dashboard from the ITDR home lab">
-<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
-<link rel="stylesheet" href="../../css/site.css">
-</head>
-<body class="case">
-
-<a class="skip" href="#built">Skip to what I built</a>
-
-<div class="bar">
-  <div class="shell">
-    <a class="mark" href="../../">Barry Sampath<span> / security</span></a>
-    <div class="barright">
-      <nav aria-label="Sections">
-        <ul class="barnav">
-          <li><a href="../classquest/">ClassQuest</a></li>
-          <li><a href="../luna/">LUNA</a></li>
-          <li><a href="../../#contact">Contact</a></li>
-        </ul>
-      </nav>
-      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
-        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
-      </button>
-      <details class="mobile-nav">
-        <summary>Menu</summary>
-        <nav aria-label="Mobile case studies">
-          <a href="../classquest/">ClassQuest</a>
-          <a href="../luna/">LUNA</a>
-          <a href="../../#contact">Contact</a>
-        </nav>
-      </details>
-    </div>
-  </div>
-</div>
-
-<main>
-<header class="casehead">
-  <div class="shell intro">
-    <p class="crumb"><a href="../../">Barry Sampath</a> &nbsp;/&nbsp; Work &nbsp;/&nbsp; ITDR Home Lab</p>
-    <h1 data-vt="homelab">ITDR Home Lab</h1>
-    <p class="lede">A Wazuh SIEM with a Sysmon-instrumented Windows endpoint, built on one laptop and documented while it was going wrong.</p>
-    <div class="casemeta">
-      <span><b>Started</b> June 2026</span>
-      <span><b>Status</b> Phase 1 complete, development paused</span>
-      <span><b>Stack</b> Wazuh 4.9.2 · Sysmon 15.20 · Ubuntu 22.04 · Windows 11 · VMware</span>
-      <span><b>Type</b> Personal project</span>
-    </div>
-  </div>
-</header>
-
-<div class="shell">
-
-  <div class="spine">
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>ITDR Home Lab | Barry Sampath</title><meta name="description" content="Getting a Windows endpoint to report into a security monitoring system — and tracing the infrastructure faults along the way."><link rel="canonical" href="https://bharath-blazecode.github.io/work/homelab/"><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><meta property="og:type" content="article"><meta property="og:site_name" content="Barry Sampath"><meta property="og:title" content="ITDR Home Lab | Barry Sampath"><meta property="og:description" content="Getting a Windows endpoint to report into a security monitoring system — and tracing the infrastructure faults along the way."><meta property="og:url" content="https://bharath-blazecode.github.io/work/homelab/"><meta property="og:image" content="https://bharath-blazecode.github.io/assets/projects/wazuh-dashboard.jpg"><meta property="og:image:alt" content="Wazuh dashboard overview showing alert severity counters and endpoint-security modules"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="ITDR Home Lab | Barry Sampath"><meta name="twitter:description" content="Getting a Windows endpoint to report into a security monitoring system — and tracing the infrastructure faults along the way."><meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/projects/wazuh-dashboard.jpg"><meta name="twitter:image:alt" content="Wazuh dashboard overview showing alert severity counters and endpoint-security modules"><link rel="preload" href="../../assets/fonts/archivo-900.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../../assets/fonts/source-serif-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="../../css/site.css"><script src="../../js/theme.js"></script></head><body class="case-page" id="top"><a class="skip" href="#main">Skip to content</a><header class="masthead"><div class="shell mast-inner"><a class="brand" href="../../" aria-label="Barry Sampath, home"><span class="brand-mark" aria-hidden="true">b.</span><span>Barry Sampath<span class="brand-sub">Security &amp; automation</span></span></a><nav class="desktop-nav" aria-label="Main"><a href="../../#work">Work</a><a href="../../#experience">Experience</a><a href="../../#about">About</a><a href="../../#contact">Say hello <span aria-hidden="true">↗</span></a></nav><div class="preferences"><button class="theme-toggle" id="theme-toggle" type="button" hidden>Night</button><button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="false" hidden>Pause motion</button><details class="mobile-menu"><summary>Menu</summary><nav aria-label="Mobile"><a href="../../#work">Work</a><a href="../../#experience">Experience</a><a href="../../#about">About</a><a href="../../#contact">Say hello</a></nav></details></div></div></header><main id="main"><header class="case-head shell"><p class="crumb"><a href="../../#work">Selected work</a> <span aria-hidden="true">/</span> ITDR Home Lab</p><p class="eyebrow">01 / Security practice / Personal lab</p><h1>ITDR Home Lab</h1><p class="case-dek">Getting a Windows endpoint to report into a security monitoring system — and tracing the infrastructure faults along the way.</p><div class="case-overview"><div><span class="eyebrow">In a minute</span><p>A personal identity threat detection and response (ITDR) home lab, started in June 2026. Phase 1 established endpoint telemetry collection with Wazuh 4.9.2 and Sysmon 15.20 on a single laptop.</p></div><div><span class="eyebrow">My contribution</span><p>I built and documented the virtual environment, enrolled the Windows endpoint and resolved storage and network faults. Detection-rule development remains a future phase.</p></div><div><span class="eyebrow">Status &amp; scope</span><p>Phase 1 complete; development paused</p></div></div><nav class="case-index" aria-label="On this page"><a href="#context">Context</a><a href="#built">The work</a><a href="#lessons">What broke</a><a href="#evidence">Evidence</a><a href="#example">Learning example</a></nav></header><div class="shell case-body">  <div class="spine" id="context">
     <div class="sg"><span class="sn">Context</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>Why I built the lab</h2>
-      <p>I built a SIEM locally so I could enrol an endpoint, generate telemetry and deal with the infrastructure problems that a guided lab normally hides.</p>
-      <p>I focused on identity and endpoint activity. Sysmon supplies the process, network and file telemetry needed to practise that analysis.</p>
+      <p>I built a local security information and event management (SIEM) system to collect activity from a Windows endpoint. I wanted to work through the storage, networking and enrolment problems that a guided lab can hide.</p>
+      <p>The focus is identity and endpoint activity. Sysmon records process, network and file events so they can be collected and inspected in Wazuh.</p>
     </div>
   </div>
 
@@ -90,7 +14,7 @@
       <p>An Ubuntu Server 22.04 virtual machine running a Wazuh 4.9.2 all-in-one deployment: indexer, server and dashboard on one host. A Windows 11 Enterprise virtual machine as the monitored endpoint, with Sysmon 15.20 installed and configured against the SwiftOnSecurity ruleset. Both on a Lenovo ThinkPad under VMware Workstation, bridged onto the local network.</p>
       <p>Phase 1 was complete once the agent enrolled, telemetry reached the indexer and Windows events appeared in the dashboard. Reaching that point exposed four separate infrastructure faults.</p>
 
-      <div class="diagram">
+      <div class="diagram" tabindex="0" role="region" aria-label="Lab architecture diagram; scroll horizontally on narrow screens">
         <svg viewBox="0 0 800 200" role="img" aria-labelledby="dgt dgd">
           <title id="dgt">ITDR home lab architecture</title>
           <desc id="dgd">A Windows 11 virtual machine running Sysmon and the Wazuh agent ships telemetry to an Ubuntu 22.04 virtual machine, where the Wazuh server analyses events, the indexer stores them, and the dashboard queries them.</desc>
@@ -133,19 +57,19 @@
           <text class="dcap" x="640" y="164">HTTPS — LOCAL ONLY</text>
         </svg>
       </div>
-      <p style="font-size:.9rem;color:var(--ink3);margin-top:-6px">Fig. 1 — where telemetry goes. The endpoint is the only node that generates data; everything to the right of it stores, analyses or presents that data.</p>
+      <p style="font-size:.9rem;color:var(--muted);margin-top:-6px">Fig. 1 — where telemetry goes. The diagram follows Windows endpoint telemetry through analysis, storage and search. It illustrates the collection path, not a recorded incident.</p>
 
       <h3>Component roles</h3>
-      <div class="tele"><b>Indexer</b>     Elasticsearch-based storage for parsed events
+      <div class="tele"><b>Indexer</b>     OpenSearch-based storage for parsed events
 <b>Server</b>      Analysis engine — decoders, rules, alerting
-<b>Dashboard</b>   Kibana-based interface for search and triage
+<b>Dashboard</b>   Interface based on OpenSearch Dashboards
 <b>Agent</b>       Runs on the endpoint, ships Windows Event Channel data
 <b>Sysmon</b>      Generates the process, network and file telemetry
-             the Windows log does not produce on its own</div>
+             used to investigate endpoint activity</div>
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="lessons">
     <div class="sg"><span class="sn">What broke</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>Four faults, in the order they happened</h2>
@@ -167,7 +91,7 @@
             </tr>
             <tr>
               <td><span class="sym">Indexer stalling</span></td>
-              <td>The virtual disk hit 99% of 50&nbsp;GB. The indexer degrades quietly under disk pressure rather than failing loudly, so this presented as a performance problem and wasted an hour before I checked <code>df</code>.</td>
+              <td>During this build, the 50&nbsp;GB virtual disk reached 99% usage. The symptom looked like slow indexing, so I investigated the service before checking disk usage with <code>df</code>.</td>
               <td class="fix">Expanded to 100&nbsp;GB via LVM with no rebuild. Now I size for retention rather than for install.</td>
             </tr>
             <tr>
@@ -183,14 +107,14 @@
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="reflection">
     <div class="sg"><span class="sn">What I&rsquo;d change</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>What I would change</h2>
       <ol class="actions">
-        <li><b>Build detection rules alongside the infrastructure.</b> I separated the plumbing from the detection work. Without rules, I could confirm that data arrived but not that the pipeline carried the events I needed.</li>
-        <li><b>Size the disk for retention from the start.</b> Fifty gigabytes is enough to install Wazuh and not enough to run it. That was predictable and I did not predict it.</li>
-        <li><b>Generate adversarial telemetry deliberately.</b> Ordinary use produces ordinary events. Atomic Red Team would have given me something to detect on day one rather than waiting for a real anomaly that was never going to arrive on a lab machine.</li>
+        <li><b>Build detection rules alongside the infrastructure.</b> I completed endpoint collection before developing my own detection rules. I would plan the test events and intended detections together so that receiving data is distinguished from detecting a specific behaviour.</li>
+        <li><b>Size the disk for retention from the start.</b> The 50&nbsp;GB disk filled during this build. I would estimate storage from the expected event volume and retention period; this experience does not establish a universal Wazuh disk requirement.</li>
+        <li><b>Generate adversarial telemetry deliberately.</b> Controlled simulations could test whether the expected events reach the dashboard. Atomic Red Team is a possible tool for a future phase. Security scanning or testing would be limited to systems I own or have explicit permission to test.</li>
         <li><b>Rotate credentials before writing anything public.</b> The initial lab password lived in plaintext in my notes for longer than it should have. It is rotated now, which is the correct outcome and an uncomfortable thing to have learned by nearly publishing it.</li>
       </ol>
 
@@ -199,36 +123,22 @@
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="evidence">
     <div class="sg"><span class="sn">Evidence</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>What backs this up</h2>
-      <p class="lede">The Phase 1 dashboard is shown below. Hostnames and internal addresses stay out of the public evidence; the full build notes remain available on request.</p>
+      <p class="lede">This Phase 1 dashboard overview provides context for the build. The completed collection milestone is documented in the build notes, available on request. The screenshot is not a recorded incident or a detection-performance result.</p>
       <figure class="case-media">
         <img src="../../assets/projects/wazuh-dashboard.jpg" alt="Wazuh dashboard overview showing alert severity counters and endpoint-security modules" width="1280" height="673" loading="lazy" decoding="async">
-        <figcaption>Fig. 2 — the Wazuh overview after the server and endpoint pipeline were running.</figcaption>
+        <figcaption>Fig. 2 — Wazuh overview from the Phase 1 build.</figcaption>
       </figure>
       <ul class="evidence">
-        <li><a href="../../#detection"><span class="et">The detection walkthrough, on the home page</span><span class="eu">Rule 100210</span></a></li>
+        <li><a href="#example"><span class="et">Illustrative detection walkthrough</span><span class="eu">Example rule 100210</span></a></li>
         <li><a href="mailto:barry.sampath@outlook.com?subject=ITDR%20lab%20build%20notes"><span class="et">Phase 1 build notes, on request</span><span class="eu">Email</span></a></li>
       </ul>
     </div>
-  </div>
-
-  <nav class="nextprev" aria-label="Other case studies">
-    <a href="../../#work">&larr; All work</a>
-    <a href="../classquest/">ClassQuest &rarr;</a>
-  </nav>
-</div>
-</main>
-
-<footer>
-  <div class="shell">
-    <span>Barry Sampath &middot; Brisbane, QLD</span>
-    <span><a href="mailto:barry.sampath@outlook.com" style="color:inherit">barry.sampath@outlook.com</a></span>
-  </div>
-</footer>
-
-<script src="../../js/site.js"></script>
-</body>
-</html>
+  </div><section class="example-section" id="example"><p class="eyebrow">Learning example / Illustrative, not a recorded incident</p><h2>Word opens PowerShell.<br>What would you check?</h2><p>This condensed example shows how process telemetry can become a question worth investigating. It is separate from the completed Phase 1 lab. Rule development and response exercises remain planned work.</p><div class="example-grid"><div><details open><summary>01 / Observe the process</summary><p>In this sample event, <code>WINWORD.EXE</code> starts <code>powershell.exe</code> with encoded arguments. That parent–child relationship is worth inspecting; it does not prove malicious activity by itself.</p><pre><code>Sample Windows process event
+Parent:  WINWORD.EXE
+Process: powershell.exe
+Flags:   -nop -w hidden -enc
+Event:   Sysmon Event ID 1</code></pre></details><details><summary>02 / Consider a rule</summary><p>Example rule identifier <code>100210</code> maps to MITRE ATT&amp;CK <code>T1059.001</code> (PowerShell). A sample <code>local_rules.xml</code> entry is a teaching aid, not proof of a deployed detection programme.</p><p>A useful rule would need testing against both expected activity and deliberately generated test events.</p></details><details><summary>03 / Interpret the alert</summary><p>An illustrative Level 12 alert indicates high importance. Its visibility and meaning depend on configuration and the surrounding event context. No measured detection or response time is claimed here.</p></details><details><summary>04 / Ask the next question</summary><p>A possible triage sequence: decode and inspect the payload safely; identify the document and its source; correlate process, network and file events; then decide whether containment or a documented exception is appropriate.</p><p>These are possible investigation steps, not a recorded incident timeline.</p></details></div><div class="example-margin"><span class="responder" data-pose="scan" aria-hidden="true"></span><p class="serif-note">An alert is<br>the beginning<br>of a question.</p><p class="small">No live telemetry. No simulated response-time claim.</p><a href="https://attack.mitre.org/techniques/T1059/001/">PowerShell in MITRE ATT&amp;CK ↗</a></div></div></section><nav class="next-case" aria-label="Continue exploring"><a href="../../#work">← All work</a><a href="../classquest/">Next: ClassQuest ↗</a></nav><aside class="case-contact"><h2>Let’s compare notes.</h2><a href="mailto:barry.sampath@outlook.com">barry.sampath@outlook.com ↗</a></aside></div></main><footer class="footer"><div class="shell"><a class="footer-name" href="../../">Barry Sampath<span aria-hidden="true">.</span></a><div class="footer-row"><span>Bharath personally. Barry professionally.<br>Brisbane, Queensland.</span><nav aria-label="Footer"><a href="mailto:barry.sampath@outlook.com">Email</a><a href="https://www.linkedin.com/in/barrysampath">LinkedIn</a><a href="https://github.com/bharath-blazecode">GitHub</a><a href="#top">Back to top ↑</a></nav><span class="small">Field notes / 2026<br>Made to be explored.</span></div></div></footer><script src="../../js/site.js"></script></body></html>
