@@ -1,110 +1,146 @@
 # bharath-blazecode.github.io
 
-Barry Sampath’s portfolio of practical work in defensive security, identity
-and access, and IT automation. Live at <https://bharath-blazecode.github.io>.
+Personal portfolio for Barry Sampath, a QUT cybersecurity and AI student.
+Live at <https://bharath-blazecode.github.io>.
 
-This refinement uses an Incident File layout with restrained evidence presentation.
-It preserves the existing project narratives, genuine images, attribution and pixel
-responder artwork. The current Code Network role is Event Officer; the Engagement
-Officer transition begins in October 2026. The ITDR home lab remains a personal
-project with Phase 1 complete and development paused.
+**Version 1.1.4.** The homepage now lists Code Network Event Officer as the
+current role and records that the Engagement Officer transition begins in October
+2026. Version 1.1.3 shortened the three case studies and used more specific copy,
+compact evidence placement and mobile navigation. ClassQuest records the full
+five-person team, LUNA separates Barry's contribution from the shared build,
+and low-signal evidence links have been removed. Each case study has its own
+Open Graph and Twitter metadata, while project images decode asynchronously.
+The automatic Incident Responder sequence from 1.1.2 remains unchanged. Versions
+1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
+and 1.0.5 are preserved as zip archives outside this repository, and in
+the branch history.
 
 ## What this is
 
-A hand-written static site. No framework, build step or runtime dependencies.
-GitHub Pages serves the committed files.
+A hand-written static site. No framework, no build step, no dependencies.
+GitHub Pages serves the files exactly as they are committed.
 
 ```
-index.html            home — hero, summary, selected work, about, detection,
-                      experience, skills, background, off shift, contact, terminal
+index.html            home — hero, glance strip, about, detection, work,
+                      experience, skills, background, hello world, off shift
 work/homelab/         case study — ITDR home lab
 work/classquest/      case study — ClassQuest
 work/luna/            case study — LUNA robot
-css/site.css          shared design system
-js/site.js            progressive enhancement
+css/site.css          the whole design system
+js/site.js            progressive enhancement only
 404.html              not-found page
 resume/               resume PDF
 favicon.svg
-assets/projects/      original project screenshots, photograph and diagram
 assets/incident-responder/
-                      six original transparent pixel sprite sheets
+                      six transparent sprite sheets used by the hero sequence
 ```
 
-## Design and reading modes
+## Design
 
-Archivo supplies headings, Source Serif 4 body text, and IBM Plex Mono technical
-labels and code. Day and Night use the Incident palette, with rust links, green
-status indicators and distinct functional borders. Genuine images keep their
-natural proportions and colours. Each project image links to its original
-file through the image and a visible **View full-size image** link.
+Two materials. Editorial print for everything that is read; console
+telemetry for everything that is evidence.
 
-The header exposes **Day / Night** in a **Colour mode** group with programmatic
-selected states. The operating-system preference applies until an explicit choice
-is saved. Theme changes are immediate. Night reveals the Off shift section.
+- **Type** — Archivo (display), Source Serif 4 (body), IBM Plex Mono (data)
+- **Colour** — paper and ink, with a single signal colour reserved strictly
+  for severity. If the accent appears, something is being flagged.
+- **Day shift / night shift** — a SOC runs around the clock, so the theme
+  states are named for the shifts. The switch wipes the page as a circle
+  expanding from the button, via the View Transitions API.
 
-**Skim / Read**, labelled **Homepage reading mode**, controls the homepage only.
-Skim is the first-visit default; Read adds the walkthrough, detailed role bullets
-and selected training. The saved preference persists across visits, and switching
-modes preserves the current section-relative reading position. Case studies always
-show their full narratives. With JavaScript disabled, all reading content remains
-visible and the theme follows the operating system.
+## Two reading speeds
 
-## The illustrative detection console
+The **glance strip** directly under the hero answers who / doing now /
+built / proof in about twenty seconds, without scrolling far. The
+**Skim / Read** control in the header compresses the page further by
+collapsing `.detail-only` sections such as the walkthrough, selected training
+and role bullets. Skim is the default for a new visitor, and the saved choice
+wins on later visits. With JavaScript off, the control is hidden and nothing
+is removed.
 
-Runs an illustrative nine-event sequence with condensed timing, displays an example
-alert, holds for nine seconds so the card can be read, then wipes and goes again.
-The telemetry, rule and alert are examples; the completed home-lab milestone is
-endpoint telemetry collection.
+## hello, world
 
-The sequence pauses on hover, keyboard focus, manual Pause, when off screen or when
-the document is hidden. Suspended timers retain their remaining duration. Restart
-replays the sequence. Reduced motion displays the whole example without animation.
-A live change to reduced motion settles it immediately; turning the preference off
-leaves the static result in place until Restart.
+Every field has a first line everybody recognises. The card near the
+footer cycles through security's six: the EICAR test string, `nmap -sV
+scanme.nmap.org`, `' OR '1'='1'`, `whoami`, "It depends." for GRC, and one
+about MFA. It cycles on a timer and advances on Next.
 
-## The simulated terminal
+Below it is a terminal. **The card and the terminal are two parts of one
+panel, not two modes** — typing appends to a log underneath the card and
+never replaces it, so nothing a visitor was part-way through reading
+disappears. Focusing the input pauses the cycle (the bar shows `Paused`)
+so the text does not change mid-sentence; leaving the box empty resumes
+it. `Next` still advances the card while the log is open, and `clear`
+empties the log without touching the card.
 
-The terminal contains only responses stored in this page. It cannot run commands,
-make requests to scan a host, or operate on a visitor’s computer. Replies use
-`textContent`, so examples such as SQL injection and XSS remain inert text.
+`help` lists the commands: `whoami`, `nmap`, `eicar`, `sqli`, `xss`,
+`grc`, `mfa`, `cards`, `ls`, `resume`, `contact`, `sudo`, `clear`, `exit`.
+`cards` prints all six card lines at once. `ls` includes `off-shift` only
+when the night shift is on. Arrow keys walk the history.
 
-The example card advances only with **Next**. The card and command log remain
-visible together. `clear` empties the log without changing the example card.
-`help` lists `whoami`, `nmap`, `eicar`, `sqli`, `xss`, `grc`, `mfa`, `cards`, `ls`,
-`resume`, `contact`, `sudo`, `clear` and `exit`. `cards` prints all six examples.
-Arrow keys navigate command history. `ls` includes `off-shift` only in Night.
-Command dispatch accepts only the command table’s own properties.
+The input is `hidden` in the markup and unhidden by script, so with
+JavaScript off there is no form to submit and the card still reads
+correctly on its own. Every response is written with `textContent`, which
+is why the `xss` and `sqli` answers are inert text rather than markup.
 
-The command form starts hidden and is enabled by JavaScript. Without JavaScript,
-the qualified service-scan example remains readable as static content.
+## The detection console
 
-## Incident responder and motion
+Runs a nine-event sequence at roughly real speed, fires the alert, holds
+for nine seconds so the card can be read, then wipes and goes again.
 
-The original sprite artwork runs one bounded hero sequence through monitoring,
-alert, containment, recovery and investigation, then settles. **Replay incident**
-starts it again. Manual Pause is remembered for the browser session. Offscreen and
-hidden-document pauses preserve the remaining timing, and sprite frames use the
-same paused state. The terminal pointing action runs once, for about 860 ms, and
-then holds its final pose.
+It only runs when running is worth it — on screen, not hovered, not
+keyboard-focused, tab in front, and not paused by hand. Any of those
+going false freezes it exactly where it is; it resumes from that point
+rather than restarting behind the reader's back. Two controls sit under
+the copy: **Pause / Resume**, which is also what satisfies WCAG 2.2.2
+for motion that starts on its own, and **Restart** for anyone who missed
+the moment.
 
-Reduced motion uses meaningful static poses and disables smooth scrolling,
-decorative entrances and drawing animations. The preference is observed both at
-load and when it changes during a visit. Turning reduced motion off does not
-restart a settled sequence without an explicit replay. Interest labels remain
-visible instead of rotating, and headings retain a consistent weight while scrolling.
+Under `prefers-reduced-motion` the whole sequence prints at once and the
+controls are removed, since there is nothing left to pause.
+
+## Shared-element transitions
+
+Each project card title and the matching case-study `h1` carry the same
+`view-transition-name` via `data-vt`, so clicking a card expands it into
+the page header. A name must be unique per document, which holds: three
+cards on the home page, one `h1` on each case-study page. The theme wipe's
+override of the root animation is scoped to a `.theme-wipe` class the
+script adds for that one transition, so navigation keeps its own root
+cross-fade.
+
+## Kinetic type
+
+Archivo is loaded on the `wght@400..900` variable axis. The hero headline
+sheds weight from 900 to 620 as it exits the viewport, scroll-linked
+rather than timed. Ignored where the variable font did not load, skipped
+under reduced-motion.
+
+## Incident responder
+
+The old portrait placeholder is now a small secure workspace. A timed sequence
+steps through monitoring, alert, containment, recovery and investigation, then
+rests in a calm monitoring state before replaying. Scrolling does not control
+or reverse the story. The sequence pauses while the hero is off-screen or the
+browser tab is hidden, and the visitor can pause or replay it directly. A
+separate inline pointing pose remains beside the terminal as the closing action.
+
+The six animations are prebuilt transparent PNG sprite sheets. CSS controls
+their frame timing with stepped background positions; timers advance the scene
+only while an `IntersectionObserver` reports that it is visible. A pause choice
+is remembered for the browser session. Smaller screens retain the enlarged hero
+sequence and inline terminal handoff. Reduced-motion users see the completed,
+contained hero scene without automatic playback controls.
 
 ## Accessibility and resilience
 
-- Skip links, semantic landmarks and heading hierarchy, visible keyboard focus,
-  and keyboard-operable walkthrough tabs with arrow keys, Home and End.
-- Sticky-header offsets measured for anchor navigation, with focus moved to the
-  destination after same-page navigation.
-- Labelled Day/Night and Skim/Read controls with `aria-pressed` selected states.
-- A semantic faults table with row headers and labelled stacked cells on small screens.
-- Natural image framing, descriptive image alternatives and normal full-size links.
-- Blocked browser storage is caught so it cannot stop the page from running.
-- With JavaScript disabled, the walkthrough panels stack and content stays available.
-- A print stylesheet produces a compact readable document.
+- Works with JavaScript disabled: role list renders as plain text, every
+  walkthrough panel renders stacked, theme follows the operating system.
+- `prefers-reduced-motion` honoured throughout.
+- `prefers-color-scheme` respected by default; an explicit choice is stored
+  in `localStorage`, wrapped so blocked storage cannot break the page.
+- Skip link, semantic landmarks, visible focus, keyboard-operable tabs
+  (arrow keys, Home, End).
+- Print stylesheet produces a clean summary.
 
 ## Local development
 
@@ -114,21 +150,7 @@ Any static server works:
 python3 -m http.server 8000
 ```
 
-Open `http://localhost:8000`. There is no package install or build command.
-
-With Node.js installed, run the interaction checks without installing packages:
-
-```bash
-node --check js/site.js
-node --test tests/site.test.cjs
-```
-
-The tests exercise the actual site script with deterministic clocks and a small
-DOM harness. Browser captures and the limits of verification are documented in
-[`docs/astra-portfolio-improvement/REVIEW.md`](docs/astra-portfolio-improvement/REVIEW.md).
-
 ## To do
 
-- Replace illustrative telemetry and rules with sanitised real examples when
-  detection-rule development resumes.
-- Add `/writing/` once the first posts are drafted.
+- Swap the sample Sysmon event and rule for sanitised real ones
+- Add `/writing/` once the first posts are drafted
