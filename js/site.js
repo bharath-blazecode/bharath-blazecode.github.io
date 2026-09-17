@@ -9,110 +9,29 @@
   'use strict';
 
   var root = document.documentElement;
-  root.classList.add('js');
-  var motionQuery = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
-  var reduce = !!(motionQuery && motionQuery.matches);
-  var motionListeners = [];
-
-  function watchMedia(query, callback) {
-    if (!query) { return; }
-    if (query.addEventListener) { query.addEventListener('change', callback); }
-    else if (query.addListener) { query.addListener(callback); }
-  }
-
-  function syncMotion() {
-    reduce = !!(motionQuery && motionQuery.matches);
-    root.setAttribute('data-reduced-motion', String(reduce));
-    motionListeners.forEach(function (listener) { listener(); });
-  }
-  watchMedia(motionQuery, syncMotion);
-  syncMotion();
-
-  /* A suspended timer retains its remaining duration. CSS uses the same
-     paused flag, so neither the sprite frames nor its state clock advances. */
-  function makeClock(callback) {
-    var timer = null;
-    var started = 0;
-    var remaining = 0;
-    return {
-      reset: function (delay) {
-        clearTimeout(timer);
-        timer = null;
-        remaining = delay;
-      },
-      pause: function () {
-        if (timer === null) { return; }
-        clearTimeout(timer);
-        timer = null;
-        remaining = Math.max(0, remaining - (Date.now() - started));
-      },
-      resume: function () {
-        if (timer !== null) { return; }
-        started = Date.now();
-        timer = setTimeout(function () { timer = null; callback(); }, remaining);
-      }
-    };
-  }
-
-  function watchVisibility(element, callback) {
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) {
-        callback(entries[0].isIntersecting);
-      }, { threshold: 0.15 }).observe(element);
-    } else { callback(true); }
-  }
-
-  var bar = document.querySelector('.bar');
-  function headerHeight() {
-    return bar ? Math.ceil(bar.getBoundingClientRect().height) : 0;
-  }
-  function measureHeader() {
-    var height = headerHeight() + 'px';
-    root.style.setProperty('--header-height', height);
-    root.style.setProperty('--header-offset', height);
-  }
-  measureHeader();
-  window.addEventListener('resize', measureHeader);
-  if (bar && 'ResizeObserver' in window) { new ResizeObserver(measureHeader).observe(bar); }
-
-  /* Record a section-relative position before a mode changes its height.
-     Native scroll anchoring alone tends to pin the sticky mode controls. */
-  function preserveReadingPosition(change) {
-    var sections = Array.prototype.slice.call(document.querySelectorAll('main > [id], main > .hero, main > section'));
-    var line = headerHeight() + 20;
-    var current = null;
-    sections.forEach(function (section) {
-      var rect = section.getBoundingClientRect();
-      if (rect.height && rect.top <= line) { current = section; }
-    });
-    var before = current && current.getBoundingClientRect();
-    var fraction = before ? Math.max(0, Math.min(1, (line - before.top) / before.height)) : 0;
-    change();
-    measureHeader();
-    if (current && before && current.getBoundingClientRect().height) {
-      var after = current.getBoundingClientRect();
-      window.scrollTo({ top: Math.max(0, window.scrollY + after.top + fraction * after.height - headerHeight() - 20), behavior: 'instant' });
-    }
-  }
+  var reduce = window.matchMedia &&
+               window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------------------------------------------------------
      1. Day shift / night shift
-     Explicit choices have matching visible and programmatic states.
-     Theme changes are immediate and preserve the reading position.
+     A SOC runs around the clock, so the two states are named
+     for the two shifts. The switch wipes the document as a
+     circle expanding from the button that was pressed, which
+     gives the change a physical origin instead of a fade.
+     Falls back to an instant switch where unsupported.
      --------------------------------------------------------- */
-  var themeButtons = Array.prototype.slice.call(document.querySelectorAll('[data-theme-choice]'));
-  var colourQuery = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+  var btn = document.getElementById('shiftBtn');
+  var lbl = document.getElementById('shiftLbl');
 
   function isDark() {
     var explicit = root.getAttribute('data-theme');
     if (explicit) { return explicit === 'dark'; }
-    return !!(colourQuery && colourQuery.matches);
+    return !!(window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
   }
 
-  function syncTheme() {
-    themeButtons.forEach(function (button) {
-      button.setAttribute('aria-pressed', String(button.getAttribute('data-theme-choice') === (isDark() ? 'dark' : 'light')));
-    });
+  function syncLabel() {
+    if (lbl) { lbl.textContent = isDark() ? 'Day shift' : 'Night shift'; }
   }
 
   /* restore a previous choice; absent one, the OS decides */
@@ -121,31 +40,90 @@
     if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
   } catch (e) { /* private mode, blocked storage — OS preference stands */ }
 
-  syncTheme();
-  watchMedia(colourQuery, syncTheme);
-  themeButtons.forEach(function (button) {
-    button.addEventListener('click', function () {
-      var next = button.getAttribute('data-theme-choice');
-      if (next !== 'light' && next !== 'dark') { return; }
-      preserveReadingPosition(function () { root.setAttribute('data-theme', next); });
-      syncTheme();
-      try { localStorage.setItem('bs-shift', next); } catch (e) {}
+  syncLabel();
+
+  if (btn) {
+    btn.addEventListener('click', function () {
+      var next = isDark() ? 'light' : 'dark';
+      var apply = function () {
+        root.setAttribute('data-theme', next);
+        syncLabel();
+        try { localStorage.setItem('bs-shift', next); } catch (e) {}
+      };
+
+      if (reduce || !document.startViewTransition) { apply(); return; }
+
+      var r = btn.getBoundingClientRect();
+      var x = r.left + r.width / 2;
+      var y = r.top + r.height / 2;
+      var far = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      /* The class scopes the root-animation override to this one
+         transition, so page navigations keep their own cross-fade. */
+      root.classList.add('theme-wipe');
+      var vt = document.startViewTransition(apply);
+      vt.ready.then(function () {
+        root.animate(
+          { clipPath: [
+              'circle(0px at ' + x + 'px ' + y + 'px)',
+              'circle(' + far + 'px at ' + x + 'px ' + y + 'px)'
+          ] },
+          {
+            duration: 620,
+            easing: 'cubic-bezier(.3,0,.2,1)',
+            pseudoElement: '::view-transition-new(root)'
+          }
+        );
+      }).catch(function () { /* transition unavailable — theme still applied */ });
+      vt.finished
+        .catch(function () {})
+        .then(function () { root.classList.remove('theme-wipe'); });
     });
-  });
+  }
 
   /* ---------------------------------------------------------
-     2. Roles stay visible. No timer or entrance animation changes
-     the identity line while somebody is reading it.
+     2. Rotating role line
+     Four lanes, one at a time, because listing them flat reads
+     as indecision and listing one reads as narrower than true.
+     Container is measured first so nothing on the page reflows.
      --------------------------------------------------------- */
   var rlist = document.getElementById('roleList');
-  if (rlist) { rlist.classList.remove('rotating'); }
+  if (rlist && !reduce) {
+    var roles = Array.prototype.slice.call(rlist.children);
+    if (roles.length > 1) {
+      var widest = 0;
+      roles.forEach(function (el) { widest = Math.max(widest, el.offsetWidth); });
+      rlist.classList.add('rotating');
+      rlist.style.minWidth = (widest + 20) + 'px';
+      var ri = 0;
+      roles[0].classList.add('on');
+      setInterval(function () {
+        var cur = roles[ri];
+        ri = (ri + 1) % roles.length;
+        cur.classList.remove('on');
+        cur.classList.add('out');
+        roles[ri].classList.remove('out');
+        roles[ri].classList.add('on');
+        setTimeout(function () { cur.classList.remove('out'); }, 460);
+      }, 2600);
+    }
+  }
 
   /* ---------------------------------------------------------
      3. The console
-     Nine illustrative events use condensed display timing.
-     The alert holds for nine seconds before the example repeats.
-     Hover, focus, manual pause, offscreen and hidden-tab states suspend it.
-     Reduced motion prints the complete example without animation.
+     Ordinary endpoint noise arriving in real time until one
+     event is not ordinary, then a hold on the fired alert, then
+     it starts over.
+
+     It only ever runs when it is worth running: on screen, not
+     hovered, not focused, tab in front, and not paused by hand.
+     Anything else freezes it exactly where it is and it picks up
+     from there — nothing restarts behind your back. Under
+     reduced-motion the whole sequence prints at once and the
+     controls come off, since there is nothing to pause.
      --------------------------------------------------------- */
   var con        = document.getElementById('console');
   var conPause   = document.getElementById('conPause');
@@ -166,19 +144,26 @@
   var LINE_GAP = 560;   /* between ordinary events            */
   var LAST_GAP = 900;   /* beat before the one that matters   */
   var ALERT_GAP = 430;  /* event to alert card                */
+  var HOLD = 9000;      /* time to read the alert before loop */
+
   if (con) {
+    var cTimer = null;
     var cIndex = 0;
+    var cPhase = 'lines';          /* lines -> alert -> hold   */
     var onScreen = false;
     var hovered = false;
-    var focused = false;
-    var byHand = false;
-    var complete = false;
+    var byHand = false;            /* paused with the button   */
+
+    var trim = function () {
+      while (con.children.length > 10) { con.removeChild(con.firstChild); }
+    };
 
     var addLine = function (row) {
       var d = document.createElement('div');
-      d.className = 'ln' + (row[2] ? ' hit' : '');
+      d.className = 'ln fresh' + (row[2] ? ' hit' : '');
       d.textContent = row[0] + '  ' + row[1];
       con.appendChild(d);
+      trim();
     };
 
     var addAlert = function () {
@@ -187,76 +172,113 @@
       d.textContent = '▲  LEVEL 12  ·  rule 100210  ·  ' +
                       'Office application spawned PowerShell  ·  T1059.001';
       con.appendChild(d);
+      trim();
     };
 
     var canRun = function () {
-      return !reduce && !complete && onScreen && !hovered && !focused && !byHand && !document.hidden;
+      return onScreen && !hovered && !byHand && !document.hidden;
     };
-    var consoleClock = makeClock(function () {
-      if (cIndex < FEED.length) {
-        addLine(FEED[cIndex]);
-        cIndex += 1;
-        consoleClock.reset(cIndex === FEED.length ? ALERT_GAP : cIndex === FEED.length - 1 ? LAST_GAP : LINE_GAP);
-      } else if (cIndex === FEED.length) {
+
+    var halt = function () { clearTimeout(cTimer); cTimer = null; };
+
+    var step = function () {
+      cTimer = null;
+      if (!canRun()) { return; }
+
+      if (cPhase === 'lines') {
+        if (cIndex < FEED.length) {
+          addLine(FEED[cIndex]);
+          cIndex += 1;
+          cTimer = setTimeout(step, cIndex >= FEED.length ? LAST_GAP : LINE_GAP);
+          return;
+        }
+        cPhase = 'alert';
+        cTimer = setTimeout(step, ALERT_GAP);
+        return;
+      }
+
+      if (cPhase === 'alert') {
         addAlert();
-        cIndex += 1;
-        consoleClock.reset(9000);
-      } else {
-        con.textContent = '';
-        cIndex = 0;
-        consoleClock.reset(320);
+        cPhase = 'hold';
+        cTimer = setTimeout(step, HOLD);
+        return;
       }
-      sync();
-    });
-    var sync = function () {
-      var running = canRun();
-      con.setAttribute('data-motion-paused', String(!running));
-      con.setAttribute('data-motion-settled', String(complete));
-      if (running) { consoleClock.resume(); } else { consoleClock.pause(); }
-      if (conPause) {
-        conPause.textContent = reduce ? 'Motion reduced' : complete ? 'Example complete' : byHand ? 'Resume' : 'Pause';
-        conPause.setAttribute('aria-pressed', String(byHand));
-        conPause.setAttribute('aria-disabled', String(reduce || complete));
-      }
-      if (conRestart) { conRestart.setAttribute('aria-disabled', String(reduce)); }
-    };
-    var restart = function () {
-      consoleClock.reset(200);
+
+      /* hold is over — wipe and go again */
       con.textContent = '';
       cIndex = 0;
-      complete = false;
-      byHand = false;
+      cPhase = 'lines';
+      cTimer = setTimeout(step, 320);
+    };
+
+    var resume = function () {
+      if (cTimer || !canRun()) { return; }
+      cTimer = setTimeout(step, 200);
+    };
+
+    /* Freeze or continue, whichever the current conditions call
+       for. Called by every input that can change them. */
+    var sync = function () {
+      if (canRun()) { resume(); } else { halt(); }
+    };
+
+    var restart = function () {
+      halt();
+      con.textContent = '';
+      cIndex = 0;
+      cPhase = 'lines';
       sync();
     };
-    var consoleMotionChanged = function () {
-      if (reduce) {
-        consoleClock.pause();
-        con.textContent = '';
-        FEED.forEach(addLine);
-        addAlert();
-        complete = true;
+
+    var setByHand = function (state) {
+      byHand = state;
+      if (conPause) {
+        conPause.textContent = state ? 'Resume' : 'Pause';
+        conPause.setAttribute('aria-pressed', String(state));
       }
       sync();
     };
-    if (conPause) {
-      conPause.addEventListener('click', function () {
-        if (reduce || complete) { return; }
-        byHand = !byHand;
+
+    if (reduce) {
+      /* No motion: print the whole sequence once and drop the
+         controls, because there is no longer anything to pause. */
+      FEED.forEach(addLine);
+      addAlert();
+      var ctl = document.querySelector('.cctl');
+      if (ctl) { ctl.hidden = true; }
+    } else {
+      con.textContent = '';
+
+      if (conPause) {
+        conPause.addEventListener('click', function () { setByHand(!byHand); });
+      }
+      if (conRestart) {
+        conRestart.addEventListener('click', function () {
+          if (byHand) { setByHand(false); }
+          restart();
+        });
+      }
+
+      /* Hover and keyboard focus hold it still so nobody loses
+         the line they were reading. */
+      con.addEventListener('mouseenter', function () { hovered = true; sync(); });
+      con.addEventListener('mouseleave', function () { hovered = false; sync(); });
+      con.addEventListener('focusin',   function () { hovered = true; sync(); });
+      con.addEventListener('focusout',  function () { hovered = false; sync(); });
+
+      /* A background tab should not be animating. */
+      document.addEventListener('visibilitychange', sync);
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) { onScreen = en.isIntersecting; });
+          sync();
+        }, { threshold: 0.2 }).observe(con);
+      } else {
+        onScreen = true;
         sync();
-      });
+      }
     }
-    if (conRestart) {
-      conRestart.addEventListener('click', function () { if (!reduce) { restart(); } });
-    }
-    con.addEventListener('mouseenter', function () { hovered = true; sync(); });
-    con.addEventListener('mouseleave', function () { hovered = false; sync(); });
-    con.addEventListener('focusin', function () { focused = true; sync(); });
-    con.addEventListener('focusout', function (event) { focused = con.contains(event.relatedTarget); sync(); });
-    document.addEventListener('visibilitychange', sync);
-    motionListeners.push(consoleMotionChanged);
-    restart();
-    consoleMotionChanged();
-    watchVisibility(con, function (visible) { onScreen = visible; sync(); });
   }
 
   /* ---------------------------------------------------------
@@ -276,10 +298,7 @@
         t.setAttribute('aria-selected', String(k === n));
         t.tabIndex = k === n ? 0 : -1;
       });
-      panels.forEach(function (p, k) {
-        p.classList.toggle('live', k === n);
-        p.hidden = k !== n;
-      });
+      panels.forEach(function (p, k) { p.classList.toggle('live', k === n); });
     };
 
     tabs.forEach(function (t, k) {
@@ -297,10 +316,12 @@
 
     show(0);
   }
+})();
+
 /* ============================================================
-   Incident responder
+   Incident responder prototype
    A short automatic story plays only while the hero is visible:
-   monitor, detect, contain, recover, investigate, then settle.
+   monitor, detect, contain, recover, investigate, then rest.
    Scrolling never controls or reverses the sequence.
    ============================================================ */
 (function () {
@@ -312,6 +333,9 @@
   var pauseButton = document.getElementById('incidentPause');
   var replayButton = document.getElementById('incidentReplay');
   var controls = document.getElementById('incidentControls');
+  var reduced = window.matchMedia &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   if (!stage || !stageSprite) { return; }
 
   var stageStates = {
@@ -326,13 +350,16 @@
     { name: 'alert', duration: 2200 },
     { name: 'contain', duration: 3000 },
     { name: 'clear', duration: 2200 },
-    { name: 'investigate', duration: 3000 }
+    { name: 'investigate', duration: 3000 },
+    { name: 'idle', duration: 8000 }
   ];
   var currentStage = '';
   var phase = 0;
+  var timer = null;
+  var phaseStarted = 0;
+  var remaining = sequence[0].duration;
   var onScreen = false;
   var pausedByHand = false;
-  var complete = false;
 
   try { pausedByHand = sessionStorage.getItem('bs-incident-paused') === 'true'; }
   catch (e) { /* blocked storage: default to playing */ }
@@ -352,102 +379,84 @@
   }
 
   function canRun() {
-    return !reduce && !complete && onScreen && !pausedByHand && !document.hidden;
+    return onScreen && !pausedByHand && !document.hidden;
   }
 
-  var clock = makeClock(function () {
-    phase += 1;
-    if (phase >= sequence.length) {
-      complete = true;
-      setStage('clear');
-      if (stageLabel) { stageLabel.textContent = 'Trace complete'; }
-    } else {
-      setStage(sequence[phase].name);
-      clock.reset(sequence[phase].duration);
-    }
-    sync();
-  });
+  function halt() {
+    if (!timer) { return; }
+    clearTimeout(timer);
+    timer = null;
+    remaining = Math.max(80, remaining - (Date.now() - phaseStarted));
+  }
+
+  function advance() {
+    timer = null;
+    phase = (phase + 1) % sequence.length;
+    remaining = sequence[phase].duration;
+    setStage(sequence[phase].name);
+    resume();
+  }
+
+  function resume() {
+    if (timer || !canRun()) { return; }
+    phaseStarted = Date.now();
+    timer = setTimeout(advance, remaining);
+  }
 
   function sync() {
-    var running = canRun();
-    stage.setAttribute('data-motion-paused', String(!running));
-    stage.setAttribute('data-motion-settled', String(complete));
-    if (running) { clock.resume(); } else { clock.pause(); }
-    updatePauseButton();
+    if (canRun()) { resume(); } else { halt(); }
   }
 
   function updatePauseButton() {
     if (!pauseButton) { return; }
-    pauseButton.textContent = reduce ? 'Motion reduced' : complete ? 'Sequence complete' : pausedByHand ? 'Resume animation' : 'Pause animation';
+    pauseButton.textContent = pausedByHand ? 'Resume animation' : 'Pause animation';
     pauseButton.setAttribute('aria-pressed', String(pausedByHand));
-    pauseButton.setAttribute('aria-disabled', String(reduce || complete));
-    if (replayButton) { replayButton.setAttribute('aria-disabled', String(reduce)); }
   }
 
   function setPaused(state) {
     pausedByHand = state;
     try { sessionStorage.setItem('bs-incident-paused', String(state)); } catch (e) {}
+    updatePauseButton();
     sync();
   }
 
   function replay() {
-    if (reduce) { return; }
+    halt();
     phase = 0;
-    complete = false;
-    clock.reset(sequence[0].duration);
+    remaining = sequence[0].duration;
     setStage(sequence[0].name);
-    setPaused(false);
+    if (pausedByHand) { setPaused(false); } else { resume(); }
   }
 
-  function motionChanged() {
-    if (reduce) {
-      clock.pause();
-      complete = true;
-      setStage('clear');
-    }
-    sync();
+  if (reduced) {
+    setStage('clear');
+    if (controls) { controls.hidden = true; }
+    return;
   }
 
   if (controls) { controls.hidden = false; }
-  clock.reset(sequence[0].duration);
+  updatePauseButton();
   setStage(sequence[0].name);
   if (pauseButton) {
-    pauseButton.addEventListener('click', function () {
-      if (!reduce && !complete) { setPaused(!pausedByHand); }
-    });
+    pauseButton.addEventListener('click', function () { setPaused(!pausedByHand); });
   }
   if (replayButton) { replayButton.addEventListener('click', replay); }
   document.addEventListener('visibilitychange', sync);
 
-  motionListeners.push(motionChanged);
-  motionChanged();
-  watchVisibility(stage, function (visible) { onScreen = visible; sync(); });
-})();
-
-/* The terminal responder points once, then holds the final frame. */
-(function () {
-  var terminal = document.querySelector('.terminal-responder');
-  if (!terminal) { return; }
-  var visible = false;
-  var complete = false;
-  var clock = makeClock(function () { complete = true; sync(); });
-  clock.reset(860);
-  function sync() {
-    if (reduce) { complete = true; }
-    var running = !reduce && !complete && visible && !document.hidden;
-    terminal.setAttribute('data-motion-paused', String(!running));
-    terminal.setAttribute('data-motion-settled', String(complete));
-    if (running) { clock.resume(); } else { clock.pause(); }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) { onScreen = entry.isIntersecting; });
+      sync();
+    }, { threshold: 0.2 }).observe(stage);
+  } else {
+    onScreen = true;
+    sync();
   }
-  document.addEventListener('visibilitychange', sync);
-  motionListeners.push(sync);
-  sync();
-  watchVisibility(terminal, function (onScreen) { visible = onScreen; sync(); });
 })();
 
 /* ============================================================
    Skim / Read, and the hello-world panel.
-   Static example cards and a text-only simulated terminal.
+   Appended as a second IIFE so the first stays readable.
    ============================================================ */
 (function () {
   'use strict';
@@ -473,7 +482,7 @@
     setMode(startMode);
     modeBtns.forEach(function (b) {
       b.addEventListener('click', function () {
-        preserveReadingPosition(function () { setMode(b.dataset.mode); });
+        setMode(b.dataset.mode);
         try { localStorage.setItem('bs-mode', b.dataset.mode); } catch (e) {}
       });
     });
@@ -489,7 +498,7 @@
   /* ---------------------------------------------------------
      hello, world
      Every field has a first line everyone recognises. Security
-     has several. Advances only when the visitor asks.
+     has several. Cycles on a timer, advances on click.
      --------------------------------------------------------- */
   var LINES = [
     {
@@ -533,6 +542,10 @@
 
   if (hwCode && hwGloss) {
     var hi = 0;
+    var hTimer = null;
+    var paused = false;
+    var reduceMotion = window.matchMedia &&
+                       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (hwDots) {
       LINES.forEach(function () { hwDots.appendChild(document.createElement('i')); });
@@ -540,7 +553,8 @@
 
     /* ---------------------------------------------------------
        The card. Always visible, always the same six lines.
-       Typing never replaces it. No timer changes its content.
+       Typing never replaces it — it only pauses the cycle so the
+       text does not change out from under someone mid-sentence.
        --------------------------------------------------------- */
     var paint = function (n) {
       hi = (n + LINES.length) % LINES.length;
@@ -557,11 +571,22 @@
 
     var advance = function () { paint(hi + 1); };
 
+    var startCycle = function () {
+      clearInterval(hTimer);
+      if (!reduceMotion && !paused) { hTimer = setInterval(advance, 7000); }
+    };
+
+    var setPaused = function (state) {
+      paused = state;
+      if (hwState) { hwState.hidden = !state; }
+      startCycle();
+    };
+
     paint(0);
-    if (hwState) { hwState.hidden = true; }
+    startCycle();
 
     if (hwNext) {
-      hwNext.addEventListener('click', advance);
+      hwNext.addEventListener('click', function () { advance(); startCycle(); });
     }
 
     /* ---------------------------------------------------------
@@ -669,6 +694,13 @@
       var history = [];
       var hpos = -1;
 
+      /* Focus pauses the card. Leaving an empty box resumes it.
+         The card itself is never cleared. */
+      hwInput.addEventListener('focus', function () { setPaused(true); });
+      hwInput.addEventListener('blur', function () {
+        if (!hwInput.value.trim()) { setPaused(false); }
+      });
+
       hwInput.addEventListener('keydown', function (e) {
         if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') { return; }
         if (!history.length) { return; }
@@ -682,7 +714,6 @@
         e.preventDefault();
         var raw = hwInput.value.trim();
         hwInput.value = '';
-        hwInput.focus({ preventScroll: true });
         if (!raw) { return; }
         history.unshift(raw);
         hpos = -1;
@@ -698,68 +729,15 @@
           hwLog.textContent = '';
           hwLog.hidden = true;
           hwInput.blur();
+          setPaused(false);
           return;
         }
 
-        var fn = Object.prototype.hasOwnProperty.call(COMMANDS, cmd) ? COMMANDS[cmd] : null;
+        var fn = COMMANDS[cmd];
         write(raw, fn ? fn()
                       : [['command not found: ' + cmd, 1],
                          ['Try help.']]);
       });
     }
   }
-})();
-
-/* Offset same-document navigation by the measured sticky header, close the
-   mobile menu first, and put keyboard focus at the destination. */
-function anchorTarget(hash) {
-  try { return document.getElementById(decodeURIComponent(hash.slice(1))); }
-  catch (e) { return null; }
-}
-function revealAnchor(target) {
-  if (root.getAttribute('data-mode') === 'skim' && target.closest('.detail-only')) {
-    root.removeAttribute('data-mode');
-    Array.prototype.forEach.call(document.querySelectorAll('.modectl button'), function (button) {
-      button.setAttribute('aria-pressed', String(button.dataset.mode === 'read'));
-    });
-    try { localStorage.setItem('bs-mode', 'read'); } catch (e) {}
-  }
-}
-function scrollToAnchor(target, smooth) {
-  measureHeader();
-  window.scrollTo({ top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - headerHeight() - 16), behavior: smooth && !reduce ? 'smooth' : 'instant' });
-}
-document.addEventListener('click', function (event) {
-  var link = event.target.closest && event.target.closest('a[href]');
-  if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.hasAttribute('download') || link.target === '_blank') { return; }
-  var url;
-  try { url = new URL(link.href, window.location.href); } catch (e) { return; }
-  if (url.origin !== window.location.origin || url.pathname !== window.location.pathname || url.search !== window.location.search || !url.hash) { return; }
-  var target = anchorTarget(url.hash);
-  if (!target) { return; }
-  event.preventDefault();
-  var menu = link.closest('details');
-  if (menu) { menu.open = false; }
-  revealAnchor(target);
-  if (!target.hasAttribute('tabindex')) {
-    target.setAttribute('tabindex', '-1');
-    target.addEventListener('blur', function () { target.removeAttribute('tabindex'); }, { once: true });
-  }
-  target.focus({ preventScroll: true });
-  try { window.history.pushState(null, '', url.hash); } catch (e) { /* native URL may be unavailable in a local preview */ }
-  scrollToAnchor(target, true);
-});
-
-/* A case-study link can request the detailed walkthrough even when the
-   visitor last chose Skim. Reveal it before native hash positioning. */
-var initialTarget = anchorTarget(window.location.hash);
-if (initialTarget) { revealAnchor(initialTarget); }
-function restoreHashPosition() {
-  var target = anchorTarget(window.location.hash);
-  if (!target) { return; }
-  revealAnchor(target);
-  scrollToAnchor(target, false);
-}
-window.addEventListener('load', restoreHashPosition);
-window.addEventListener('hashchange', restoreHashPosition);
 })();

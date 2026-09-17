@@ -33,7 +33,7 @@
 
 <div class="bar">
   <div class="shell">
-    <a class="mark" href="../../">Barry Sampath<span> / cybersecurity &amp; automation</span></a>
+    <a class="mark" href="../../">Barry Sampath<span> / security</span></a>
     <div class="barright">
       <nav aria-label="Sections">
         <ul class="barnav">
@@ -42,10 +42,9 @@
           <li><a href="../../#contact">Contact</a></li>
         </ul>
       </nav>
-      <div class="themectl" role="group" aria-label="Colour mode">
-        <button type="button" data-theme-choice="light" aria-pressed="true">Day</button>
-        <button type="button" data-theme-choice="dark" aria-pressed="false">Night</button>
-      </div>
+      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
+        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
+      </button>
       <details class="mobile-nav">
         <summary>Menu</summary>
         <nav aria-label="Mobile case studies">
@@ -137,18 +136,12 @@
       <p style="font-size:.9rem;color:var(--ink3);margin-top:-6px">Fig. 1 — where telemetry goes. The endpoint is the only node that generates data; everything to the right of it stores, analyses or presents that data.</p>
 
       <h3>Component roles</h3>
-      <div class="tele"><b>Indexer</b>     OpenSearch-based storage and search for alerts
+      <div class="tele"><b>Indexer</b>     Elasticsearch-based storage for parsed events
 <b>Server</b>      Analysis engine — decoders, rules, alerting
-<b>Dashboard</b>   OpenSearch Dashboards-based interface for search and triage
+<b>Dashboard</b>   Kibana-based interface for search and triage
 <b>Agent</b>       Runs on the endpoint, ships Windows Event Channel data
 <b>Sysmon</b>      Generates the process, network and file telemetry
              the Windows log does not produce on its own</div>
-
-      <p class="lede">The Phase 1 dashboard is shown below. The full build notes remain available on request.</p>
-      <figure class="case-media">
-        <a class="evidence-image" href="../../assets/projects/wazuh-dashboard.jpg"><img src="../../assets/projects/wazuh-dashboard.jpg" alt="Wazuh dashboard overview showing alert severity counters and endpoint-security modules" width="1280" height="673" loading="lazy" decoding="async"></a>
-        <figcaption>Fig. 2 — the Wazuh overview after the server and endpoint pipeline were running. <a class="fullsize" href="../../assets/projects/wazuh-dashboard.jpg">View full-size image</a></figcaption>
-      </figure>
     </div>
   </div>
 
@@ -163,24 +156,24 @@
           <thead><tr><th scope="col">Symptom</th><th scope="col">Diagnosis</th><th scope="col">Fix</th></tr></thead>
           <tbody>
             <tr>
-              <th scope="row" data-label="Symptom"><span class="sym">VM storage corrupting</span></th>
-              <td data-label="Diagnosis">OneDrive was syncing the directory holding the virtual disks and taking locks on <code>.vmdk</code> files mid-write.</td>
-              <td class="fix" data-label="Fix">Moved every VM file outside the OneDrive tree. Cloud sync and files that write continuously do not belong in the same folder.</td>
+              <td><span class="sym">VM storage corrupting</span></td>
+              <td>OneDrive was syncing the directory holding the virtual disks and taking locks on <code>.vmdk</code> files mid-write.</td>
+              <td class="fix">Moved every VM file outside the OneDrive tree. Cloud sync and files that write continuously do not belong in the same folder.</td>
             </tr>
             <tr>
-              <th scope="row" data-label="Symptom"><span class="sym">Server unreachable</span></th>
-              <td data-label="Diagnosis">A stale netplan configuration held a static address of <code>192.168.170.10</code>, from a subnet that stopped existing when I changed network adapters. The interface came up; nothing could route to it.</td>
-              <td class="fix" data-label="Fix">Rewrote netplan against the bridged adapter. Found by comparing the configured address against the adapter&rsquo;s actual subnet instead of debugging the services on top.</td>
+              <td><span class="sym">Server unreachable</span></td>
+              <td>A stale netplan configuration held a static address of <code>192.168.170.10</code>, from a subnet that stopped existing when I changed network adapters. The interface came up; nothing could route to it.</td>
+              <td class="fix">Rewrote netplan against the bridged adapter. Found by comparing the configured address against the adapter&rsquo;s actual subnet instead of debugging the services on top.</td>
             </tr>
             <tr>
-              <th scope="row" data-label="Symptom"><span class="sym">Indexer stalling</span></th>
-              <td data-label="Diagnosis">The virtual disk hit 99% of 50&nbsp;GB. The indexer degrades quietly under disk pressure rather than failing loudly, so this presented as a performance problem and wasted an hour before I checked <code>df</code>.</td>
-              <td class="fix" data-label="Fix">Expanded to 100&nbsp;GB via LVM with no rebuild. Now I size for retention rather than for install.</td>
+              <td><span class="sym">Indexer stalling</span></td>
+              <td>The virtual disk hit 99% of 50&nbsp;GB. The indexer degrades quietly under disk pressure rather than failing loudly, so this presented as a performance problem and wasted an hour before I checked <code>df</code>.</td>
+              <td class="fix">Expanded to 100&nbsp;GB via LVM with no rebuild. Now I size for retention rather than for install.</td>
             </tr>
             <tr>
-              <th scope="row" data-label="Symptom"><span class="sym">SSH dead on NAT</span></th>
-              <td data-label="Diagnosis">On NAT networking the host was unreachable over SSH while the agent still enrolled successfully, so the failure looked partial and I spent time on the wrong layer.</td>
-              <td class="fix" data-label="Fix">Reverted to bridged to get the lab productive. NAT restoration on the correct subnet is documented and queued rather than abandoned.</td>
+              <td><span class="sym">SSH dead on NAT</span></td>
+              <td>On NAT networking the host was unreachable over SSH while the agent still enrolled successfully, so the failure looked partial and I spent time on the wrong layer.</td>
+              <td class="fix">Reverted to bridged to get the lab productive. NAT restoration on the correct subnet is documented and queued rather than abandoned.</td>
             </tr>
           </tbody>
         </table>
@@ -196,16 +189,13 @@
       <h2>What I would change</h2>
       <ol class="actions">
         <li><b>Build detection rules alongside the infrastructure.</b> I separated the plumbing from the detection work. Without rules, I could confirm that data arrived but not that the pipeline carried the events I needed.</li>
-        <li><b>Size the disk for retention from the start.</b> The 50 GB disk filled during my build. I would size storage around expected event volume and retention from the start.</li>
+        <li><b>Size the disk for retention from the start.</b> Fifty gigabytes is enough to install Wazuh and not enough to run it. That was predictable and I did not predict it.</li>
         <li><b>Generate adversarial telemetry deliberately.</b> Ordinary use produces ordinary events. Atomic Red Team would have given me something to detect on day one rather than waiting for a real anomaly that was never going to arrive on a lab machine.</li>
         <li><b>Rotate credentials before writing anything public.</b> The initial lab password lived in plaintext in my notes for longer than it should have. It is rotated now, which is the correct outcome and an uncomfortable thing to have learned by nearly publishing it.</li>
       </ol>
 
       <h3>Where it goes next</h3>
       <p>Phase 2 is detection-rule development and incident-response exercises against the endpoint. The lab is paused while university assessment and paid work take priority. The environment is still available when I return to it.</p>
-      <ul class="evidence">
-        <li><a href="../../#detection"><span class="et">Illustrative detection walkthrough</span><span class="eu">Example rule 100210</span></a></li>
-      </ul>
     </div>
   </div>
 
@@ -213,7 +203,13 @@
     <div class="sg"><span class="sn">Evidence</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>What backs this up</h2>
+      <p class="lede">The Phase 1 dashboard is shown below. Hostnames and internal addresses stay out of the public evidence; the full build notes remain available on request.</p>
+      <figure class="case-media">
+        <img src="../../assets/projects/wazuh-dashboard.jpg" alt="Wazuh dashboard overview showing alert severity counters and endpoint-security modules" width="1280" height="673" loading="lazy" decoding="async">
+        <figcaption>Fig. 2 — the Wazuh overview after the server and endpoint pipeline were running.</figcaption>
+      </figure>
       <ul class="evidence">
+        <li><a href="../../#detection"><span class="et">The detection walkthrough, on the home page</span><span class="eu">Rule 100210</span></a></li>
         <li><a href="mailto:barry.sampath@outlook.com?subject=ITDR%20lab%20build%20notes"><span class="et">Phase 1 build notes, on request</span><span class="eu">Email</span></a></li>
       </ul>
     </div>
