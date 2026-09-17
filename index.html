@@ -4,22 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Barry Sampath | Cybersecurity and IT automation</title>
-<meta name="description" content="Barry Sampath’s portfolio of practical work in defensive security, identity and access, and IT automation, with project evidence and technical case studies.">
+<title>Barry Sampath | Cybersecurity student portfolio</title>
+<meta name="description" content="Barry Sampath is a QUT cybersecurity and AI student in Brisbane, building practical experience in blue-team detection, identity security and IT automation.">
 <link rel="canonical" href="https://bharath-blazecode.github.io/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Barry Sampath portfolio">
 <meta property="og:url" content="https://bharath-blazecode.github.io/">
-<meta property="og:title" content="Barry Sampath | Cybersecurity and IT automation">
-<meta property="og:description" content="Practical work in defensive security, identity and access, and IT automation, with project evidence and technical case studies.">
+<meta property="og:title" content="Barry Sampath | Cybersecurity student portfolio">
+<meta property="og:description" content="QUT cybersecurity and AI student building practical experience in detection, identity security and IT automation.">
 <meta property="og:image" content="https://bharath-blazecode.github.io/assets/og-portfolio.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Barry Sampath cybersecurity student portfolio">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Barry Sampath | Cybersecurity and IT automation">
-<meta name="twitter:description" content="Practical work in defensive security, identity and access, and IT automation, with project evidence and technical case studies.">
+<meta name="twitter:title" content="Barry Sampath | Cybersecurity student portfolio">
+<meta name="twitter:description" content="QUT cybersecurity and AI student building practical experience in detection, identity security and IT automation.">
 <meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/og-portfolio.jpg">
 <meta name="twitter:image:alt" content="Barry Sampath cybersecurity student portfolio">
 <link rel="preload" href="assets/incident-responder/idle.png" as="image">
@@ -48,33 +48,32 @@
 <!-- ══════════ BAR ══════════ -->
 <div class="bar">
   <div class="shell">
-    <a class="mark" href="#top">Barry Sampath<span> / cybersecurity &amp; automation</span></a>
+    <a class="mark" href="#top">Barry Sampath<span> / cybersecurity student</span></a>
     <div class="barright">
       <nav aria-label="Sections">
         <ul class="barnav">
-          <li><a href="#work">Work</a></li>
           <li><a href="#about">About</a></li>
+          <li><a href="#work">Work</a></li>
           <li><a href="#experience">Experience</a></li>
-          <li><a href="#contact">Contact</a></li>
           <li><a href="#helloworld">Terminal</a></li>
+          <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
-      <div class="modectl" role="group" aria-label="Homepage reading mode">
+      <div class="modectl" role="group" aria-label="Reading mode">
         <button type="button" data-mode="skim" aria-pressed="true">Skim</button>
         <button type="button" data-mode="read" aria-pressed="false">Read</button>
       </div>
-      <div class="themectl" role="group" aria-label="Colour mode">
-        <button type="button" data-theme-choice="light" aria-pressed="true">Day</button>
-        <button type="button" data-theme-choice="dark" aria-pressed="false">Night</button>
-      </div>
+      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
+        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
+      </button>
       <details class="mobile-nav">
         <summary>Menu</summary>
         <nav aria-label="Mobile sections">
-          <a href="#work">Work</a>
           <a href="#about">About</a>
+          <a href="#work">Work</a>
           <a href="#experience">Experience</a>
-          <a href="#contact">Contact</a>
           <a href="#helloworld">Terminal</a>
+          <a href="#contact">Contact</a>
         </nav>
       </details>
     </div>
@@ -98,7 +97,7 @@
         </span>
       </p>
 
-      <p class="herolede">I focus on defensive security, identity and access, and IT automation. Explore the projects, lab notes and technical decisions behind my work.</p>
+      <p class="herolede">I am a second-year Cybersecurity and AI student at QUT in Brisbane. This site collects the projects, lab notes and work experience behind the direction I am taking.</p>
 
       <div class="cta">
         <a class="solid" href="#work">See the projects &rarr;</a>
@@ -107,7 +106,7 @@
     </div>
 
     <div>
-      <figure>
+      <figure style="margin:0">
         <div class="portrait">
           <div class="incident-stage" id="incidentStage" data-incident="idle" role="img" aria-label="A pixel incident responder automatically monitors a secure workspace, detects and contains a hostile signal, then investigates its trace.">
             <div class="threat-field" aria-hidden="true">
@@ -151,12 +150,12 @@
   <div class="shell">
     <div class="gwrap">
       <div class="gcell">
-        <p class="eyebrow">Who</p>
+        <h4>Who</h4>
         <p class="big">Barry Sampath</p>
-        <p>My given name is Bharath; I use Barry professionally. I’m based in Brisbane.</p>
+        <p>My given name is Bharath; I use Barry professionally. Second-year QUT Bachelor of IT student. GPA 6.09 / 7.00, finishing December 2027.</p>
       </div>
       <div class="gcell">
-        <p class="eyebrow">Doing now</p>
+        <h4>Doing now</h4>
         <ul>
           <li><b>ScienceGears</b><br>Cybersecurity &amp; IT Automation Analyst, paid contract</li>
           <li><b>Code Network</b><br>Event Officer</li>
@@ -164,7 +163,7 @@
         </ul>
       </div>
       <div class="gcell">
-        <p class="eyebrow">Built</p>
+        <h4>Built</h4>
         <ul>
           <li><a href="work/homelab/"><b>ITDR home lab</b></a>: Wazuh SIEM and Sysmon telemetry</li>
           <li><a href="work/classquest/"><b>ClassQuest</b></a>: 10 merged PRs and the People&rsquo;s Choice Award</li>
@@ -172,7 +171,7 @@
         </ul>
       </div>
       <div class="gcell">
-        <p class="eyebrow">Proof</p>
+        <h4>Proof</h4>
         <ul>
           <li><b>3rd place</b> CIMCTF 2026, team SushiShield</li>
           <li><b>People&rsquo;s Choice</b> Winter Hackathon 2026</li>
@@ -182,65 +181,6 @@
     </div>
   </div>
 </div>
-
-<!-- ══════════ WORK ══════════ -->
-<section id="work" class="sec-rule">
-  <div class="shell">
-    <p class="slab">Selected work</p>
-    <h2>Three projects I can explain</h2>
-    <p class="lede">Each case study covers the context, my contribution, the problems I hit and the evidence behind the result.</p>
-
-    <div class="cards">
-      <article class="card wcard">
-        <div class="cbody">
-          <span class="cbadge done">People&rsquo;s Choice Award</span>
-          <h3 data-vt="classquest"><a class="card-title" href="work/classquest/">ClassQuest</a></h3>
-          <p class="cmeta">Code Network Winter Hackathon &middot; Aug 2026 &middot; Team of five</p>
-          <p>A learning site that turns lecture material into playable quests. I contributed ten merged pull requests across the playable demo, frontend, upload security and cohort challenges.</p>
-          <p class="detail-only">The upload handler is the part I would start with. Student-supplied files create most of the site&rsquo;s attack surface in one function.</p>
-          <div class="ctags"><span>React</span><span>TypeScript</span><span>FastAPI</span><span>Python</span><span>SQLite</span></div>
-          <a class="cgo" href="work/classquest/">Read the case study &rarr;</a>
-        </div>
-        <figure class="cthumb">
-          <a class="evidence-image" href="assets/projects/classquest-gameplay.jpg"><img src="assets/projects/classquest-gameplay.jpg" alt="ClassQuest game world with a player character, learning portals and a concept-progress panel" width="1280" height="720" loading="lazy" decoding="async"></a>
-          <figcaption><a class="fullsize" href="assets/projects/classquest-gameplay.jpg">View full-size image</a></figcaption>
-        </figure>
-      </article>
-
-      <article class="card wcard">
-        <div class="cbody">
-          <span class="cbadge pause">Phase 1 complete &middot; paused</span>
-          <h3 data-vt="homelab"><a class="card-title" href="work/homelab/">ITDR Home Lab</a></h3>
-          <p class="cmeta">Personal project &middot; from June 2026</p>
-          <p>A Wazuh 4.9.2 server, Windows endpoint and Sysmon telemetry running on my laptop. The case study includes the four failures I hit before the first dashboard login.</p>
-          <p class="detail-only">Phase 1 is complete. Detection-rule development is the next phase when I return to the project.</p>
-          <div class="ctags"><span>Wazuh 4.9.2</span><span>Sysmon</span><span>Ubuntu</span><span>VMware</span></div>
-          <a class="cgo" href="work/homelab/">Read the case study &rarr;</a>
-        </div>
-        <figure class="cthumb">
-          <a class="evidence-image" href="assets/projects/wazuh-dashboard.jpg"><img src="assets/projects/wazuh-dashboard.jpg" alt="Wazuh dashboard overview showing alert severity counters and endpoint-security modules" width="1280" height="673" loading="lazy" decoding="async"></a>
-          <figcaption><a class="fullsize" href="assets/projects/wazuh-dashboard.jpg">View full-size image</a></figcaption>
-        </figure>
-      </article>
-
-      <article class="card wcard">
-        <div class="cbody">
-          <span class="cbadge done">Completed</span>
-          <h3 data-vt="luna"><a class="card-title" href="work/luna/">LUNA: TurboPi robot</a></h3>
-          <p class="cmeta">QUT university project &middot; Jul to Nov 2025 &middot; With Zhirui Lu</p>
-          <p>A Raspberry Pi robot combining computer vision, offline voice, wireless control and PID-tuned movement on one platform.</p>
-          <p class="detail-only">This project taught me how quickly hardware exposes bad assumptions. It is also where I started documenting decisions while I worked.</p>
-          <div class="ctags"><span>Python</span><span>OpenCV</span><span>Flask</span><span>Raspberry Pi</span></div>
-          <a class="cgo" href="work/luna/">Read the case study &rarr;</a>
-        </div>
-        <figure class="cthumb">
-          <a class="evidence-image" href="assets/projects/luna-robot.jpg"><img class="thumb-luna" src="assets/projects/luna-robot.jpg" alt="LUNA TurboPi robot with mecanum wheels, camera and ultrasonic sensors" width="1600" height="1600" loading="lazy" decoding="async"></a>
-          <figcaption><a class="fullsize" href="assets/projects/luna-robot.jpg">View full-size image</a></figcaption>
-        </figure>
-      </article>
-    </div>
-  </div>
-</section>
 
 <!-- ══════════ ABOUT ══════════ -->
 <section id="about" class="about">
@@ -270,10 +210,10 @@
 <div class="band bleed" id="detection">
   <div class="shell">
     <div>
-      <p class="slab">Illustrative detection exercise</p>
+      <p class="slab">From the home lab</p>
       <h2>What happens when Word spawns PowerShell</h2>
       <p>A busy endpoint produces thousands of process-creation events a day. Almost all of them are boring, which is the point: you cannot recognise the one that matters without knowing what ordinary looks like.</p>
-      <p>This illustrative sequence uses sample telemetry, with timing condensed for display. It loops while it is on screen and pauses if you hover over it or scroll away.</p>
+      <p>This is that stream, playing at real speed. It loops while it is on screen, and pauses if you hover it or scroll away.</p>
       <p style="font-family:var(--f-mono);font-size:11px;color:var(--ink3);letter-spacing:.04em">One of three projects &middot; <a href="work/homelab/" style="color:var(--ink)">ITDR home lab &rarr;</a></p>
       <div class="cctl">
         <button type="button" class="creplay" id="conPause" aria-pressed="false">Pause</button>
@@ -281,7 +221,7 @@
       </div>
     </div>
     <div>
-      <div class="console" id="console" tabindex="0" role="img" aria-label="A simulated endpoint event stream: routine process and network events, ending with PowerShell launched by Microsoft Word and a level 12 alert.">
+      <div class="console" id="console" role="img" aria-label="A simulated endpoint event stream: routine process and network events, ending with PowerShell launched by Microsoft Word and a level 12 alert.">
         <div class="ln">11:42:04  EventID 1   svchost.exe    &larr; services.exe</div>
         <div class="ln">11:42:06  EventID 3   chrome.exe     &rarr; 142.250.76.14:443</div>
         <div class="ln">11:42:08  EventID 1   Teams.exe      &larr; explorer.exe</div>
@@ -294,9 +234,9 @@
 <!-- ══════════ WALKTHROUGH ══════════ -->
 <section id="walkthrough" class="detail-only">
   <div class="shell">
-    <p class="slab">How the example works</p>
-    <h2>One sample event, from rule to response</h2>
-    <p class="lede">Step through with the tabs or the arrow keys. The telemetry, rule and alert are illustrative. The completed lab milestone is endpoint telemetry collection.</p>
+    <p class="slab">The rule behind it</p>
+    <h2>One event, through my rule, to a response</h2>
+    <p class="lede">Step through with the tabs or the arrow keys. Sample telemetry modelled on my lab; the rule is the shape I write them in.</p>
 
     <div class="steps" role="tablist" aria-label="Detection walkthrough">
       <button type="button" role="tab" aria-selected="true" aria-controls="p1" id="t1"><b>Step 01</b>Raw Sysmon event</button>
@@ -320,8 +260,8 @@
       </div>
 
       <div class="panel" role="tabpanel" id="p2" aria-labelledby="t2">
-        <h3>Example rule for <code>local_rules.xml</code></h3>
-        <p>It chains off Wazuh&rsquo;s built-in Sysmon process-create rule and narrows on the parent. Level 12 marks this example as high importance; alert logging and dashboard visibility also depend on configuration.</p>
+        <h3>The rule, in <code>local_rules.xml</code></h3>
+        <p>It chains off Wazuh&rsquo;s built-in Sysmon process-create rule and narrows on the parent. Level 12 puts it above the noise floor so it surfaces on the dashboard instead of settling into the archive.</p>
         <div class="tele">&lt;group name="sysmon,windows,"&gt;
   &lt;rule id="<u>100210</u>" level="<u>12</u>"&gt;
     &lt;if_sid&gt;61603&lt;/if_sid&gt;
@@ -335,8 +275,8 @@
       </div>
 
       <div class="panel" role="tabpanel" id="p3" aria-labelledby="t3">
-        <h3>Illustrative alert summary</h3>
-        <p>A simplified alert card showing the fields used in this example.</p>
+        <h3>What the analyst actually sees</h3>
+        <p>The dashboard card, roughly two seconds after the process starts.</p>
         <div class="alertcard">
           <div class="ah">
             <span class="lv">Level 12</span>
@@ -344,18 +284,18 @@
             <span class="ts">11:42:18 UTC</span>
           </div>
           <dl class="arows">
-            <dt>Rule</dt><dd>100210 &middot; T1059.001 PowerShell</dd>
+            <dt>Rule</dt><dd>100210 &middot; T1059.001 Command and Scripting Interpreter</dd>
             <dt>Agent</dt><dd>Windows-Lab-Endpoint</dd>
             <dt>Process</dt><dd>powershell.exe &larr; WINWORD.EXE</dd>
             <dt>Flags</dt><dd>-nop &middot; -w hidden &middot; -enc</dd>
             <dt>Decoder</dt><dd>windows_eventchannel</dd>
           </dl>
         </div>
-        <p>The label states the example alert’s severity.</p>
+        <p>The severity colour is reserved for alerts, so it stays noticeable against the otherwise neutral interface.</p>
       </div>
 
       <div class="panel" role="tabpanel" id="p4" aria-labelledby="t4">
-        <h3>A possible triage sequence</h3>
+        <h3>Triage, in the order I work it</h3>
         <ol class="actions">
           <li><b>Decode the payload.</b> Base64 out of the encoded block first, because everything after this depends on what it was trying to do.</li>
           <li><b>Establish the document.</b> Which file Word had open, where it came from, who else received it.</li>
@@ -368,11 +308,67 @@
   </div>
 </section>
 
+<!-- ══════════ WORK ══════════ -->
+<section id="work" class="sec-rule">
+  <div class="shell">
+    <p class="slab">Selected work</p>
+    <h2>Three projects I can explain</h2>
+    <p class="lede">Each case study covers the context, my contribution, the problems I hit and the evidence behind the result.</p>
+
+    <div class="cards">
+      <a class="card" href="work/classquest/">
+        <div class="cbody">
+          <span class="cbadge done">People&rsquo;s Choice Award</span>
+          <h3 data-vt="classquest">ClassQuest</h3>
+          <p class="cmeta">Code Network Winter Hackathon &middot; Aug 2026 &middot; Team of five</p>
+          <p>A learning site that turns lecture material into playable quests. I contributed ten merged pull requests across the playable demo, frontend, upload security and cohort challenges.</p>
+          <p class="detail-only">The upload handler is the part I would start with. Student-supplied files create most of the site&rsquo;s attack surface in one function.</p>
+          <div class="ctags"><span>React</span><span>TypeScript</span><span>FastAPI</span><span>Python</span><span>SQLite</span></div>
+          <span class="cgo">Read the case study &rarr;</span>
+        </div>
+        <div class="cthumb">
+          <img src="assets/projects/classquest-gameplay.jpg" alt="" width="1280" height="720" loading="lazy">
+        </div>
+      </a>
+
+      <a class="card" href="work/homelab/">
+        <div class="cbody">
+          <span class="cbadge pause">Phase 1 complete &middot; paused</span>
+          <h3 data-vt="homelab">ITDR Home Lab</h3>
+          <p class="cmeta">Personal project &middot; from June 2026</p>
+          <p>A Wazuh 4.9.2 server, Windows endpoint and Sysmon telemetry running on my laptop. The case study includes the four failures I hit before the first dashboard login.</p>
+          <p class="detail-only">Phase 1 is complete. Detection-rule development is the next phase when I return to the project.</p>
+          <div class="ctags"><span>Wazuh 4.9.2</span><span>Sysmon</span><span>Ubuntu</span><span>VMware</span></div>
+          <span class="cgo">Read the case study &rarr;</span>
+        </div>
+        <div class="cthumb">
+          <img src="assets/projects/wazuh-dashboard.jpg" alt="" width="1280" height="673" loading="lazy">
+        </div>
+      </a>
+
+      <a class="card" href="work/luna/">
+        <div class="cbody">
+          <span class="cbadge done">Completed</span>
+          <h3 data-vt="luna">LUNA: TurboPi robot</h3>
+          <p class="cmeta">QUT university project &middot; Jul to Nov 2025 &middot; With Zhirui Lu</p>
+          <p>A Raspberry Pi robot combining computer vision, offline voice, wireless control and PID-tuned movement on one platform.</p>
+          <p class="detail-only">This project taught me how quickly hardware exposes bad assumptions. It is also where I started documenting decisions while I worked.</p>
+          <div class="ctags"><span>Python</span><span>OpenCV</span><span>Flask</span><span>Raspberry Pi</span></div>
+          <span class="cgo">Read the case study &rarr;</span>
+        </div>
+        <div class="cthumb">
+          <img class="thumb-luna" src="assets/projects/luna-robot.jpg" alt="" width="1600" height="1600" loading="lazy">
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ══════════ EXPERIENCE ══════════ -->
 <section id="experience" class="sec-rule">
   <div class="shell">
     <p class="slab">Experience</p>
-    <h2>Professional and community experience</h2>
+    <h2>Work alongside full-time study</h2>
 
     <ul class="roles-list">
       <li class="role">
@@ -439,7 +435,7 @@
     <h2>What I work with</h2>
     <div class="skills">
       <div>
-        <h3>Security</h3>
+        <h4>Security</h4>
         <div class="tags">
           <span>Microsoft Entra ID</span><span>Conditional Access</span><span>MFA</span>
           <span>Zero Trust</span><span>Wazuh SIEM</span><span>Sysmon</span>
@@ -447,14 +443,14 @@
         </div>
       </div>
       <div>
-        <h3>Programming &amp; data</h3>
+        <h4>Programming &amp; data</h4>
         <div class="tags">
           <span>Python</span><span>PowerShell</span><span>SQL</span><span>Data analysis</span>
           <span>OpenCV</span><span>Flask</span><span>FastAPI</span><span>React</span><span>TypeScript</span>
         </div>
       </div>
       <div>
-        <h3>Systems &amp; tools</h3>
+        <h4>Systems &amp; tools</h4>
         <div class="tags">
           <span>Microsoft 365</span><span>Power Platform</span><span>Power Automate</span>
           <span>Linux</span><span>VMware Workstation</span><span>Raspberry Pi</span>
@@ -473,14 +469,14 @@
 
     <div class="appx background-grid">
       <div>
-        <h3>Education</h3>
+        <h4>Education</h4>
         <ul>
           <li><b>Bachelor of Information Technology</b>, QUT. Cybersecurity &amp; AI, expected December 2027. GPA 6.09 / 7.00</li>
           <li><b>Diploma of Information Technology</b>, QUT. Completed November 2025. GPA 6.25 / 7.00</li>
         </ul>
       </div>
       <div class="detail-only">
-        <h3>Selected training</h3>
+        <h4>Selected training</h4>
         <ul>
           <li><b>Foundations of Cybersecurity</b>, Google. Completed 2025</li>
           <li><b>CompTIA A+</b>, Lumify Learn. In progress</li>
@@ -489,14 +485,14 @@
         </ul>
       </div>
       <div>
-        <h3>Competitions</h3>
+        <h4>Competitions</h4>
         <ul>
           <li><b>CIMCTF 2026</b>: 3rd place with team SushiShield</li>
           <li><b>Winter Hackathon 2026</b>: People&rsquo;s Choice Award with team ClassQuest</li>
         </ul>
       </div>
       <div class="detail-only">
-        <h3>Community</h3>
+        <h4>Community</h4>
         <ul>
           <li><b>Cyber in Motion</b>: CTF events volunteer since April 2026</li>
           <li><b>QUT Guild</b>: events and student engagement, August to November 2025</li>
@@ -505,6 +501,41 @@
     </div>
   </div>
 </section>
+
+<!-- ══════════ HELLO, WORLD ══════════ -->
+<div class="hw bleed" id="helloworld">
+  <div class="shell">
+    <div>
+      <p class="slab">Try the terminal</p>
+      <h2>A small, harmless security sandbox</h2>
+      <p>These are common first commands and test strings from security work. The terminal only responds with text already stored on this page; it cannot run anything on your computer.</p>
+      <p class="terminal-start">Type <code>help</code> to begin, or use <code>cards</code> to print all six examples.</p>
+      <div class="terminal-responder" aria-hidden="true">
+        <span class="responder-sprite" data-motion="point"></span>
+        <span class="terminal-responder-note"><b>Trace complete</b>Type help to investigate</span>
+      </div>
+    </div>
+    <div class="hwbox">
+      <div class="hwcard" id="hwCard">
+        <p class="hwcode" id="hwCode">nmap -sV scanme.nmap.org</p>
+        <p class="hwgloss" id="hwGloss">Everyone&rsquo;s first scan, run against the one host on the internet that explicitly asks to be scanned.</p>
+      </div>
+      <div class="hwlog" id="hwLog" aria-live="polite" hidden></div>
+      <form class="hwform" id="hwForm" hidden>
+        <label class="sr" for="hwInput">Type a command</label>
+        <span class="hwprompt" aria-hidden="true">$</span>
+        <input id="hwInput" type="text" autocomplete="off" autocapitalize="off"
+               spellcheck="false" placeholder="type help, or cards for all six">
+        <span class="hwhint">Enter</span>
+      </form>
+      <div class="hwbar">
+        <div class="hwdots" id="hwDots" aria-hidden="true"></div>
+        <span class="hwstate" id="hwState" hidden>Paused</span>
+        <button type="button" class="hwnext" id="hwNext">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════ OFF SHIFT — after dark only ══════════ -->
 <section id="offshift" class="bleed" aria-label="Off shift">
@@ -559,41 +590,6 @@
     </div>
   </div>
 </section>
-<!-- ══════════ HELLO, WORLD ══════════ -->
-<div class="hw bleed" id="helloworld">
-  <div class="shell">
-    <div>
-      <p class="slab">Try the terminal</p>
-      <h2>A small, harmless security sandbox</h2>
-      <p>These are common first commands and test strings from security work. The terminal only responds with text already stored on this page; it cannot run anything on your computer.</p>
-      <p class="terminal-start">Type <code>help</code> to begin, or use <code>cards</code> to print all six examples.</p>
-      <div class="terminal-responder" aria-hidden="true">
-        <span class="responder-sprite" data-motion="point"></span>
-        <span class="terminal-responder-note"><b>Trace complete</b>Type help to investigate</span>
-      </div>
-    </div>
-    <div class="hwbox">
-      <div class="hwcard" id="hwCard">
-        <p class="hwcode" id="hwCode">nmap -sV scanme.nmap.org</p>
-        <p class="hwgloss" id="hwGloss">A common service scan against the test host that explicitly permits it. Scanning another system requires permission.</p>
-      </div>
-      <div class="hwlog" id="hwLog" aria-live="polite" hidden></div>
-      <form class="hwform" id="hwForm" hidden>
-        <label class="sr" for="hwInput">Type a command</label>
-        <span class="hwprompt" aria-hidden="true">$</span>
-        <input id="hwInput" type="text" autocomplete="off" autocapitalize="off"
-               spellcheck="false" placeholder="type help, or cards for all six">
-        <span class="hwhint">Enter</span>
-      </form>
-      <div class="hwbar">
-        <div class="hwdots" id="hwDots" aria-hidden="true"></div>
-        <span class="hwstate" id="hwState" hidden>Paused</span>
-        <button type="button" class="hwnext" id="hwNext">Next</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 </main>
 
 <footer>
