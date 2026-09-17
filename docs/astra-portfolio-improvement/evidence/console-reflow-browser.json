@@ -1,0 +1,18 @@
+{
+  "width": 320,
+  "start": {
+    "clientHeight": 339,
+    "firstReachable": true,
+    "focused": true,
+    "scrollHeight": 763,
+    "scrollTop": 0,
+    "tabIndex": 0
+  },
+  "end": {
+    "focused": true,
+    "lastReachable": true,
+    "maxScroll": 424,
+    "outline": "solid",
+    "scrollTop": 424
+  }
+}

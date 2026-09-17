@@ -33,7 +33,7 @@
 
 <div class="bar">
   <div class="shell">
-    <a class="mark" href="../../">Barry Sampath<span> / security</span></a>
+    <a class="mark" href="../../">Barry Sampath<span> / cybersecurity &amp; automation</span></a>
     <div class="barright">
       <nav aria-label="Sections">
         <ul class="barnav">
@@ -42,9 +42,10 @@
           <li><a href="../../#contact">Contact</a></li>
         </ul>
       </nav>
-      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
-        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
-      </button>
+      <div class="themectl" role="group" aria-label="Colour mode">
+        <button type="button" data-theme-choice="light" aria-pressed="true">Day</button>
+        <button type="button" data-theme-choice="dark" aria-pressed="false">Night</button>
+      </div>
       <details class="mobile-nav">
         <summary>Menu</summary>
         <nav aria-label="Mobile case studies">
@@ -82,8 +83,8 @@
       <p>A badly tuned control loop does not throw an exception; it makes the robot spin. A missed sensor reading can end a demonstration. That immediate physical feedback made this more useful to me than an isolated coursework exercise.</p>
       <p>My work covered hardware setup and maintenance, Raspberry Pi hardware integration, WonderEcho voice control, the line-following controller, hands-on troubleshooting, Flask command-routing support, PID fine-tuning after Zhirui&rsquo;s initial implementation, and project documentation.</p>
       <figure class="case-media">
-        <img src="../../assets/projects/luna-robot.jpg" alt="LUNA TurboPi robot with mecanum wheels, camera and ultrasonic sensors" width="1600" height="1600" loading="lazy" decoding="async">
-        <figcaption>Fig. 1 — LUNA on the bench, with the camera gimbal and front sonar visible.</figcaption>
+        <a class="evidence-image" href="../../assets/projects/luna-robot.jpg"><img src="../../assets/projects/luna-robot.jpg" alt="LUNA TurboPi robot with mecanum wheels, camera and ultrasonic sensors" width="1600" height="1600" loading="lazy" decoding="async"></a>
+        <figcaption>Fig. 1 — LUNA on the bench, with the camera gimbal and front sonar visible. <a class="fullsize" href="../../assets/projects/luna-robot.jpg">View full-size image</a></figcaption>
       </figure>
     </div>
   </div>
@@ -101,8 +102,8 @@
 <b>Interface</b>   Tkinter for local diagnostics</div>
 
       <figure class="case-media">
-        <img src="../../assets/projects/luna-system-architecture.svg" alt="LUNA architecture from the Tkinter and voice interfaces through the Raspberry Pi control layer to the motors, camera, gimbal and sonar" width="680" height="506" loading="lazy" decoding="async">
-        <figcaption>Fig. 2 — control paths from the two interfaces through the Raspberry Pi to the feature modules and hardware.</figcaption>
+        <a class="evidence-image" href="../../assets/projects/luna-system-architecture.svg"><img src="../../assets/projects/luna-system-architecture.svg" alt="LUNA architecture from the Tkinter and voice interfaces through the Raspberry Pi control layer to the motors, camera, gimbal and sonar" width="680" height="506" loading="lazy" decoding="async"></a>
+        <figcaption>Fig. 2 — control paths from the two interfaces through the Raspberry Pi to the feature modules and hardware. <a class="fullsize" href="../../assets/projects/luna-system-architecture.svg">View full-size image</a></figcaption>
       </figure>
 
       <p style="margin-top:20px">The integration work centred on arbitration and timing. Each subsystem assumed it owned the loop, so we had to decide which command took priority and how the robot should respond when a camera frame or bus read took too long.</p>

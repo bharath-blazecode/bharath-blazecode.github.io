@@ -1,0 +1,36 @@
+{
+  "anchor": {
+    "focused": "experience",
+    "hash": "#experience",
+    "header": 66,
+    "targetTop": 81.77083587646484
+  },
+  "beforeMode": {
+    "fraction": 0.10739269972670593,
+    "height": 1529.2396240234375,
+    "top": -78.22917175292969
+  },
+  "afterMode": {
+    "fraction": 0.10700457501851582,
+    "height": 823.2708740234375,
+    "top": -2.09375
+  },
+  "keyboardFocus": {
+    "label": "Day",
+    "outline": "rgb(177, 212, 233) solid 2px",
+    "visible": true
+  },
+  "terminalFocus": {
+    "active": "hwInput",
+    "offset": "2px",
+    "outline": "rgb(177, 212, 233) solid 2px"
+  },
+  "caseTheme": {
+    "controls": "flex",
+    "theme": "dark"
+  },
+  "returnPreferences": {
+    "mode": "skim",
+    "theme": "dark"
+  }
+}
