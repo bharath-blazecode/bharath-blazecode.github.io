@@ -1,85 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>ClassQuest | Barry Sampath</title>
-<meta name="description" content="ClassQuest, the People's Choice Award winner at the Code Network Winter Hackathon 2026: what I contributed, the upload security work, and every pull request behind it.">
-<link rel="canonical" href="https://bharath-blazecode.github.io/work/classquest/">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Barry Sampath portfolio">
-<meta property="og:url" content="https://bharath-blazecode.github.io/work/classquest/">
-<meta property="og:title" content="ClassQuest | Barry Sampath">
-<meta property="og:description" content="My contributions to ClassQuest, the People's Choice Award winner at the Code Network Winter Hackathon 2026.">
-<meta property="og:image" content="https://bharath-blazecode.github.io/assets/projects/classquest-gameplay.jpg">
-<meta property="og:image:width" content="1280">
-<meta property="og:image:height" content="720">
-<meta property="og:image:alt" content="ClassQuest playable learning world">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ClassQuest | Barry Sampath">
-<meta name="twitter:description" content="My contributions to ClassQuest, the People's Choice Award winner at the Code Network Winter Hackathon 2026.">
-<meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/projects/classquest-gameplay.jpg">
-<meta name="twitter:image:alt" content="ClassQuest playable learning world">
-<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
-<link rel="stylesheet" href="../../css/site.css">
-</head>
-<body class="case">
-
-<a class="skip" href="#built">Skip to what I built</a>
-
-<div class="bar">
-  <div class="shell">
-    <a class="mark" href="../../">Barry Sampath<span> / security</span></a>
-    <div class="barright">
-      <nav aria-label="Sections">
-        <ul class="barnav">
-          <li><a href="../homelab/">Home lab</a></li>
-          <li><a href="../luna/">LUNA</a></li>
-          <li><a href="../../#contact">Contact</a></li>
-        </ul>
-      </nav>
-      <button type="button" id="shiftBtn" aria-label="Switch between day shift and night shift">
-        <span class="sw" aria-hidden="true"></span><span id="shiftLbl">Night shift</span>
-      </button>
-      <details class="mobile-nav">
-        <summary>Menu</summary>
-        <nav aria-label="Mobile case studies">
-          <a href="../homelab/">Home lab</a>
-          <a href="../luna/">LUNA</a>
-          <a href="../../#contact">Contact</a>
-        </nav>
-      </details>
-    </div>
-  </div>
-</div>
-
-<main>
-<header class="casehead">
-  <div class="shell intro">
-    <p class="crumb"><a href="../../">Barry Sampath</a> &nbsp;/&nbsp; Work &nbsp;/&nbsp; ClassQuest</p>
-    <h1 data-vt="classquest">ClassQuest</h1>
-    <p class="lede">A learning site that turns lecture material into playable quests, built over one weekend by a team of five. It won the People&rsquo;s Choice Award.</p>
-    <div class="casemeta">
-      <span><b>Event</b> Code Network Winter Hackathon, 21&ndash;23 Aug 2026</span>
-      <span><b>Result</b> People&rsquo;s Choice Award</span>
-      <span><b>Team</b> Five, led technically by Miguel Pineda</span>
-      <span><b>Stack</b> React · TypeScript · FastAPI · Python · SQLite</span>
-    </div>
-  </div>
-</header>
-
-<div class="shell">
-
-  <div class="spine">
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>ClassQuest | Barry Sampath</title><meta name="description" content="Turning lecture material into playable quests in three days — with a contribution trail from the learning loop to upload security."><link rel="canonical" href="https://bharath-blazecode.github.io/work/classquest/"><link rel="icon" href="../../favicon.svg" type="image/svg+xml"><meta property="og:type" content="article"><meta property="og:site_name" content="Barry Sampath"><meta property="og:title" content="ClassQuest | Barry Sampath"><meta property="og:description" content="Turning lecture material into playable quests in three days — with a contribution trail from the learning loop to upload security."><meta property="og:url" content="https://bharath-blazecode.github.io/work/classquest/"><meta property="og:image" content="https://bharath-blazecode.github.io/assets/projects/classquest-gameplay.jpg"><meta property="og:image:alt" content="ClassQuest game world with a player character, learning portals and a concept-progress panel"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="ClassQuest | Barry Sampath"><meta name="twitter:description" content="Turning lecture material into playable quests in three days — with a contribution trail from the learning loop to upload security."><meta name="twitter:image" content="https://bharath-blazecode.github.io/assets/projects/classquest-gameplay.jpg"><meta name="twitter:image:alt" content="ClassQuest game world with a player character, learning portals and a concept-progress panel"><link rel="preload" href="../../assets/fonts/archivo-900.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="../../assets/fonts/source-serif-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="../../css/site.css"><script src="../../js/theme.js"></script></head><body class="case-page" id="top"><a class="skip" href="#main">Skip to content</a><header class="masthead"><div class="shell mast-inner"><a class="brand" href="../../" aria-label="Barry Sampath, home"><span class="brand-mark" aria-hidden="true">b.</span><span>Barry Sampath<span class="brand-sub">Security &amp; automation</span></span></a><nav class="desktop-nav" aria-label="Main"><a href="../../#work">Work</a><a href="../../#experience">Experience</a><a href="../../#about">About</a><a href="../../#contact">Say hello <span aria-hidden="true">↗</span></a></nav><div class="preferences"><button class="theme-toggle" id="theme-toggle" type="button" hidden>Night</button><button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="false" hidden>Pause motion</button><details class="mobile-menu"><summary>Menu</summary><nav aria-label="Mobile"><a href="../../#work">Work</a><a href="../../#experience">Experience</a><a href="../../#about">About</a><a href="../../#contact">Say hello</a></nav></details></div></div></header><main id="main"><header class="case-head shell"><p class="crumb"><a href="../../#work">Selected work</a> <span aria-hidden="true">/</span> ClassQuest</p><p class="eyebrow">02 / Collaborative delivery / Hackathon</p><h1>ClassQuest</h1><p class="case-dek">Turning lecture material into playable quests in three days — with a contribution trail from the learning loop to upload security.</p><div class="case-overview"><div><span class="eyebrow">In a minute</span><p>Built by a five-person team at Code Network’s Winter Hackathon, 21–23 August 2026. ClassQuest received the People’s Choice Award after audience voting across 15 teams.</p></div><div><span class="eyebrow">My contribution</span><p>Ten merged pull requests cover my work on the playable demo, frontend foundation, upload security, cohort learning and preferences. Miguel Pineda led the technical build; the award belongs to the team.</p></div><div><span class="eyebrow">Status &amp; scope</span><p>Three-day hackathon build; team refinement continued afterwards</p></div></div><nav class="case-index" aria-label="On this page"><a href="#context">Context</a><a href="#built">The work</a><a href="#lessons">What broke</a><a href="#evidence">Evidence</a></nav></header><div class="shell case-body">  <div class="spine" id="context">
     <div class="sg"><span class="sn">Context</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>The project and my contribution</h2>
-      <p>ClassQuest takes course material and turns it into a sequence of playable challenges: predict, diagnose, check the source evidence, then transfer the idea or retry. Students join a cohort server, work through quests, and get readiness feedback based on how the group is answering.</p>
-      <p>Miguel Pineda led the technical build. I was one of the main contributors, working on the playable demo, frontend foundation, upload security and cohort features. I also presented during the judging Q&amp;A. The award belongs to the whole team.</p>
+      <p>ClassQuest turns course material into playable challenges: make a prediction, diagnose the result, check source evidence, then apply the idea or try again. Learners join a cohort server and receive readiness feedback based on the group&rsquo;s answers. We built it with React, TypeScript, FastAPI, Python and SQLite.</p>
+      <p>Miguel Pineda led the technical build for our five-person team. My work covered the playable demo, frontend foundation, upload security and cohort features, and I presented during the judging Q&amp;A. The team received the People&rsquo;s Choice Award following audience voting across 15 teams.</p>
       <p>I was a Code Network Event Officer while competing in its hackathon. The executive cleared this before the event.</p>
     </div>
   </div>
@@ -90,12 +14,12 @@
       <h2>My work across ten merged pull requests</h2>
 
       <h3>The playable learning loop</h3>
-      <p>Built the prediction &rarr; diagnosis &rarr; source evidence &rarr; transfer-or-retry cycle, the answer choices and the concept trail. Added an overfitting fixture and updated the backend test expectations to match.</p>
+      <p>I built the prediction &rarr; diagnosis &rarr; source evidence &rarr; transfer-or-retry cycle, answer choices and concept trail. I added an overfitting fixture and updated the backend test expectations to match.</p>
 
       <h3>Frontend foundation and the visual system</h3>
-      <p>Connected sign-in and registration to the existing API, restored sessions on return, and built the onboarding and server create/join flows with loading and error recovery. Applied the team&rsquo;s visual system across those screens and the demo.</p>
+      <p>I connected sign-in and registration to the existing API, restored returning sessions, and built onboarding and server create/join flows with loading states and error recovery. I applied the team&rsquo;s visual system across those screens and the demo.</p>
 
-      <div class="case-gallery" aria-label="ClassQuest interface evidence">
+      <div class="case-gallery" role="group" aria-label="ClassQuest interface evidence">
         <figure class="case-media wide">
           <img src="../../assets/projects/classquest-gameplay.jpg" alt="ClassQuest game world with a player character, learning portals and a concept-progress panel" width="1280" height="720" loading="lazy" decoding="async">
           <figcaption>Fig. 1 — the playable learning world, with concept progression kept visible beside the game.</figcaption>
@@ -115,38 +39,38 @@
       <p>I replaced the supplied filenames with server-generated storage identifiers, bounded the read and added tests for traversal attempts, absolute paths and size limits. I also documented the security work that remained after the hackathon.</p>
 
       <h3>Cohort learning and preferences</h3>
-      <p>I added an asynchronous practice challenge and readiness feedback based on shared answer patterns. Sparse and tied results fall back instead of producing confident feedback from weak evidence. Local learning preferences are validated and still work when storage is blocked.</p>
+      <p>I added an asynchronous practice challenge and readiness feedback based on shared answer patterns. When the answer data is sparse or tied, the application uses a fallback rather than presenting a confident readiness judgement. Local learning preferences are validated and still work when storage is blocked.</p>
 
       <h3>Iteration and debugging</h3>
-      <p>Revised the starting experience to remove forced learning modes, fixed a dependent hub card that broke after a failed typecheck, and added universal dashboard actions.</p>
+      <p>I revised the starting experience to remove forced learning modes, fixed a dependent hub card exposed by a failed typecheck, and added universal dashboard actions.</p>
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="lessons">
     <div class="sg"><span class="sn">What broke</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>Three problems found during the build</h2>
       <ol class="actions">
         <li><b>A failed typecheck left a broken card in the hub.</b> An upstream change invalidated a dependent component, and we moved past the type error under time pressure. Testing exposed the broken card later.</li>
-        <li><b>The first onboarding forced a learning mode on people.</b> It tested fine with the team, who all knew what the modes meant, and confused everyone else. We removed the forced choice entirely.</li>
+        <li><b>The first onboarding forced a learning mode on people.</b> The team already understood the modes, which made the forced choice seem clearer to us than it was to new users. We removed that step.</li>
         <li><b>The upload handler was insecure in its first version.</b> It accepted untrusted filenames and unbounded uploads. I corrected both and added regression tests.</li>
       </ol>
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="reflection">
     <div class="sg"><span class="sn">What I&rsquo;d change</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>What I would do earlier</h2>
       <ol class="actions">
         <li><b>Start with safe upload defaults.</b> Server-generated identifiers and bounded reads should have been in the first version rather than the patch.</li>
-        <li><b>Test onboarding with someone outside the team on day one.</b> Every usability problem we found late would have been found in ten minutes by one person who had not been in the planning conversation.</li>
+        <li><b>Test onboarding with someone outside the team on day one.</b> Someone who had not been part of the planning conversation could have challenged our assumptions about the starting experience much earlier.</li>
         <li><b>Finish the security baseline earlier.</b> Writing down what is unhardened is most useful while there is still time to harden some of it, not at the end as documentation.</li>
       </ol>
     </div>
   </div>
 
-  <div class="spine">
+  <div class="spine" id="evidence">
     <div class="sg"><span class="sn">Evidence</span><span class="rail" aria-hidden="true"></span></div>
     <div>
       <h2>Pull requests and repository</h2>
@@ -166,22 +90,4 @@
         <li><a href="https://github.com/MikePineda/class-quest"><span class="et">Team repository</span><span class="eu">MikePineda/class-quest</span></a></li>
       </ul>
     </div>
-  </div>
-
-  <nav class="nextprev" aria-label="Other case studies">
-    <a href="../../#work">&larr; All work</a>
-    <a href="../luna/">LUNA &rarr;</a>
-  </nav>
-</div>
-</main>
-
-<footer>
-  <div class="shell">
-    <span>Barry Sampath &middot; Brisbane, QLD</span>
-    <span>Built with Miguel Pineda and the ClassQuest team.</span>
-  </div>
-</footer>
-
-<script src="../../js/site.js"></script>
-</body>
-</html>
+  </div><nav class="next-case" aria-label="Continue exploring"><a href="../../#work">← All work</a><a href="../luna/">Next: LUNA ↗</a></nav><aside class="case-contact"><h2>Let’s compare notes.</h2><a href="mailto:barry.sampath@outlook.com">barry.sampath@outlook.com ↗</a></aside></div></main><footer class="footer"><div class="shell"><a class="footer-name" href="../../">Barry Sampath<span aria-hidden="true">.</span></a><div class="footer-row"><span>Bharath personally. Barry professionally.<br>Brisbane, Queensland.</span><nav aria-label="Footer"><a href="mailto:barry.sampath@outlook.com">Email</a><a href="https://www.linkedin.com/in/barrysampath">LinkedIn</a><a href="https://github.com/bharath-blazecode">GitHub</a><a href="#top">Back to top ↑</a></nav><span class="small">Field notes / 2026<br>Made to be explored.</span></div></div></footer><script src="../../js/site.js"></script></body></html>

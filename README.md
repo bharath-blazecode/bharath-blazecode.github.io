@@ -1,156 +1,75 @@
-# bharath-blazecode.github.io
+# Barry Sampath — Field Notes
 
-Personal portfolio for Barry Sampath, a QUT cybersecurity and AI student.
-Live at <https://bharath-blazecode.github.io>.
+A complete static portfolio about cybersecurity, identity controls, IT automation and practical systems work. The redesign begins at restored public main commit `57bed42ccb5c8fb66970a852315429cbbbb4354c` (the merged PR #15 revert). It retains the existing GitHub Pages routes.
 
-**Version 1.1.4.** The homepage now lists Code Network Event Officer as the
-current role and records that the Engagement Officer transition begins in October
-2026. Version 1.1.3 shortened the three case studies and used more specific copy,
-compact evidence placement and mobile navigation. ClassQuest records the full
-five-person team, LUNA separates Barry's contribution from the shared build,
-and low-signal evidence links have been removed. Each case study has its own
-Open Graph and Twitter metadata, while project images decode asynchronously.
-The automatic Incident Responder sequence from 1.1.2 remains unchanged. Versions
-1.0.1 (the original single-file site), 1.0.2 (the rebuild), 1.0.3, 1.0.4
-and 1.0.5 are preserved as zip archives outside this repository, and in
-the branch history.
+## Run locally
 
-## What this is
+Node.js 22 or later is sufficient. No dependency installation is needed for these commands:
 
-A hand-written static site. No framework, no build step, no dependencies.
-GitHub Pages serves the files exactly as they are committed.
-
-```
-index.html            home — hero, glance strip, about, detection, work,
-                      experience, skills, background, hello world, off shift
-work/homelab/         case study — ITDR home lab
-work/classquest/      case study — ClassQuest
-work/luna/            case study — LUNA robot
-css/site.css          the whole design system
-js/site.js            progressive enhancement only
-404.html              not-found page
-resume/               resume PDF
-favicon.svg
-assets/incident-responder/
-                      six transparent sprite sheets used by the hero sequence
+```sh
+npm test
+npm run build
+npm run preview
 ```
 
-## Design
+Open `http://127.0.0.1:48763`. The server binds only to the local loopback address. Stop it with Ctrl+C. `npm start` previews the source directly; `npm run preview` previews the complete static copy in `dist/`.
 
-Two materials. Editorial print for everything that is read; console
-telemetry for everything that is evidence.
+The production site has no runtime packages, backend, credentials, remote fonts, tracking or analytics. GitHub Pages can continue serving the source files at repository root; the optional build produces the same pages and assets for verification. No deployment configuration has been changed.
 
-- **Type** — Archivo (display), Source Serif 4 (body), IBM Plex Mono (data)
-- **Colour** — paper and ink, with a single signal colour reserved strictly
-  for severity. If the accent appears, something is being flagged.
-- **Day shift / night shift** — a SOC runs around the clock, so the theme
-  states are named for the shifts. The switch wipes the page as a circle
-  expanding from the button, via the View Transitions API.
+## Browser checks
 
-## Two reading speeds
+Only browser testing requires development dependencies and an installed browser:
 
-The **glance strip** directly under the hero answers who / doing now /
-built / proof in about twenty seconds, without scrolling far. The
-**Skim / Read** control in the header compresses the page further by
-collapsing `.detail-only` sections such as the walkthrough, selected training
-and role bullets. Skim is the default for a new visitor, and the saved choice
-wins on later visits. With JavaScript off, the control is hidden and nothing
-is removed.
-
-## hello, world
-
-Every field has a first line everybody recognises. The card near the
-footer cycles through security's six: the EICAR test string, `nmap -sV
-scanme.nmap.org`, `' OR '1'='1'`, `whoami`, "It depends." for GRC, and one
-about MFA. It cycles on a timer and advances on Next.
-
-Below it is a terminal. **The card and the terminal are two parts of one
-panel, not two modes** — typing appends to a log underneath the card and
-never replaces it, so nothing a visitor was part-way through reading
-disappears. Focusing the input pauses the cycle (the bar shows `Paused`)
-so the text does not change mid-sentence; leaving the box empty resumes
-it. `Next` still advances the card while the log is open, and `clear`
-empties the log without touching the card.
-
-`help` lists the commands: `whoami`, `nmap`, `eicar`, `sqli`, `xss`,
-`grc`, `mfa`, `cards`, `ls`, `resume`, `contact`, `sudo`, `clear`, `exit`.
-`cards` prints all six card lines at once. `ls` includes `off-shift` only
-when the night shift is on. Arrow keys walk the history.
-
-The input is `hidden` in the markup and unhidden by script, so with
-JavaScript off there is no form to submit and the card still reads
-correctly on its own. Every response is written with `textContent`, which
-is why the `xss` and `sqli` answers are inert text rather than markup.
-
-## The detection console
-
-Runs a nine-event sequence at roughly real speed, fires the alert, holds
-for nine seconds so the card can be read, then wipes and goes again.
-
-It only runs when running is worth it — on screen, not hovered, not
-keyboard-focused, tab in front, and not paused by hand. Any of those
-going false freezes it exactly where it is; it resumes from that point
-rather than restarting behind the reader's back. Two controls sit under
-the copy: **Pause / Resume**, which is also what satisfies WCAG 2.2.2
-for motion that starts on its own, and **Restart** for anyone who missed
-the moment.
-
-Under `prefers-reduced-motion` the whole sequence prints at once and the
-controls are removed, since there is nothing left to pause.
-
-## Shared-element transitions
-
-Each project card title and the matching case-study `h1` carry the same
-`view-transition-name` via `data-vt`, so clicking a card expands it into
-the page header. A name must be unique per document, which holds: three
-cards on the home page, one `h1` on each case-study page. The theme wipe's
-override of the root animation is scoped to a `.theme-wipe` class the
-script adds for that one transition, so navigation keeps its own root
-cross-fade.
-
-## Kinetic type
-
-Archivo is loaded on the `wght@400..900` variable axis. The hero headline
-sheds weight from 900 to 620 as it exits the viewport, scroll-linked
-rather than timed. Ignored where the variable font did not load, skipped
-under reduced-motion.
-
-## Incident responder
-
-The old portrait placeholder is now a small secure workspace. A timed sequence
-steps through monitoring, alert, containment, recovery and investigation, then
-rests in a calm monitoring state before replaying. Scrolling does not control
-or reverse the story. The sequence pauses while the hero is off-screen or the
-browser tab is hidden, and the visitor can pause or replay it directly. A
-separate inline pointing pose remains beside the terminal as the closing action.
-
-The six animations are prebuilt transparent PNG sprite sheets. CSS controls
-their frame timing with stepped background positions; timers advance the scene
-only while an `IntersectionObserver` reports that it is visible. A pause choice
-is remembered for the browser session. Smaller screens retain the enlarged hero
-sequence and inline terminal handoff. Reduced-motion users see the completed,
-contained hero scene without automatic playback controls.
-
-## Accessibility and resilience
-
-- Works with JavaScript disabled: role list renders as plain text, every
-  walkthrough panel renders stacked, theme follows the operating system.
-- `prefers-reduced-motion` honoured throughout.
-- `prefers-color-scheme` respected by default; an explicit choice is stored
-  in `localStorage`, wrapped so blocked storage cannot break the page.
-- Skip link, semantic landmarks, visible focus, keyboard-operable tabs
-  (arrow keys, Home, End).
-- Print stylesheet produces a clean summary.
-
-## Local development
-
-Any static server works:
-
-```bash
-python3 -m http.server 8000
+```sh
+npm ci --ignore-scripts
+npx playwright install chromium
+npm run test:browser
 ```
 
-## To do
+Alternatively set `BROWSER_CHANNEL=chrome` or `msedge` to use an installed browser. In PowerShell: `$env:BROWSER_CHANNEL = 'chrome'`; then run the test command. The dependency lock pins Playwright 1.62.1 and axe-core 4.10.3. The test checks five routes at desktop and 320px in both themes, automated accessibility rules, theme and motion persistence, the running and paused motion paths, safe terminal command handling and a no-JavaScript path. Automated checks do not establish WCAG conformance or replace assistive-technology testing.
 
-- Swap the sample Sysmon event and rule for sanitised real ones
-- Add `/writing/` once the first posts are drafted
+## Edit the site
+
+```
+index.html                 homepage and optional terminal
+work/homelab/index.html     lab case study and illustrative learning example
+work/classquest/index.html  collaborative work and ten merged PRs
+work/luna/index.html        shared robot project and contribution boundaries
+404.html                   missing-page experience
+css/site.css               responsive styles, themes and print treatment
+js/theme.js                early local theme restoration
+js/site.js                 optional motion, theme and terminal behaviour
+assets/                    inherited evidence, responder, fonts and social image
+resume/                    original June 2026 PDF, explicitly flagged as stale
+tools/                     dependency-free verification, build and preview
+tests/browser.cjs          reproducible browser smoke test
+```
+
+HTML is the editable source of truth. Shared navigation is deliberately ordinary markup repeated across five small pages. Update all five when changing global navigation; `npm test` checks local links, fragments, assets, metadata and core factual boundaries. Image width and height attributes are required and should be updated when an image changes. The optional `dist/` build uses a public-file allowlist that excludes tests, dependencies and documentation. The current GitHub Pages configuration still serves the repository root, so that allowlist is a packaging boundary rather than the live hosting boundary.
+
+## Reading and interaction
+
+The homepage supplies a quick scan. Every project links directly to a complete case study with a summary, contribution boundary and evidence index. Native disclosures hold optional role detail, training, off-shift material, the résumé notice and terminal. They work without scripting.
+
+Day/Night follows the operating system until a local choice is saved. The role reel and inherited pixel responder pause off screen, when the tab is hidden, or using the persistent motion control. Reduced-motion users receive a static full interests list. A blocked preference store cannot prevent the page loading. No hover gesture is required.
+
+The homelab example is a manual four-step explanation, not live telemetry or a timed incident. The original nine-event autoplay stream was removed. The terminal inserts only text; it cannot execute commands, scan systems or submit data. Its history exists only for the current page session and is bounded.
+
+## Content boundaries
+
+- ScienceGears is Barry's paid Cybersecurity & IT Automation Analyst contract.
+- Code Network Event Officer is current as of September 2026. Engagement Officer starts in October; update this deliberately after confirmation.
+- ITDR Phase 1 collected endpoint telemetry. The lab is paused and rule development is future work. The overview image is context, not proof of a production detection programme.
+- ClassQuest is a five-person team achievement; Barry's ten linked contributions were independently checked. LUNA is shared with Zhirui Lu and uses vendor components.
+- DissentKit is a secondary early-stage experiment, with attributed origins and no asserted model effectiveness. Ollama and Hermes are omitted for lack of useful project evidence.
+- The June 2026 résumé remains byte-for-byte unchanged. Its GPA, completion date and lab claims are stale; the only download path explicitly warns readers. Replace it only with a verified owner-approved update.
+
+## Assets and ownership
+
+Archivo and Source Serif 4 are self-hosted WOFF2 Latin subsets provided by Google Fonts. Their OFL licences are in `assets/fonts/`. Optional font loading avoids late layout shifts on slow connections. The body and metadata use system fonts. The social preview is a local typographic composition, not fabricated project evidence. No AI-generated imagery was added.
+
+Existing screenshots, robot photograph, diagram and responder sprite sheets are retained under the user's redesign authority. The baseline has no repository-wide licence, and the sprite creation/licence history was not supplied; no new ownership or blanket MIT claim is made. Confirm inherited artwork provenance before wider redistribution. The handoff package records evidence-specific attribution and all file hashes.
+
+## Publication
+
+This is a local review package. Nothing has been pushed, deployed, merged or configured in an external account. The trusted owner agent should inspect the included patch and documentation, verify the recorded base, then prepare one unmerged pull request for Barry's review. Do not treat local test success as approval to publish.

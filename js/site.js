@@ -1,743 +1,141 @@
-/* ============================================================
-   Barry Sampath — portfolio v1.0.2
-   Everything here is progressive enhancement. With JavaScript
-   disabled the page still reads correctly: the role list shows
-   as plain text, every walkthrough panel is visible stacked,
-   and the theme follows the operating system.
-   ============================================================ */
-(function () {
+/* Field Notes: optional enhancements; core content is ordinary HTML. */
+(() => {
   'use strict';
-
-  var root = document.documentElement;
-  var reduce = window.matchMedia &&
-               window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ---------------------------------------------------------
-     1. Day shift / night shift
-     A SOC runs around the clock, so the two states are named
-     for the two shifts. The switch wipes the document as a
-     circle expanding from the button that was pressed, which
-     gives the change a physical origin instead of a fade.
-     Falls back to an instant switch where unsupported.
-     --------------------------------------------------------- */
-  var btn = document.getElementById('shiftBtn');
-  var lbl = document.getElementById('shiftLbl');
-
-  function isDark() {
-    var explicit = root.getAttribute('data-theme');
-    if (explicit) { return explicit === 'dark'; }
-    return !!(window.matchMedia &&
-              window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const root = document.documentElement;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const dark = matchMedia('(prefers-color-scheme: dark)');
+  const themeButton = document.getElementById('theme-toggle');
+  const motionButton = document.getElementById('motion-toggle');
+  let paused = false;
+  try { paused = localStorage.getItem('bs-motion') === 'paused'; } catch (_) {}
+  function isDark() { return root.dataset.theme ? root.dataset.theme === 'dark' : dark.matches; }
+  function themeLabel() {
+    if (!themeButton) return;
+    themeButton.textContent = isDark() ? 'Day' : 'Night';
+    themeButton.setAttribute('aria-label', `Switch to ${isDark() ? 'light' : 'dark'} theme`);
   }
-
-  function syncLabel() {
-    if (lbl) { lbl.textContent = isDark() ? 'Day shift' : 'Night shift'; }
-  }
-
-  /* restore a previous choice; absent one, the OS decides */
-  try {
-    var saved = localStorage.getItem('bs-shift');
-    if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
-  } catch (e) { /* private mode, blocked storage — OS preference stands */ }
-
-  syncLabel();
-
-  if (btn) {
-    btn.addEventListener('click', function () {
-      var next = isDark() ? 'light' : 'dark';
-      var apply = function () {
-        root.setAttribute('data-theme', next);
-        syncLabel();
-        try { localStorage.setItem('bs-shift', next); } catch (e) {}
-      };
-
-      if (reduce || !document.startViewTransition) { apply(); return; }
-
-      var r = btn.getBoundingClientRect();
-      var x = r.left + r.width / 2;
-      var y = r.top + r.height / 2;
-      var far = Math.hypot(
-        Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
-      );
-
-      /* The class scopes the root-animation override to this one
-         transition, so page navigations keep their own cross-fade. */
-      root.classList.add('theme-wipe');
-      var vt = document.startViewTransition(apply);
-      vt.ready.then(function () {
-        root.animate(
-          { clipPath: [
-              'circle(0px at ' + x + 'px ' + y + 'px)',
-              'circle(' + far + 'px at ' + x + 'px ' + y + 'px)'
-          ] },
-          {
-            duration: 620,
-            easing: 'cubic-bezier(.3,0,.2,1)',
-            pseudoElement: '::view-transition-new(root)'
-          }
-        );
-      }).catch(function () { /* transition unavailable — theme still applied */ });
-      vt.finished
-        .catch(function () {})
-        .then(function () { root.classList.remove('theme-wipe'); });
+  if (themeButton) {
+    themeButton.hidden = false;
+    themeLabel();
+    themeButton.addEventListener('click', () => {
+      const next = isDark() ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try { localStorage.setItem('bs-shift', next); } catch (_) {}
+      themeLabel();
     });
+    dark.addEventListener('change', themeLabel);
   }
-
-  /* ---------------------------------------------------------
-     2. Rotating role line
-     Four lanes, one at a time, because listing them flat reads
-     as indecision and listing one reads as narrower than true.
-     Container is measured first so nothing on the page reflows.
-     --------------------------------------------------------- */
-  var rlist = document.getElementById('roleList');
-  if (rlist && !reduce) {
-    var roles = Array.prototype.slice.call(rlist.children);
-    if (roles.length > 1) {
-      var widest = 0;
-      roles.forEach(function (el) { widest = Math.max(widest, el.offsetWidth); });
-      rlist.classList.add('rotating');
-      rlist.style.minWidth = (widest + 20) + 'px';
-      var ri = 0;
-      roles[0].classList.add('on');
-      setInterval(function () {
-        var cur = roles[ri];
-        ri = (ri + 1) % roles.length;
-        cur.classList.remove('on');
-        cur.classList.add('out');
-        roles[ri].classList.remove('out');
-        roles[ri].classList.add('on');
-        setTimeout(function () { cur.classList.remove('out'); }, 460);
-      }, 2600);
-    }
-  }
-
-  /* ---------------------------------------------------------
-     3. The console
-     Ordinary endpoint noise arriving in real time until one
-     event is not ordinary, then a hold on the fired alert, then
-     it starts over.
-
-     It only ever runs when it is worth running: on screen, not
-     hovered, not focused, tab in front, and not paused by hand.
-     Anything else freezes it exactly where it is and it picks up
-     from there — nothing restarts behind your back. Under
-     reduced-motion the whole sequence prints at once and the
-     controls come off, since there is nothing to pause.
-     --------------------------------------------------------- */
-  var con        = document.getElementById('console');
-  var conPause   = document.getElementById('conPause');
-  var conRestart = document.getElementById('conRestart');
-
-  var FEED = [
-    ['11:42:04', 'EventID 1   svchost.exe    ← services.exe'],
-    ['11:42:06', 'EventID 3   chrome.exe     → 142.250.76.14:443'],
-    ['11:42:08', 'EventID 1   Teams.exe      ← explorer.exe'],
-    ['11:42:09', 'EventID 3   Teams.exe      → 52.113.194.132:443'],
-    ['11:42:11', 'EventID 11  OUTLOOK.EXE    created ~\\AppData\\Local\\Temp\\att.tmp'],
-    ['11:42:13', 'EventID 1   conhost.exe    ← svchost.exe'],
-    ['11:42:15', 'EventID 1   WINWORD.EXE    ← explorer.exe'],
-    ['11:42:16', 'EventID 11  WINWORD.EXE    created ~\\AppData\\Roaming\\...\\index.dat'],
-    ['11:42:18', 'EventID 1   powershell.exe ← WINWORD.EXE  -nop -w hidden -enc', true]
-  ];
-
-  var LINE_GAP = 560;   /* between ordinary events            */
-  var LAST_GAP = 900;   /* beat before the one that matters   */
-  var ALERT_GAP = 430;  /* event to alert card                */
-  var HOLD = 9000;      /* time to read the alert before loop */
-
-  if (con) {
-    var cTimer = null;
-    var cIndex = 0;
-    var cPhase = 'lines';          /* lines -> alert -> hold   */
-    var onScreen = false;
-    var hovered = false;
-    var byHand = false;            /* paused with the button   */
-
-    var trim = function () {
-      while (con.children.length > 10) { con.removeChild(con.firstChild); }
-    };
-
-    var addLine = function (row) {
-      var d = document.createElement('div');
-      d.className = 'ln fresh' + (row[2] ? ' hit' : '');
-      d.textContent = row[0] + '  ' + row[1];
-      con.appendChild(d);
-      trim();
-    };
-
-    var addAlert = function () {
-      var d = document.createElement('div');
-      d.className = 'alertln';
-      d.textContent = '▲  LEVEL 12  ·  rule 100210  ·  ' +
-                      'Office application spawned PowerShell  ·  T1059.001';
-      con.appendChild(d);
-      trim();
-    };
-
-    var canRun = function () {
-      return onScreen && !hovered && !byHand && !document.hidden;
-    };
-
-    var halt = function () { clearTimeout(cTimer); cTimer = null; };
-
-    var step = function () {
-      cTimer = null;
-      if (!canRun()) { return; }
-
-      if (cPhase === 'lines') {
-        if (cIndex < FEED.length) {
-          addLine(FEED[cIndex]);
-          cIndex += 1;
-          cTimer = setTimeout(step, cIndex >= FEED.length ? LAST_GAP : LINE_GAP);
-          return;
-        }
-        cPhase = 'alert';
-        cTimer = setTimeout(step, ALERT_GAP);
-        return;
-      }
-
-      if (cPhase === 'alert') {
-        addAlert();
-        cPhase = 'hold';
-        cTimer = setTimeout(step, HOLD);
-        return;
-      }
-
-      /* hold is over — wipe and go again */
-      con.textContent = '';
-      cIndex = 0;
-      cPhase = 'lines';
-      cTimer = setTimeout(step, 320);
-    };
-
-    var resume = function () {
-      if (cTimer || !canRun()) { return; }
-      cTimer = setTimeout(step, 200);
-    };
-
-    /* Freeze or continue, whichever the current conditions call
-       for. Called by every input that can change them. */
-    var sync = function () {
-      if (canRun()) { resume(); } else { halt(); }
-    };
-
-    var restart = function () {
-      halt();
-      con.textContent = '';
-      cIndex = 0;
-      cPhase = 'lines';
-      sync();
-    };
-
-    var setByHand = function (state) {
-      byHand = state;
-      if (conPause) {
-        conPause.textContent = state ? 'Resume' : 'Pause';
-        conPause.setAttribute('aria-pressed', String(state));
-      }
-      sync();
-    };
-
-    if (reduce) {
-      /* No motion: print the whole sequence once and drop the
-         controls, because there is no longer anything to pause. */
-      FEED.forEach(addLine);
-      addAlert();
-      var ctl = document.querySelector('.cctl');
-      if (ctl) { ctl.hidden = true; }
-    } else {
-      con.textContent = '';
-
-      if (conPause) {
-        conPause.addEventListener('click', function () { setByHand(!byHand); });
-      }
-      if (conRestart) {
-        conRestart.addEventListener('click', function () {
-          if (byHand) { setByHand(false); }
-          restart();
-        });
-      }
-
-      /* Hover and keyboard focus hold it still so nobody loses
-         the line they were reading. */
-      con.addEventListener('mouseenter', function () { hovered = true; sync(); });
-      con.addEventListener('mouseleave', function () { hovered = false; sync(); });
-      con.addEventListener('focusin',   function () { hovered = true; sync(); });
-      con.addEventListener('focusout',  function () { hovered = false; sync(); });
-
-      /* A background tab should not be animating. */
-      document.addEventListener('visibilitychange', sync);
-
-      if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (entries) {
-          entries.forEach(function (en) { onScreen = en.isIntersecting; });
-          sync();
-        }, { threshold: 0.2 }).observe(con);
-      } else {
-        onScreen = true;
-        sync();
-      }
-    }
-  }
-
-  /* ---------------------------------------------------------
-     4. Detection walkthrough tabs
-     Without JavaScript every panel renders stacked, so the
-     content is never hidden behind an interaction.
-     --------------------------------------------------------- */
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('.steps [role="tab"]'));
-  var panels = Array.prototype.slice.call(document.querySelectorAll('.panel'));
-
-  if (tabs.length && panels.length) {
-    var host = document.getElementById('walkthrough');
-    if (host) { host.classList.add('js-on'); }
-
-    var show = function (n) {
-      tabs.forEach(function (t, k) {
-        t.setAttribute('aria-selected', String(k === n));
-        t.tabIndex = k === n ? 0 : -1;
-      });
-      panels.forEach(function (p, k) { p.classList.toggle('live', k === n); });
-    };
-
-    tabs.forEach(function (t, k) {
-      t.tabIndex = k === 0 ? 0 : -1;
-      t.addEventListener('click', function () { show(k); });
-      t.addEventListener('keydown', function (e) {
-        var n = null;
-        if (e.key === 'ArrowRight') { n = (k + 1) % tabs.length; }
-        if (e.key === 'ArrowLeft')  { n = (k - 1 + tabs.length) % tabs.length; }
-        if (e.key === 'Home')       { n = 0; }
-        if (e.key === 'End')        { n = tabs.length - 1; }
-        if (n !== null) { e.preventDefault(); show(n); tabs[n].focus(); }
-      });
-    });
-
-    show(0);
-  }
-})();
-
-/* ============================================================
-   Incident responder prototype
-   A short automatic story plays only while the hero is visible:
-   monitor, detect, contain, recover, investigate, then rest.
-   Scrolling never controls or reverses the sequence.
-   ============================================================ */
-(function () {
-  'use strict';
-
-  var stage = document.getElementById('incidentStage');
-  var stageSprite = stage && stage.querySelector('.responder-sprite');
-  var stageLabel = document.getElementById('incidentState');
-  var pauseButton = document.getElementById('incidentPause');
-  var replayButton = document.getElementById('incidentReplay');
-  var controls = document.getElementById('incidentControls');
-  var reduced = window.matchMedia &&
-                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (!stage || !stageSprite) { return; }
-
-  var stageStates = {
-    idle:        { motion: 'idle',    label: 'Monitoring' },
-    alert:       { motion: 'alert',   label: 'Signal detected' },
-    contain:     { motion: 'contain', label: 'Containment active' },
-    clear:       { motion: 'idle',    label: 'System recovered' },
-    investigate: { motion: 'scan',    label: 'Investigating trace' }
-  };
-  var sequence = [
-    { name: 'idle', duration: 2200 },
-    { name: 'alert', duration: 2200 },
-    { name: 'contain', duration: 3000 },
-    { name: 'clear', duration: 2200 },
-    { name: 'investigate', duration: 3000 },
-    { name: 'idle', duration: 8000 }
-  ];
-  var currentStage = '';
-  var phase = 0;
-  var timer = null;
-  var phaseStarted = 0;
-  var remaining = sequence[0].duration;
-  var onScreen = false;
-  var pausedByHand = false;
-
-  try { pausedByHand = sessionStorage.getItem('bs-incident-paused') === 'true'; }
-  catch (e) { /* blocked storage: default to playing */ }
-
-  function setMotion(sprite, motion) {
-    if (sprite.getAttribute('data-motion') !== motion) {
-      sprite.setAttribute('data-motion', motion);
-    }
-  }
-
-  function setStage(name) {
-    if (currentStage === name) { return; }
-    currentStage = name;
-    stage.setAttribute('data-incident', name);
-    setMotion(stageSprite, stageStates[name].motion);
-    if (stageLabel) { stageLabel.textContent = stageStates[name].label; }
-  }
-
-  function canRun() {
-    return onScreen && !pausedByHand && !document.hidden;
-  }
-
-  function halt() {
-    if (!timer) { return; }
-    clearTimeout(timer);
-    timer = null;
-    remaining = Math.max(80, remaining - (Date.now() - phaseStarted));
-  }
-
-  function advance() {
-    timer = null;
-    phase = (phase + 1) % sequence.length;
-    remaining = sequence[phase].duration;
-    setStage(sequence[phase].name);
-    resume();
-  }
-
-  function resume() {
-    if (timer || !canRun()) { return; }
-    phaseStarted = Date.now();
-    timer = setTimeout(advance, remaining);
-  }
-
-  function sync() {
-    if (canRun()) { resume(); } else { halt(); }
-  }
-
-  function updatePauseButton() {
-    if (!pauseButton) { return; }
-    pauseButton.textContent = pausedByHand ? 'Resume animation' : 'Pause animation';
-    pauseButton.setAttribute('aria-pressed', String(pausedByHand));
-  }
-
-  function setPaused(state) {
-    pausedByHand = state;
-    try { sessionStorage.setItem('bs-incident-paused', String(state)); } catch (e) {}
-    updatePauseButton();
-    sync();
-  }
-
-  function replay() {
-    halt();
-    phase = 0;
-    remaining = sequence[0].duration;
-    setStage(sequence[0].name);
-    if (pausedByHand) { setPaused(false); } else { resume(); }
-  }
-
-  if (reduced) {
-    setStage('clear');
-    if (controls) { controls.hidden = true; }
-    return;
-  }
-
-  if (controls) { controls.hidden = false; }
-  updatePauseButton();
-  setStage(sequence[0].name);
-  if (pauseButton) {
-    pauseButton.addEventListener('click', function () { setPaused(!pausedByHand); });
-  }
-  if (replayButton) { replayButton.addEventListener('click', replay); }
-  document.addEventListener('visibilitychange', sync);
-
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) { onScreen = entry.isIntersecting; });
-      sync();
-    }, { threshold: 0.2 }).observe(stage);
-  } else {
-    onScreen = true;
-    sync();
-  }
-})();
-
-/* ============================================================
-   Skim / Read, and the hello-world panel.
-   Appended as a second IIFE so the first stays readable.
-   ============================================================ */
-(function () {
-  'use strict';
-
-  var root = document.documentElement;
-
-  /* ---------------------------------------------------------
-     Skim mode
-     Skim is the default for a first visit. A saved choice wins.
-     With JavaScript off, CSS leaves every section visible.
-     --------------------------------------------------------- */
-  var modeBtns = Array.prototype.slice.call(document.querySelectorAll('.modectl button'));
-  if (modeBtns.length) {
-    var setMode = function (m) {
-      if (m === 'skim') { root.setAttribute('data-mode', 'skim'); }
-      else { root.removeAttribute('data-mode'); }
-      modeBtns.forEach(function (b) {
-        b.setAttribute('aria-pressed', String(b.dataset.mode === m));
-      });
-    };
-    var startMode = 'skim';
-    try { startMode = localStorage.getItem('bs-mode') || 'skim'; } catch (e) {}
-    setMode(startMode);
-    modeBtns.forEach(function (b) {
-      b.addEventListener('click', function () {
-        setMode(b.dataset.mode);
-        try { localStorage.setItem('bs-mode', b.dataset.mode); } catch (e) {}
-      });
-    });
-  }
-
-  Array.prototype.slice.call(document.querySelectorAll('.mobile-nav a')).forEach(function (link) {
-    link.addEventListener('click', function () {
-      var menu = link.closest('details');
-      if (menu) { menu.open = false; }
+  document.querySelectorAll('.mobile-menu a').forEach(link => {
+    link.addEventListener('click', () => link.closest('details').removeAttribute('open'));
+  });
+  document.querySelectorAll('.mobile-menu').forEach(menu => {
+    menu.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { menu.open = false; menu.querySelector('summary').focus(); }
     });
   });
-
-  /* ---------------------------------------------------------
-     hello, world
-     Every field has a first line everyone recognises. Security
-     has several. Cycles on a timer, advances on click.
-     --------------------------------------------------------- */
-  var LINES = [
-    {
-      cmd: 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
-      raw: true,
-      gloss: 'The EICAR test string is a harmless sample used to check whether antivirus detection is working.'
-    },
-    {
-      cmd: 'nmap -sV scanme.nmap.org',
-      gloss: 'A common service scan against the test host that explicitly permits it. Scanning another system requires permission.'
-    },
-    {
-      cmd: "' OR '1'='1",
-      raw: true,
-      gloss: 'A basic SQL injection example that shows why applications should use parameterised queries.'
-    },
-    {
-      cmd: 'whoami',
-      gloss: 'Shows the current user. It is useful context for an administrator and a common post-compromise command.'
-    },
-    {
-      cmd: 'It depends.',
-      raw: true,
-      gloss: 'A GRC answer depends on the system, the risk and the constraints. The useful follow-up is: on what?'
-    },
-    {
-      cmd: 'Have you tried turning MFA on?',
-      raw: true,
-      gloss: 'MFA is a high-impact identity control, although it is only one part of a secure access design.'
+  const sprites = [...document.querySelectorAll('.responder')];
+  const visible = new WeakMap();
+  const reel = document.getElementById('role-reel');
+  const roles = ['Blue team', 'Identity & access', 'GRC', 'IT automation', 'SOC opportunities'];
+  let reelVisible = false, roleIndex = 0, reelTimer = null;
+  if (reel) reel.setAttribute('aria-hidden', 'true');
+  function showRole(staticMode) {
+    if (!reel) return;
+    reel.replaceChildren();
+    const span = document.createElement('span');
+    span.className = 'role-reel-item' + (staticMode ? '' : ' changed');
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = staticMode ? 'Blue team · Identity · GRC · Automation · SOC' : roles[roleIndex];
+    reel.append(span);
+  }
+  function motionSync() {
+    clearTimeout(reelTimer); reelTimer = null;
+    const stop = paused || reduced.matches;
+    root.dataset.motion = stop ? 'paused' : 'running';
+    sprites.forEach(sprite => sprite.classList.toggle('is-active', !stop && !document.hidden && visible.get(sprite) === true));
+    if (motionButton) {
+      motionButton.hidden = !(sprites.length || reel);
+      motionButton.textContent = reduced.matches ? 'Motion off' : paused ? 'Play motion' : 'Pause motion';
+      motionButton.setAttribute('aria-pressed', String(stop));
+      motionButton.setAttribute('aria-label', reduced.matches ? 'Motion disabled by your system preference' : paused ? 'Play decorative motion' : 'Pause decorative motion');
+      motionButton.disabled = reduced.matches;
     }
-  ];
-
-  var hwCode  = document.getElementById('hwCode');
-  var hwGloss = document.getElementById('hwGloss');
-  var hwNext  = document.getElementById('hwNext');
-  var hwDots  = document.getElementById('hwDots');
-  var hwState = document.getElementById('hwState');
-  var hwLog   = document.getElementById('hwLog');
-  var hwForm  = document.getElementById('hwForm');
-  var hwInput = document.getElementById('hwInput');
-
-  if (hwCode && hwGloss) {
-    var hi = 0;
-    var hTimer = null;
-    var paused = false;
-    var reduceMotion = window.matchMedia &&
-                       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (hwDots) {
-      LINES.forEach(function () { hwDots.appendChild(document.createElement('i')); });
-    }
-
-    /* ---------------------------------------------------------
-       The card. Always visible, always the same six lines.
-       Typing never replaces it — it only pauses the cycle so the
-       text does not change out from under someone mid-sentence.
-       --------------------------------------------------------- */
-    var paint = function (n) {
-      hi = (n + LINES.length) % LINES.length;
-      var L = LINES[hi];
-      hwCode.textContent = L.cmd;
-      hwCode.className = 'hwcode' + (L.raw ? ' nocmd' : '');
-      hwGloss.textContent = L.gloss;
-      if (hwDots) {
-        Array.prototype.slice.call(hwDots.children).forEach(function (d, k) {
-          d.className = k === hi ? 'on' : '';
-        });
-      }
-    };
-
-    var advance = function () { paint(hi + 1); };
-
-    var startCycle = function () {
-      clearInterval(hTimer);
-      if (!reduceMotion && !paused) { hTimer = setInterval(advance, 7000); }
-    };
-
-    var setPaused = function (state) {
-      paused = state;
-      if (hwState) { hwState.hidden = !state; }
-      startCycle();
-    };
-
-    paint(0);
-    startCycle();
-
-    if (hwNext) {
-      hwNext.addEventListener('click', function () { advance(); startCycle(); });
-    }
-
-    /* ---------------------------------------------------------
-       The terminal. Appends below the card, never over it.
-       Every response is written with textContent, so the xss and
-       sqli answers below are inert text rather than markup.
-       --------------------------------------------------------- */
-    var EICAR = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
-
-    var COMMANDS = {
-      help: function () {
-        return [['Commands: whoami, nmap, eicar, sqli, xss, grc, mfa, cards, ' +
-                 'ls, resume, contact, sudo, clear.'],
-                ['cards prints all six of the lines above at once. Nothing here ' +
-                 'touches your machine. This is a static page and it has no idea ' +
-                 'what you are running.']];
-      },
-      cards: function () {
-        var rows = [['All six, in order:']];
-        LINES.forEach(function (L) {
-          rows.push([L.cmd, 1]);
-          rows.push([L.gloss]);
-        });
-        return rows;
-      },
-      whoami: function () {
-        return [['bharath (barry)', 1],
-                ['Bharath is my given name, and I use Barry professionally. ' +
-                 'I am a QUT cybersecurity and AI student in Brisbane.']];
-      },
-      nmap: function () {
-        return [['nmap -sV scanme.nmap.org', 1],
-                ['A common service scan against the test host that explicitly ' +
-                 'permits it. Scanning another system requires permission.']];
-      },
-      eicar: function () {
-        return [[EICAR, 1],
-                ['A harmless test string used to check whether antivirus ' +
-                 'detection is working without using real malware.']];
-      },
-      sqli: function () {
-        return [["' OR '1'='1", 1],
-                ['A basic SQL injection example and a reason applications use ' +
-                 'parameterised queries.']];
-      },
-      xss: function () {
-        return [['<script>alert(1)</script>', 1],
-                ['This page prints the example as text, so the browser does not ' +
-                 'interpret it as markup.']];
-      },
-      grc: function () {
-        return [['It depends.', 1],
-                ['A GRC answer depends on the system, the risk and the ' +
-                 'constraints. The useful follow-up is: on what?']];
-      },
-      mfa: function () {
-        return [['Have you tried turning MFA on?', 1],
-                ['MFA is a high-impact identity control, although it is only one ' +
-                 'part of a secure access design.']];
-      },
-      ls: function () {
-        var dark = document.documentElement.getAttribute('data-theme') === 'dark' ||
-                   (!document.documentElement.getAttribute('data-theme') &&
-                    window.matchMedia &&
-                    window.matchMedia('(prefers-color-scheme: dark)').matches);
-        return [['about  work  experience  skills  background' +
-                 (dark ? '  off-shift' : ''), 1],
-                [dark ? 'All of it. You are on the night shift.'
-                      : 'That is everything the day shift shows.']];
-      },
-      resume: function () {
-        return [['resume/Barry_Sampath_Resume.pdf', 1],
-                ['One page. The link is in the header and at the bottom of the page.']];
-      },
-      contact: function () {
-        return [['barry.sampath@outlook.com', 1],
-                ['Also on LinkedIn at /in/barrysampath and GitHub as bharath-blazecode.']];
-      },
-      sudo: function () {
-        return [['Nice try.', 1],
-                ['This is a static page. There is no shell, no server and nothing ' +
-                 'to escalate to. Which is its own small security lesson.']];
-      }
-    };
-
-    function write(echo, rows) {
-      hwLog.hidden = false;
-      if (echo !== null) {
-        var e = document.createElement('p');
-        e.className = 'hwecho';
-        e.textContent = echo;
-        hwLog.appendChild(e);
-      }
-      rows.forEach(function (row) {
-        var r = document.createElement('p');
-        r.className = 'hwreply' + (row[1] ? ' mono' : '');
-        r.textContent = row[0];
-        hwLog.appendChild(r);
-      });
-      hwLog.scrollTop = hwLog.scrollHeight;
-    }
-
-    if (hwForm && hwInput && hwLog) {
-      hwForm.hidden = false;
-      var history = [];
-      var hpos = -1;
-
-      /* Focus pauses the card. Leaving an empty box resumes it.
-         The card itself is never cleared. */
-      hwInput.addEventListener('focus', function () { setPaused(true); });
-      hwInput.addEventListener('blur', function () {
-        if (!hwInput.value.trim()) { setPaused(false); }
-      });
-
-      hwInput.addEventListener('keydown', function (e) {
-        if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') { return; }
-        if (!history.length) { return; }
-        e.preventDefault();
-        if (e.key === 'ArrowUp') { hpos = Math.min(hpos + 1, history.length - 1); }
-        else { hpos = Math.max(hpos - 1, -1); }
-        hwInput.value = hpos < 0 ? '' : history[hpos];
-      });
-
-      hwForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var raw = hwInput.value.trim();
-        hwInput.value = '';
-        if (!raw) { return; }
-        history.unshift(raw);
-        hpos = -1;
-
-        var cmd = raw.toLowerCase().split(/\s+/)[0];
-
-        if (cmd === 'clear') {
-          hwLog.textContent = '';
-          hwLog.hidden = true;
-          return;
-        }
-        if (cmd === 'exit' || cmd === 'q') {
-          hwLog.textContent = '';
-          hwLog.hidden = true;
-          hwInput.blur();
-          setPaused(false);
-          return;
-        }
-
-        var fn = COMMANDS[cmd];
-        write(raw, fn ? fn()
-                      : [['command not found: ' + cmd, 1],
-                         ['Try help.']]);
-      });
+    showRole(stop);
+    if (!stop && !document.hidden && reelVisible && reel) {
+      reelTimer = setTimeout(() => { roleIndex = (roleIndex + 1) % roles.length; motionSync(); }, 3300);
     }
   }
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.target === reel) reelVisible = entry.isIntersecting;
+        else visible.set(entry.target, entry.isIntersecting);
+      });
+      motionSync();
+    }, { threshold: 0.1 });
+    sprites.forEach(sprite => observer.observe(sprite));
+    if (reel) observer.observe(reel);
+  }
+  if (motionButton) motionButton.addEventListener('click', () => {
+    paused = !paused;
+    try { localStorage.setItem('bs-motion', paused ? 'paused' : 'running'); } catch (_) {}
+    motionSync();
+  });
+  reduced.addEventListener('change', motionSync);
+  document.addEventListener('visibilitychange', motionSync);
+  motionSync();
+  const form = document.getElementById('terminal-form');
+  const input = document.getElementById('terminal-input');
+  const log = document.getElementById('terminal-log');
+  const terminal = document.getElementById('terminal');
+  const replies = {
+    help: 'whoami — a short introduction\nwork or ls — the three projects\ncontact — email and profiles\nresume — the existing PDF and its update status\nmfa · grc · nmap · eicar · sqli · xss — small security notes\nsudo — nice try\nclear — clear this log\nexit — close the terminal',
+    whoami: 'Barry Sampath. Bharath personally. Cybersecurity & IT Automation Analyst at ScienceGears, based in Brisbane. Curious about systems; careful with the details.',
+    work: '01 ITDR home lab — Phase 1 telemetry collection complete; development paused.\n02 ClassQuest — five-person hackathon build; ten merged PRs from me.\n03 LUNA — Raspberry Pi robot, built with Zhirui Lu.\nUse the Work links above to inspect each case study.',
+    contact: 'Email: barry.sampath@outlook.com\nLinkedIn: linkedin.com/in/barrysampath\nGitHub: github.com/bharath-blazecode\nOpen to suitable 2027 internships and early-career opportunities. Work rights remain subject to student visa conditions.',
+    resume: 'The linked résumé is from June 2026 and needs updating. GPA, graduation date and lab-status claims are superseded by this site. Find the labelled PDF in Contact.',
+    mfa: 'Multi-factor authentication asks for more than one kind of proof. It is one part of an access-control system, alongside permissions and the conditions under which access is allowed.',
+    grc: 'Governance, risk and compliance: deciding which controls are needed, who owns them, and what evidence shows that they work.',
+    nmap: 'Nmap helps inspect network services. Only scan systems you own or have explicit permission to test. This sandbox performs no scans.',
+    eicar: 'EICAR provides a standard harmless file for checking antivirus handling. No test file is created or downloaded here.',
+    sqli: 'SQL injection happens when untrusted input changes the meaning of a database query. Parameterised queries keep data separate from query structure.',
+    xss: 'Untrusted input should be rendered as text. This terminal uses textContent; submitted markup is never inserted as HTML.',
+    sudo: 'Permission denied. The little responder runs a tight ship.',
+    cards: 'mfa · grc · nmap · eicar · sqli · xss — choose a topic for a short explanation.'
+  };
+  replies.ls = replies.work;
+  if (form && input && log) {
+    form.hidden = false;
+    document.querySelector('.terminal-shortcuts').hidden = false;
+    const history = []; let historyIndex = 0;
+    function run(raw) {
+      const command = raw.trim().slice(0, 200);
+      if (!command) return;
+      history.push(command); if (history.length > 50) history.shift(); historyIndex = history.length;
+      const key = command.toLowerCase();
+      if (key === 'clear') { log.replaceChildren(); input.value = ''; return; }
+      if (key === 'exit') { terminal.open = false; terminal.querySelector('summary').focus(); input.value = ''; return; }
+      const line = document.createElement('p'), echo = document.createElement('span');
+      echo.className = 'command-echo'; echo.textContent = '$ ' + command;
+      const response = document.createElement('span');
+      response.textContent = Object.prototype.hasOwnProperty.call(replies, key)
+        ? replies[key]
+        : 'Unknown command. Try help for the available commands.';
+      line.append(echo, response); log.append(line);
+      while (log.children.length > 30) log.firstElementChild.remove();
+      log.scrollTop = log.scrollHeight; input.value = '';
+    }
+    form.addEventListener('submit', event => { event.preventDefault(); run(input.value); });
+    document.querySelectorAll('[data-command]').forEach(button => button.addEventListener('click', () => { run(button.dataset.command); input.focus(); }));
+    input.addEventListener('keydown', event => {
+      if (event.key === 'ArrowUp') { event.preventDefault(); historyIndex = Math.max(0, historyIndex - 1); input.value = history[historyIndex] || ''; }
+      if (event.key === 'ArrowDown') { event.preventDefault(); historyIndex = Math.min(history.length, historyIndex + 1); input.value = history[historyIndex] || ''; }
+    });
+  }
+  let printStates = [];
+  window.addEventListener('beforeprint', () => {
+    printStates = [...document.querySelectorAll('details:not(.mobile-menu):not(.terminal-disclosure)')].map(detail => [detail, detail.open]);
+    printStates.forEach(([detail]) => { detail.open = true; });
+  });
+  window.addEventListener('afterprint', () => printStates.forEach(([detail, open]) => { detail.open = open; }));
 })();

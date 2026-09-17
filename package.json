@@ -1,0 +1,15 @@
+{
+  "name": "barry-sampath-portfolio",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Field Notes — Barry Sampath's static portfolio",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node tools/serve.cjs . 48763",
+    "build": "node tools/build.cjs",
+    "preview": "node tools/serve.cjs dist 48763",
+    "test": "node tools/verify.cjs",
+    "test:browser": "node tests/browser.cjs"
+  },
+  "devDependencies": { "axe-core": "4.10.3", "playwright": "1.62.1" }
+}
