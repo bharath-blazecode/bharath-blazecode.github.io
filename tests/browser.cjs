@@ -126,33 +126,114 @@ const ready = new Promise((resolve, reject) => {
 
     await motionPage.goto(url + '/work/homelab/');
     const flow = motionPage.locator('[data-telemetry-flow]');
+    await motionPage.evaluate(() => {
+      window.__packetStarts = [];
+      window.__packetIterations = [];
+      const diagram = document.querySelector('[data-telemetry-flow]');
+      diagram.addEventListener('animationstart', event => {
+        if (event.target.matches('[data-flow-packet]')) {
+          window.__packetStarts.push({ step: event.target.dataset.flowStep, at: performance.now() });
+        }
+      });
+      diagram.addEventListener('animationiteration', event => {
+        if (event.target.matches('[data-flow-packet]')) {
+          window.__packetIterations.push({ step: event.target.dataset.flowStep, at: performance.now() });
+        }
+      });
+    });
     await flow.scrollIntoViewIfNeeded();
     await motionPage.waitForFunction(() => document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing'));
     const packetTiming = await flow.locator('[data-flow-packet]').evaluateAll(packets => packets.map(packet => {
       const style = getComputedStyle(packet);
       return {
         delay: Number.parseFloat(style.animationDelay) || 0,
+        duration: Number.parseFloat(style.animationDuration) || 0,
         iterations: style.animationIterationCount
       };
     }));
     assert.equal(packetTiming.length, 3);
-    assert.ok(packetTiming[0].delay < packetTiming[1].delay && packetTiming[1].delay < packetTiming[2].delay);
-    assert.ok(packetTiming.every(packet => packet.iterations === '1'));
-    await motionPage.waitForFunction(() => {
-      const diagram = document.querySelector('[data-telemetry-flow]');
-      return diagram?.classList.contains('is-complete') && !diagram.classList.contains('is-flowing');
-    }, null, { timeout: 6500 });
+    assert.deepEqual(packetTiming.map(packet => packet.delay), [0, 0.7, 1.4]);
+    assert.ok(packetTiming.every(packet => packet.duration === 8));
+    assert.ok(packetTiming.every(packet => packet.iterations === 'infinite'));
+    await motionPage.waitForFunction(() => window.__packetStarts.length >= 3, null, { timeout: 3000 });
+    const packetStarts = await motionPage.evaluate(() => window.__packetStarts);
+    assert.deepEqual(packetStarts.slice(0, 3).map(start => start.step), ['1', '2', '3']);
+    assert.equal(await flow.getAttribute('role'), 'button');
+    assert.equal(await flow.getAttribute('aria-pressed'), 'false');
+    assert.match(await motionPage.locator('[data-flow-instruction]').innerText(), /press Enter to pause/);
+    await flow.click();
+    assert.equal(await flow.getAttribute('aria-pressed'), 'true');
+    await motionPage.mouse.move(0, 0);
+    await flow.evaluate(element => element.blur());
+    assert.ok((await flow.locator('[data-flow-packet]').evaluateAll(packets =>
+      packets.map(packet => getComputedStyle(packet).animationPlayState)
+    )).every(state => state === 'paused'));
+    assert.match(await motionPage.locator('[data-flow-instruction]').innerText(), /Packet flow paused/);
+    await flow.focus();
+    await motionPage.keyboard.press('Enter');
+    assert.equal(await flow.getAttribute('aria-pressed'), 'false');
+    assert.ok((await flow.locator('[data-flow-packet]').evaluateAll(packets =>
+      packets.map(packet => getComputedStyle(packet).animationPlayState)
+    )).every(state => state === 'running'));
+    const scrollBeforeSpace = await motionPage.evaluate(() => scrollY);
+    await motionPage.keyboard.press('Space');
+    assert.equal(await flow.getAttribute('aria-pressed'), 'true');
+    assert.equal(await motionPage.evaluate(() => scrollY), scrollBeforeSpace, 'Space key scrolled while toggling telemetry');
+    assert.ok((await flow.locator('[data-flow-packet]').evaluateAll(packets =>
+      packets.map(packet => getComputedStyle(packet).animationPlayState)
+    )).every(state => state === 'paused'));
+    await motionPage.keyboard.press('Space');
+    assert.equal(await flow.getAttribute('aria-pressed'), 'false');
+    await flow.evaluate(element => element.blur());
+    assert.ok((await flow.locator('[data-flow-packet]').evaluateAll(packets =>
+      packets.map(packet => getComputedStyle(packet).animationPlayState)
+    )).every(state => state === 'running'));
+    await motionPage.waitForFunction(() => window.__packetIterations.some(event => event.step === '1'), null, { timeout: 10000 });
+    assert.ok(await flow.evaluate(element => element.classList.contains('is-flowing')));
+    const initialPacketStarts = await motionPage.evaluate(() => window.__packetStarts.length);
 
     const trace = motionPage.locator('[data-event-trace]');
-    await trace.scrollIntoViewIfNeeded();
+    await motionPage.evaluate(() => {
+      window.__traceReveals = [];
+      document.querySelectorAll('[data-event-trace] [data-trace-step]').forEach(line => {
+        new MutationObserver(() => {
+          if (line.classList.contains('is-revealed') &&
+              !window.__traceReveals.some(reveal => reveal.step === line.dataset.traceStep)) {
+            window.__traceReveals.push({ step: line.dataset.traceStep, at: performance.now() });
+          }
+        }).observe(line, { attributes: true, attributeFilter: ['class'] });
+      });
+      const tracePanel = document.querySelector('[data-event-trace]');
+      const rect = tracePanel.getBoundingClientRect();
+      const top = rect.top + scrollY - innerHeight + rect.height * 0.2;
+      scrollTo({ top, behavior: 'instant' });
+    });
+    await delay(650);
+    assert.equal(await trace.locator('[data-trace-step].is-revealed').count(), 0, 'Trace began before enough of it was visible');
+    assert.equal(await trace.evaluate(element => element.classList.contains('is-playing')), false);
+    await trace.evaluate(element => element.scrollIntoView({ block: 'center' }));
     await motionPage.waitForFunction(() => document.querySelector('[data-event-trace]')?.classList.contains('is-playing'));
-    assert.ok(await trace.locator('[data-trace-step].is-revealed').count() < 5, 'Trace skipped its bounded reveal');
+    assert.equal(await trace.locator('[data-trace-step].is-revealed').count(), 0, 'Trace skipped its opening pause');
     await motionPage.waitForFunction(() => {
       const panel = document.querySelector('[data-event-trace]');
       return panel?.classList.contains('is-complete') && panel.querySelectorAll('[data-trace-step].is-revealed').length === 5;
-    }, null, { timeout: 5000 });
+    }, null, { timeout: 6500 });
+    const traceReveals = await motionPage.evaluate(() => window.__traceReveals);
+    assert.deepEqual(traceReveals.map(reveal => reveal.step), ['1', '2', '3', '4', '5']);
+    const revealGaps = traceReveals.slice(1).map((reveal, index) => reveal.at - traceReveals[index].at);
+    assert.ok(revealGaps.every(gap => gap >= 650 && gap <= 1150), `Trace reveal gaps were ${revealGaps.join(', ')}ms`);
     await delay(500);
     assert.equal(await trace.locator('[data-trace-step].is-revealed').count(), 5, 'Trace did not remain visible');
+    await flow.evaluate(element => element.scrollIntoView({ block: 'center' }));
+    await motionPage.waitForFunction(count => window.__packetStarts.length > count, initialPacketStarts, { timeout: 3000 });
+    const fastReentryStarts = await motionPage.evaluate(() => window.__packetStarts.length);
+    await motionPage.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
+    await motionPage.waitForFunction(() => !document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing'));
+    await flow.evaluate(element => element.scrollIntoView({ block: 'center' }));
+    await motionPage.waitForFunction(count => (
+      document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing') &&
+      window.__packetStarts.length > count
+    ), fastReentryStarts, { timeout: 3000 });
     await motionContext.close();
 
     const backgroundContext = await browser.newContext({
@@ -168,6 +249,41 @@ const ready = new Promise((resolve, reject) => {
       });
     });
     await backgroundPage.goto(url + '/work/homelab/#example');
+    const backgroundFlow = backgroundPage.locator('[data-telemetry-flow]');
+    await backgroundFlow.evaluate(element => element.scrollIntoView({ block: 'center' }));
+    assert.equal(await backgroundFlow.evaluate(element => element.classList.contains('is-flowing')), false);
+    await backgroundPage.evaluate(() => {
+      window.__backgroundPacketStarts = 0;
+      document.querySelector('[data-telemetry-flow]').addEventListener('animationstart', event => {
+        if (event.target.matches('[data-flow-packet]')) window.__backgroundPacketStarts += 1;
+      });
+      window.__testDocumentHidden = false;
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await backgroundPage.waitForFunction(() => (
+      document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing') &&
+      window.__backgroundPacketStarts >= 1
+    ));
+    const backgroundStarts = await backgroundPage.evaluate(() => window.__backgroundPacketStarts);
+    await backgroundPage.evaluate(() => {
+      window.__testDocumentHidden = true;
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await backgroundPage.waitForFunction(() => (
+      !document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing')
+    ));
+    assert.ok((await backgroundFlow.locator('[data-flow-packet]').evaluateAll(packets =>
+      packets.map(packet => getComputedStyle(packet).animationName)
+    )).every(name => name === 'none'));
+    await backgroundPage.evaluate(() => {
+      window.__testDocumentHidden = false;
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await backgroundPage.waitForFunction(count => window.__backgroundPacketStarts > count, backgroundStarts);
+    await backgroundPage.evaluate(() => {
+      window.__testDocumentHidden = true;
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
     const backgroundTrace = backgroundPage.locator('[data-event-trace]');
     await backgroundTrace.scrollIntoViewIfNeeded();
     await backgroundPage.waitForFunction(() => (
@@ -182,7 +298,7 @@ const ready = new Promise((resolve, reject) => {
     ));
     await backgroundPage.waitForFunction(() => (
       document.querySelectorAll('[data-event-trace] [data-trace-step].is-revealed').length === 5
-    ), null, { timeout: 5000 });
+    ), null, { timeout: 6500 });
     await backgroundContext.close();
 
     const reducedContext = await browser.newContext({
@@ -266,6 +382,15 @@ const ready = new Promise((resolve, reject) => {
     assert.ok(ledgerBoxes[2].top >= ledgerBoxes[1].bottom - 1);
 
     await mobilePage.goto(url + '/work/homelab/');
+    assert.equal(await mobilePage.locator('[data-telemetry-flow]').getAttribute('role'), 'region');
+    assert.equal(await mobilePage.locator('[data-telemetry-flow]').getAttribute('aria-pressed'), null);
+    assert.equal(await mobilePage.locator('[data-flow-instruction]').isHidden(), true);
+    const mobileFlow = mobilePage.locator('[data-telemetry-flow]');
+    await mobileFlow.focus();
+    const mobileScrollBeforeSpace = await mobilePage.evaluate(() => scrollY);
+    await mobilePage.keyboard.press('Space');
+    await delay(100);
+    assert.ok(await mobilePage.evaluate(() => scrollY) > mobileScrollBeforeSpace, 'Static telemetry region swallowed Space');
     const mobileTrace = mobilePage.locator('[data-event-trace]');
     await mobileTrace.scrollIntoViewIfNeeded();
     const traceBox = await mobileTrace.boundingBox();

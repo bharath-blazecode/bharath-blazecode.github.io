@@ -14,7 +14,7 @@
       <p>An Ubuntu Server 22.04 virtual machine running a Wazuh 4.9.2 all-in-one deployment: indexer, server and dashboard on one host. A Windows 11 Enterprise virtual machine as the monitored endpoint, with Sysmon 15.20 installed and configured against the SwiftOnSecurity ruleset. Both on a Lenovo ThinkPad under VMware Workstation, bridged onto the local network.</p>
       <p>Phase 1 was complete once the agent enrolled, telemetry reached the indexer and Windows events appeared in the dashboard. Reaching that point exposed four separate infrastructure faults.</p>
 
-      <div class="diagram telemetry-flow" data-telemetry-flow tabindex="0" role="region" aria-label="Lab architecture diagram; scroll horizontally on narrow screens">
+      <div class="diagram telemetry-flow" data-telemetry-flow tabindex="0" role="region" aria-label="Lab architecture diagram showing Windows endpoint telemetry moving through the Wazuh server, indexer and dashboard" aria-describedby="telemetry-caption">
         <svg viewBox="0 0 800 200" role="img" aria-labelledby="dgt dgd">
           <title id="dgt">ITDR home lab architecture</title>
           <desc id="dgd">A Windows 11 virtual machine running Sysmon and the Wazuh agent ships telemetry to an Ubuntu 22.04 virtual machine, where the Wazuh server analyses events, the indexer stores them, and the dashboard queries them.</desc>
@@ -57,7 +57,7 @@
           <text class="dcap" x="640" y="164">HTTPS — LOCAL ONLY</text>
         </svg>
       </div>
-      <p style="font-size:.9rem;color:var(--muted);margin-top:-6px">Fig. 1 — where telemetry goes. The diagram follows Windows endpoint telemetry through analysis, storage and search. It illustrates the collection path, not a recorded incident.</p>
+      <p id="telemetry-caption" style="font-size:.9rem;color:var(--muted);margin-top:-6px">Fig. 1 — where telemetry goes. The diagram follows Windows endpoint telemetry through analysis, storage and search. It illustrates the collection path, not a recorded incident. On wider screens, the packet flow repeats every eight seconds.<span data-flow-instruction aria-live="polite" hidden></span></p>
 
       <h3>Component roles</h3>
       <div class="tele"><b>Indexer</b>     OpenSearch-based storage for parsed events
