@@ -2,12 +2,10 @@
 (() => {
   'use strict';
   const root = document.documentElement;
+  root.classList.add('has-js');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const dark = matchMedia('(prefers-color-scheme: dark)');
   const themeButton = document.getElementById('theme-toggle');
-  const motionButton = document.getElementById('motion-toggle');
-  let paused = false;
-  try { paused = localStorage.getItem('bs-motion') === 'paused'; } catch (_) {}
   function isDark() { return root.dataset.theme ? root.dataset.theme === 'dark' : dark.matches; }
   function themeLabel() {
     if (!themeButton) return;
@@ -33,57 +31,239 @@
       if (event.key === 'Escape') { menu.open = false; menu.querySelector('summary').focus(); }
     });
   });
+
+  /*
+   * Decorative motion is deliberately bounded. Each sequence plays once when it
+   * enters the viewport, settles within five seconds, and only becomes eligible
+   * to replay after it has fully left the viewport. Content remains readable
+   * without these enhancements, and reduced-motion visitors get the final state.
+   */
+  const activities = [];
+  function restartAnimation(element) {
+    element.style.animationName = 'none';
+    void element.getBoundingClientRect();
+    element.style.removeProperty('animation-name');
+  }
+  function createViewportActivity(element, options) {
+    const duration = Math.min(Number(options.duration) || 3000, 4900);
+    const threshold = Number(options.threshold) || 0.1;
+    let inView = false;
+    let armed = true;
+    let running = false;
+    let interrupted = false;
+    let finishTimer = null;
+    let leaveTimer = null;
+    let cancelPlayback = null;
+
+    function cancelTimer() {
+      clearTimeout(finishTimer);
+      finishTimer = null;
+      if (cancelPlayback) cancelPlayback();
+      cancelPlayback = null;
+    }
+    function settle() {
+      cancelTimer();
+      running = false;
+      options.settle();
+    }
+    function showStatic() {
+      cancelTimer();
+      running = false;
+      armed = false;
+      interrupted = false;
+      options.staticState();
+    }
+    function play() {
+      if (!armed || running || reduced.matches || document.hidden || !inView) return;
+      armed = false;
+      running = true;
+      interrupted = false;
+      options.reset();
+      cancelPlayback = options.play() || null;
+      finishTimer = setTimeout(settle, duration);
+    }
+    function leave() {
+      inView = false;
+      interrupted = false;
+      if (running) settle();
+      clearTimeout(leaveTimer);
+      leaveTimer = setTimeout(() => {
+        if (!inView && !reduced.matches) armed = true;
+      }, 350);
+    }
+    function enter(entry) {
+      inView = true;
+      clearTimeout(leaveTimer);
+      if (entry.intersectionRatio >= threshold || entry.boundingClientRect.height < 40) play();
+    }
+    function interrupt() {
+      if (!running) return;
+      interrupted = true;
+      settle();
+      interrupted = true;
+    }
+    function resume() {
+      if (!inView || reduced.matches || document.hidden) return;
+      if (interrupted) armed = true;
+      if (armed && !running) play();
+    }
+    function preferenceChanged() {
+      if (reduced.matches) showStatic();
+      else {
+        options.reset();
+        armed = true;
+        if (inView && !document.hidden) play();
+      }
+    }
+
+    const activity = { element, enter, leave, interrupt, resume, preferenceChanged, play };
+    activities.push(activity);
+    if (reduced.matches) showStatic();
+    return activity;
+  }
+
   const sprites = [...document.querySelectorAll('.responder')];
-  const visible = new WeakMap();
   const reel = document.getElementById('role-reel');
   const roles = ['Blue team', 'Identity & access', 'GRC', 'IT automation', 'SOC opportunities'];
-  let reelVisible = false, roleIndex = 0, reelTimer = null;
-  if (reel) reel.setAttribute('aria-hidden', 'true');
-  function showRole(staticMode) {
+  const fullRoleList = 'Blue team · Identity & access · GRC · IT automation · SOC opportunities';
+  function showRole(text, changed = false) {
     if (!reel) return;
     reel.replaceChildren();
     const span = document.createElement('span');
-    span.className = 'role-reel-item' + (staticMode ? '' : ' changed');
+    span.className = 'role-reel-item' + (changed ? ' changed' : '');
     span.setAttribute('aria-hidden', 'true');
-    span.textContent = staticMode ? 'Blue team · Identity · GRC · Automation · SOC' : roles[roleIndex];
+    span.textContent = text;
     reel.append(span);
   }
-  function motionSync() {
-    clearTimeout(reelTimer); reelTimer = null;
-    const stop = paused || reduced.matches;
-    root.dataset.motion = stop ? 'paused' : 'running';
-    sprites.forEach(sprite => sprite.classList.toggle('is-active', !stop && !document.hidden && visible.get(sprite) === true));
-    if (motionButton) {
-      motionButton.hidden = !(sprites.length || reel);
-      motionButton.textContent = reduced.matches ? 'Motion off' : paused ? 'Play motion' : 'Pause motion';
-      motionButton.setAttribute('aria-pressed', String(stop));
-      motionButton.setAttribute('aria-label', reduced.matches ? 'Motion disabled by your system preference' : paused ? 'Play decorative motion' : 'Pause decorative motion');
-      motionButton.disabled = reduced.matches;
-    }
-    showRole(stop);
-    if (!stop && !document.hidden && reelVisible && reel) {
-      reelTimer = setTimeout(() => { roleIndex = (roleIndex + 1) % roles.length; motionSync(); }, 3300);
-    }
+
+  sprites.forEach(sprite => {
+    const pose = sprite.dataset.pose || 'idle';
+    const poseDurations = { idle: 2400, point: 2400, scan: 3600 };
+    createViewportActivity(sprite, {
+      duration: Number(sprite.dataset.motionDuration) || poseDurations[pose] || 2800,
+      threshold: 0.15,
+      reset() {
+        sprite.classList.remove('is-active', 'is-complete', 'is-static');
+        restartAnimation(sprite);
+      },
+      play() { sprite.classList.add('is-active'); },
+      settle() {
+        sprite.classList.remove('is-active');
+        sprite.classList.add('is-complete');
+      },
+      staticState() {
+        sprite.classList.remove('is-active');
+        sprite.classList.add('is-static', 'is-complete');
+      }
+    });
+  });
+
+  if (reel) {
+    reel.setAttribute('aria-hidden', 'true');
+    createViewportActivity(reel, {
+      duration: 4200,
+      threshold: 0.15,
+      reset() { showRole(roles[0]); },
+      play() {
+        const timers = roles.slice(1).map((role, index) =>
+          setTimeout(() => showRole(role, true), (index + 1) * 720)
+        );
+        timers.push(setTimeout(() => showRole(fullRoleList, true), 3700));
+        return () => timers.forEach(clearTimeout);
+      },
+      settle() { showRole(fullRoleList); },
+      staticState() { showRole(fullRoleList); }
+    });
+  }
+
+  const flowDiagrams = [...document.querySelectorAll('[data-telemetry-flow], .diagram')]
+    .filter((diagram, index, all) => diagram.querySelector('.dpacket') && all.indexOf(diagram) === index);
+  flowDiagrams.forEach(diagram => {
+    const packets = [...diagram.querySelectorAll('.dpacket')];
+    packets.forEach((packet, index) => {
+      packet.style.setProperty('--packet-index', index);
+      packet.style.setProperty('--packet-delay', `${index * 900}ms`);
+    });
+    createViewportActivity(diagram, {
+      duration: Number(diagram.dataset.motionDuration) || Math.min(1800 + packets.length * 900, 4700),
+      threshold: 0.12,
+      reset() {
+        diagram.classList.remove('is-flowing', 'is-complete', 'is-static');
+        packets.forEach(restartAnimation);
+      },
+      play() { diagram.classList.add('is-flowing'); },
+      settle() {
+        diagram.classList.remove('is-flowing');
+        diagram.classList.add('is-complete');
+      },
+      staticState() {
+        diagram.classList.remove('is-flowing');
+        diagram.classList.add('is-static', 'is-complete');
+      }
+    });
+  });
+
+  const traces = [...document.querySelectorAll('[data-event-trace], .event-trace')];
+  traces.forEach(trace => {
+    const lines = [...trace.querySelectorAll('[data-trace-line], [data-trace-step], .trace-line, .event-trace-row')];
+    if (!lines.length) return;
+    lines.forEach((line, index) => line.style.setProperty('--trace-index', index));
+    const revealInterval = Math.min(Number(trace.dataset.traceInterval) || 480, 700);
+    createViewportActivity(trace, {
+      duration: Math.min(900 + lines.length * revealInterval, 4700),
+      threshold: 0.12,
+      reset() {
+        trace.classList.remove('is-playing', 'is-complete', 'is-static');
+        lines.forEach(line => line.classList.remove('is-revealed'));
+      },
+      play() {
+        trace.classList.add('is-playing');
+        const timers = lines.map((line, index) =>
+          setTimeout(() => line.classList.add('is-revealed'), index * revealInterval)
+        );
+        return () => timers.forEach(clearTimeout);
+      },
+      settle() {
+        trace.classList.remove('is-playing');
+        trace.classList.add('is-complete');
+        lines.forEach(line => line.classList.add('is-revealed'));
+      },
+      staticState() {
+        trace.classList.remove('is-playing');
+        trace.classList.add('is-static', 'is-complete');
+        lines.forEach(line => line.classList.add('is-revealed'));
+      }
+    });
+  });
+
+  function syncMotionState() {
+    root.dataset.motion = reduced.matches || document.hidden ? 'paused' : 'running';
   }
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.target === reel) reelVisible = entry.isIntersecting;
-        else visible.set(entry.target, entry.isIntersecting);
+        const activity = activities.find(candidate => candidate.element === entry.target);
+        if (!activity) return;
+        if (entry.isIntersecting) activity.enter(entry);
+        else activity.leave();
       });
-      motionSync();
-    }, { threshold: 0.1 });
-    sprites.forEach(sprite => observer.observe(sprite));
-    if (reel) observer.observe(reel);
+    }, { threshold: [0, 0.1, 0.15] });
+    activities.forEach(activity => observer.observe(activity.element));
+  } else {
+    activities.forEach(activity => {
+      activity.enter({ intersectionRatio: 1, boundingClientRect: activity.element.getBoundingClientRect() });
+    });
   }
-  if (motionButton) motionButton.addEventListener('click', () => {
-    paused = !paused;
-    try { localStorage.setItem('bs-motion', paused ? 'paused' : 'running'); } catch (_) {}
-    motionSync();
+  reduced.addEventListener('change', () => {
+    syncMotionState();
+    activities.forEach(activity => activity.preferenceChanged());
   });
-  reduced.addEventListener('change', motionSync);
-  document.addEventListener('visibilitychange', motionSync);
-  motionSync();
+  document.addEventListener('visibilitychange', () => {
+    syncMotionState();
+    if (document.hidden) activities.forEach(activity => activity.interrupt());
+    else activities.forEach(activity => activity.resume());
+  });
+  syncMotionState();
   const form = document.getElementById('terminal-form');
   const input = document.getElementById('terminal-input');
   const log = document.getElementById('terminal-log');

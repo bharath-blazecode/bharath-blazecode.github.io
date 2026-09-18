@@ -1,6 +1,6 @@
 # Barry Sampath — Field Notes
 
-A complete static portfolio about cybersecurity, identity controls, IT automation and practical systems work. The redesign begins at restored public main commit `57bed42ccb5c8fb66970a852315429cbbbb4354c` (the merged PR #15 revert). It retains the existing GitHub Pages routes.
+A complete static portfolio about cybersecurity, identity controls, IT automation and practical systems work. This refinement builds on the Field Notes redesign merged in PR #16 at commit `928ab22e1a09f2084d45aec0d5b53981a4b5494f`. It retains the existing GitHub Pages routes.
 
 ## Run locally
 
@@ -26,7 +26,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-Alternatively set `BROWSER_CHANNEL=chrome` or `msedge` to use an installed browser. In PowerShell: `$env:BROWSER_CHANNEL = 'chrome'`; then run the test command. The dependency lock pins Playwright 1.62.1 and axe-core 4.10.3. The test checks five routes at desktop and 320px in both themes, automated accessibility rules, theme and motion persistence, the running and paused motion paths, safe terminal command handling and a no-JavaScript path. Automated checks do not establish WCAG conformance or replace assistive-technology testing.
+Alternatively set `BROWSER_CHANNEL=chrome` or `msedge` to use an installed browser. In PowerShell: `$env:BROWSER_CHANNEL = 'chrome'`; then run the test command. The dependency lock pins Playwright 1.62.1 and axe-core 4.10.3. The test checks five routes at desktop and 320px in both themes, automated accessibility rules, theme persistence, bounded entry and re-entry motion, reduced-motion fallbacks, the telemetry and trace sequences, mobile layout, keyboard interaction, safe terminal command handling and a no-JavaScript path. Automated checks do not establish WCAG conformance or replace assistive-technology testing.
 
 ## Edit the site
 
@@ -38,7 +38,7 @@ work/luna/index.html        shared robot project and contribution boundaries
 404.html                   missing-page experience
 css/site.css               responsive styles, themes and print treatment
 js/theme.js                early local theme restoration
-js/site.js                 optional motion, theme and terminal behaviour
+js/site.js                 bounded viewport motion, theme and terminal behaviour
 assets/                    inherited evidence, responder, fonts and social image
 resume/                    original June 2026 PDF, explicitly flagged as stale
 tools/                     dependency-free verification, build and preview
@@ -49,11 +49,11 @@ HTML is the editable source of truth. Shared navigation is deliberately ordinary
 
 ## Reading and interaction
 
-The homepage supplies a quick scan. Every project links directly to a complete case study with a summary, contribution boundary and evidence index. Native disclosures hold optional role detail, training, off-shift material, the résumé notice and terminal. They work without scripting.
+The homepage supplies a quick scan. Every project links directly to a complete case study with a summary, contribution boundary and evidence index. Native disclosures hold optional role detail, a structured training, tools and community ledger, off-shift material, the résumé notice and terminal. They work without scripting.
 
-Day/Night follows the operating system until a local choice is saved. The role reel and inherited pixel responder pause off screen, when the tab is hidden, or using the persistent motion control. Reduced-motion users receive a static full interests list. A blocked preference store cannot prevent the page loading. No hover gesture is required.
+Day/Night follows the operating system until a local choice is saved. The role reel, inherited pixel responders, desktop telemetry packets and illustrative trace use short viewport-triggered sequences. Each settles in under five seconds and becomes eligible to replay only after fully leaving the viewport. A hidden tab interrupts motion, no motion preference is stored, and reduced-motion users receive complete static content. A blocked theme-preference store cannot prevent the page loading. No hover gesture is required.
 
-The homelab example is a manual four-step explanation, not live telemetry or a timed incident. The original nine-event autoplay stream was removed. The terminal inserts only text; it cannot execute commands, scan systems or submit data. Its history exists only for the current page session and is bounded.
+The homelab example remains a manual four-step explanation. Its three moving packet markers and five-line illustrative trace are teaching aids, not live telemetry or a timed incident. They settle after one short sequence; the original nine-event autoplay stream remains removed. The terminal inserts only text; it cannot execute commands, scan systems or submit data. Its history exists only for the current page session and is bounded.
 
 ## Content boundaries
 
@@ -72,4 +72,4 @@ Existing screenshots, robot photograph, diagram and responder sprite sheets are 
 
 ## Publication
 
-This is a local review package. Nothing has been pushed, deployed, merged or configured in an external account. The trusted owner agent should inspect the included patch and documentation, verify the recorded base, then prepare one unmerged pull request for Barry's review. Do not treat local test success as approval to publish.
+This refinement is intended for one unmerged pull request for Barry's review. Test success does not approve a merge or deployment; the final publication decision remains with Barry.
