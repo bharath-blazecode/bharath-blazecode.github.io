@@ -33,10 +33,10 @@
   });
 
   /*
-   * Decorative motion is deliberately bounded. Each sequence plays once when it
-   * enters the viewport, settles within five seconds, and only becomes eligible
-   * to replay after it has fully left the viewport. Content remains readable
-   * without these enhancements, and reduced-motion visitors get the final state.
+   * Decorative motion begins in view. Most sequences settle within five seconds
+   * and only become eligible to replay after fully leaving the viewport. The
+   * telemetry diagram is the one continuous sequence; it stops off screen and
+   * can be paused locally. Reduced-motion visitors receive the final state.
    */
   const activities = [];
   function restartAnimation(element) {
@@ -47,6 +47,7 @@
   function createViewportActivity(element, options) {
     const duration = Math.min(Number(options.duration) || 3000, 4900);
     const threshold = Number(options.threshold) || 0.1;
+    const continuous = options.continuous === true;
     let inView = false;
     let armed = true;
     let running = false;
@@ -80,7 +81,7 @@
       interrupted = false;
       options.reset();
       cancelPlayback = options.play() || null;
-      finishTimer = setTimeout(settle, duration);
+      if (!continuous) finishTimer = setTimeout(settle, duration);
     }
     function leave() {
       inView = false;
@@ -88,12 +89,17 @@
       if (running) settle();
       clearTimeout(leaveTimer);
       leaveTimer = setTimeout(() => {
+        leaveTimer = null;
         if (!inView && !reduced.matches) armed = true;
       }, 350);
     }
     function enter(entry) {
       inView = true;
-      clearTimeout(leaveTimer);
+      if (leaveTimer !== null) {
+        clearTimeout(leaveTimer);
+        leaveTimer = null;
+        if (!reduced.matches) armed = true;
+      }
       if (entry.intersectionRatio >= threshold || entry.boundingClientRect.height < 40) play();
     }
     function interrupt() {
@@ -178,15 +184,58 @@
 
   const flowDiagrams = [...document.querySelectorAll('[data-telemetry-flow], .diagram')]
     .filter((diagram, index, all) => diagram.querySelector('.dpacket') && all.indexOf(diagram) === index);
+  const wideFlow = window.matchMedia('(min-width: 601px)');
   flowDiagrams.forEach(diagram => {
     const packets = [...diagram.querySelectorAll('.dpacket')];
+    const instruction = diagram.parentElement.querySelector('[data-flow-instruction]');
+    const packetStagger = 700;
+    let userPaused = false;
     packets.forEach((packet, index) => {
       packet.style.setProperty('--packet-index', index);
-      packet.style.setProperty('--packet-delay', `${index * 900}ms`);
+      packet.style.setProperty('--packet-delay', `${index * packetStagger}ms`);
     });
+    function controlAvailable() {
+      return wideFlow.matches && !reduced.matches;
+    }
+    function syncFlowControl() {
+      const available = controlAvailable();
+      diagram.classList.toggle('has-flow-control', available);
+      diagram.classList.toggle('is-user-paused', userPaused);
+      if (available) {
+        diagram.setAttribute('role', 'button');
+        diagram.setAttribute('aria-pressed', String(userPaused));
+        diagram.setAttribute('aria-keyshortcuts', 'Enter Space');
+        if (instruction) {
+          instruction.hidden = false;
+          instruction.textContent = userPaused
+            ? ' Packet flow paused. Select the diagram or press Enter to resume.'
+            : ' Select the diagram or press Enter to pause.';
+        }
+      } else {
+        diagram.setAttribute('role', 'region');
+        diagram.removeAttribute('aria-pressed');
+        diagram.removeAttribute('aria-keyshortcuts');
+        if (instruction) instruction.hidden = true;
+      }
+    }
+    function toggleFlow() {
+      if (!controlAvailable()) return;
+      userPaused = !userPaused;
+      syncFlowControl();
+    }
+    diagram.addEventListener('click', toggleFlow);
+    diagram.addEventListener('keydown', event => {
+      if (!controlAvailable()) return;
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      toggleFlow();
+    });
+    wideFlow.addEventListener('change', syncFlowControl);
+    reduced.addEventListener('change', syncFlowControl);
+    syncFlowControl();
     createViewportActivity(diagram, {
-      duration: Number(diagram.dataset.motionDuration) || Math.min(1800 + packets.length * 900, 4700),
-      threshold: 0.12,
+      threshold: 0.3,
+      continuous: true,
       reset() {
         diagram.classList.remove('is-flowing', 'is-complete', 'is-static');
         packets.forEach(restartAnimation);
@@ -208,10 +257,11 @@
     const lines = [...trace.querySelectorAll('[data-trace-line], [data-trace-step], .trace-line, .event-trace-row')];
     if (!lines.length) return;
     lines.forEach((line, index) => line.style.setProperty('--trace-index', index));
-    const revealInterval = Math.min(Number(trace.dataset.traceInterval) || 480, 700);
+    const revealDelay = Math.min(Number(trace.dataset.traceDelay) || 450, 600);
+    const revealInterval = Math.min(Number(trace.dataset.traceInterval) || 850, 900);
     createViewportActivity(trace, {
-      duration: Math.min(900 + lines.length * revealInterval, 4700),
-      threshold: 0.12,
+      duration: Math.min(revealDelay + (lines.length - 1) * revealInterval + 650, 4700),
+      threshold: 0.3,
       reset() {
         trace.classList.remove('is-playing', 'is-complete', 'is-static');
         lines.forEach(line => line.classList.remove('is-revealed'));
@@ -219,7 +269,7 @@
       play() {
         trace.classList.add('is-playing');
         const timers = lines.map((line, index) =>
-          setTimeout(() => line.classList.add('is-revealed'), index * revealInterval)
+          setTimeout(() => line.classList.add('is-revealed'), revealDelay + index * revealInterval)
         );
         return () => timers.forEach(clearTimeout);
       },
@@ -247,7 +297,7 @@
         if (entry.isIntersecting) activity.enter(entry);
         else activity.leave();
       });
-    }, { threshold: [0, 0.1, 0.15] });
+    }, { threshold: [0, 0.1, 0.15, 0.3] });
     activities.forEach(activity => observer.observe(activity.element));
   } else {
     activities.forEach(activity => {

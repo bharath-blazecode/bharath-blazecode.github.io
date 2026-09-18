@@ -60,13 +60,13 @@
 .event-trace-row code{color:var(--ink);font-size:.8125rem}
 .event-trace-row:nth-child(4),.event-trace-row:nth-child(5){box-shadow:inset 3px 0 0 var(--accent)}
 .example-trace-note{margin-top:34px}
-.has-js [data-event-trace]:not(.is-static) .event-trace-row{opacity:0;transform:translateY(5px);transition:opacity .2s ease,transform .2s ease}
+.has-js [data-event-trace]:not(.is-static) .event-trace-row{opacity:0;transform:translateY(5px);transition:opacity .28s ease-out,transform .28s ease-out}
 .has-js [data-event-trace] .event-trace-row.is-revealed{opacity:1;transform:none}
 .dpacket{fill:var(--link);display:none;offset-distance:0;offset-rotate:0deg;filter:drop-shadow(0 0 2px var(--link))}
-.has-js .telemetry-flow.is-flowing .dpacket{display:block;animation:telemetry-packet .72s ease-in-out 1 both}
-.has-js .telemetry-flow.is-flowing .dpacket[data-flow-step='2']{animation-delay:.82s}
-.has-js .telemetry-flow.is-flowing .dpacket[data-flow-step='3']{animation-delay:1.64s}
-@keyframes telemetry-packet{0%{offset-distance:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{offset-distance:100%;opacity:0}}
+.telemetry-flow.has-flow-control{cursor:pointer}
+.has-js .telemetry-flow.is-flowing .dpacket{display:block;animation:telemetry-packet 8s linear infinite both;animation-delay:var(--packet-delay,0ms)}
+.has-js .telemetry-flow.is-flowing.is-user-paused .dpacket{animation-play-state:paused}
+@keyframes telemetry-packet{0%{offset-distance:0;opacity:0}1%{opacity:1}8%{opacity:1}8.75%{offset-distance:100%;opacity:0}100%{offset-distance:100%;opacity:0}}
 @media(max-width:1100px){.background-ledger .tools-ledger dl{grid-template-columns:1fr}.background-ledger .tools-ledger dl>div{padding:12px 0;border-left:0;border-top:1px solid var(--line)}.background-ledger .tools-ledger dl>div:first-child{padding-top:0;border-top:0}.background-ledger .tools-ledger dl>div:last-child{padding-bottom:0}}
 @media(max-width:850px){.background-ledger{grid-template-columns:1fr}.background-ledger>section:first-child{border-right:0;border-bottom:1px solid var(--line)}.background-ledger .tools-ledger{grid-column:auto}.example-grid{grid-template-columns:1fr}.example-margin.example-trace-aside{display:block;padding-top:0}.example-trace-note{display:none}}
 @media(max-width:600px){.has-js .telemetry-flow .dpacket{display:none!important;animation:none!important}}
