@@ -32,53 +32,6 @@
     });
   });
 
-  document.querySelectorAll('[data-offshift-index]').forEach(index => {
-    const tablist = index.querySelector('[data-offshift-tabs]');
-    const tabs = [...index.querySelectorAll('[data-offshift-tab]')];
-    const notes = [...index.querySelectorAll('[data-offshift-note]')];
-    if (!tablist || !tabs.length || tabs.length !== notes.length) return;
-
-    index.dataset.enhanced = '';
-    tablist.hidden = false;
-    tablist.setAttribute('role', 'tablist');
-    tabs.forEach(tab => tab.setAttribute('role', 'tab'));
-    notes.forEach(note => {
-      note.setAttribute('role', 'tabpanel');
-      note.setAttribute('aria-labelledby', `offshift-tab-${note.dataset.offshiftNote}`);
-      note.tabIndex = 0;
-    });
-
-    function activate(nextIndex, moveFocus = false) {
-      tabs.forEach((tab, tabIndex) => {
-        const active = tabIndex === nextIndex;
-        tab.setAttribute('aria-selected', String(active));
-        tab.tabIndex = active ? 0 : -1;
-        notes[tabIndex].hidden = !active;
-        notes[tabIndex].classList.remove('is-entering');
-        if (active) {
-          void notes[tabIndex].offsetWidth;
-          notes[tabIndex].classList.add('is-entering');
-        }
-      });
-      if (moveFocus) tabs[nextIndex].focus();
-    }
-
-    tabs.forEach((tab, tabIndex) => {
-      tab.addEventListener('click', () => activate(tabIndex));
-      tab.addEventListener('keydown', event => {
-        let nextIndex = tabIndex;
-        if (event.key === 'ArrowRight') nextIndex = (tabIndex + 1) % tabs.length;
-        else if (event.key === 'ArrowLeft') nextIndex = (tabIndex - 1 + tabs.length) % tabs.length;
-        else if (event.key === 'Home') nextIndex = 0;
-        else if (event.key === 'End') nextIndex = tabs.length - 1;
-        else return;
-        event.preventDefault();
-        activate(nextIndex, true);
-      });
-    });
-    activate(1);
-  });
-
   /*
    * Decorative motion begins in view. Most sequences settle within five seconds
    * and only become eligible to replay after fully leaving the viewport. The
@@ -246,12 +199,10 @@
     }
     function syncFlowControl() {
       const available = controlAvailable();
-      const narrow = !wideFlow.matches;
       diagram.classList.toggle('has-flow-control', available);
       diagram.classList.toggle('is-user-paused', userPaused);
       if (available) {
         diagram.setAttribute('role', 'button');
-        diagram.tabIndex = 0;
         diagram.setAttribute('aria-pressed', String(userPaused));
         diagram.setAttribute('aria-keyshortcuts', 'Enter Space');
         if (instruction) {
@@ -262,8 +213,6 @@
         }
       } else {
         diagram.setAttribute('role', 'region');
-        if (narrow) diagram.tabIndex = 0;
-        else diagram.removeAttribute('tabindex');
         diagram.removeAttribute('aria-pressed');
         diagram.removeAttribute('aria-keyshortcuts');
         if (instruction) instruction.hidden = true;

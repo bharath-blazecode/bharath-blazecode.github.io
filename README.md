@@ -60,7 +60,7 @@ The HTML files are the editable source of truth. Shared navigation is repeated a
 
 ## Design and accessibility behavior
 
-The primary content and navigation use ordinary HTML. JavaScript progressively adds the theme control, decorative sequences, the keyboard-operated Off Shift index and terminal interaction. Without JavaScript, all four Off Shift notes remain visible in the page.
+The primary content and navigation use ordinary HTML. JavaScript progressively adds the theme control, decorative sequences and terminal interaction.
 
 Day and night themes follow the operating-system preference until the visitor makes a local choice. Most decorative sequences settle within five seconds. On wider screens, the telemetry flow repeats while visible, and the diagram itself can pause or resume it. All motion stops when the page is hidden; an interrupted sequence restarts if it is still in view. With `prefers-reduced-motion`, the page presents the complete static content instead. The homelab diagrams remain understandable without animation.
 
