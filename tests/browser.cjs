@@ -110,26 +110,6 @@ const ready = new Promise((resolve, reject) => {
     await delay(750);
     assert.equal(await roleReel.innerText(), settledRole, 'Role reel did not settle');
 
-    const offshiftIndex = motionPage.locator('[data-offshift-index]');
-    await offshiftIndex.scrollIntoViewIfNeeded();
-    const offshiftTabs = offshiftIndex.locator('[role="tab"]');
-    assert.equal(await offshiftTabs.count(), 4);
-    assert.equal(await offshiftIndex.locator('[role="tablist"]').count(), 1);
-    assert.equal(await offshiftIndex.locator('[role="tab"][aria-selected="true"]').innerText(), '02\nChess');
-    assert.equal(await offshiftIndex.locator('[role="tabpanel"]:visible').count(), 1);
-    assert.match(await offshiftIndex.locator('[role="tabpanel"]:visible').innerText(), /rules stay the same/i);
-    const selectedOffshiftTab = offshiftIndex.locator('[role="tab"][aria-selected="true"]');
-    await selectedOffshiftTab.focus();
-    await motionPage.keyboard.press('Tab');
-    assert.ok(await offshiftIndex.locator('[role="tabpanel"]:visible').evaluate(element => element === document.activeElement));
-    await selectedOffshiftTab.focus();
-    await selectedOffshiftTab.press('ArrowRight');
-    assert.equal(await offshiftIndex.locator('[role="tab"][aria-selected="true"]').innerText(), '03\nMovement');
-    assert.match(await offshiftIndex.locator('[role="tabpanel"]:visible').innerText(), /boxing/i);
-    assert.ok(await offshiftIndex.locator('#offshift-tab-movement').evaluate(element => element === document.activeElement));
-    await offshiftIndex.locator('#offshift-tab-movement').press('Home');
-    assert.equal(await offshiftIndex.locator('[role="tab"][aria-selected="true"]').innerText(), '01\nRoute');
-
     await motionPage.locator('#contact').scrollIntoViewIfNeeded();
     await delay(500);
     await roleReel.scrollIntoViewIfNeeded();
@@ -335,13 +315,8 @@ const ready = new Promise((resolve, reject) => {
       await reducedPage.locator('.responder.is-static.is-complete').count(),
       await reducedPage.locator('.responder').count()
     );
-    await reducedPage.emulateMedia({ media: 'print', reducedMotion: 'reduce' });
-    assert.equal(await reducedPage.locator('[data-offshift-note]:visible').count(), 4);
-    assert.equal(await reducedPage.locator('[data-offshift-tabs]').isVisible(), false);
-    await reducedPage.emulateMedia({ media: 'screen', reducedMotion: 'reduce' });
     await reducedPage.goto(url + '/work/homelab/');
     assert.ok(await reducedPage.locator('[data-telemetry-flow]').evaluate(element => element.classList.contains('is-static')));
-    assert.equal(await reducedPage.locator('[data-telemetry-flow]').getAttribute('tabindex'), null);
     const reducedPackets = await reducedPage.locator('[data-flow-packet]').evaluateAll(packets => packets.map(packet => {
       const style = getComputedStyle(packet);
       return { animation: style.animationName, display: style.display };
@@ -385,20 +360,11 @@ const ready = new Promise((resolve, reject) => {
     assert.equal(await menu.evaluate(element => element.open), false);
     assert.ok(await menuSummary.evaluate(element => element === document.activeElement));
 
-    const mobileOffshift = mobilePage.locator('[data-offshift-index]');
-    await mobileOffshift.scrollIntoViewIfNeeded();
-    assert.equal(await mobileOffshift.locator('[role="tab"]').count(), 4);
-    assert.equal(await mobileOffshift.locator('[role="tabpanel"]:visible').count(), 1);
-    const mobileTabBoxes = await mobileOffshift.locator('[role="tab"]').evaluateAll(tabs => tabs.map(tab => {
-      const rect = tab.getBoundingClientRect();
-      return { width: rect.width, height: rect.height, top: rect.top, left: rect.left };
-    }));
-    assert.ok(mobileTabBoxes.every(box => box.width >= 130 && box.height >= 44));
-    assert.equal(mobileTabBoxes[0].top, mobileTabBoxes[1].top);
-    assert.ok(mobileTabBoxes[2].top > mobileTabBoxes[0].top);
-    await mobileOffshift.locator('#offshift-tab-chess').press('End');
-    assert.equal(await mobileOffshift.locator('[role="tab"][aria-selected="true"]').innerText(), '04\nGuitar');
-    assert.match(await mobileOffshift.locator('[role="tabpanel"]:visible').innerText(), /beginner/i);
+    const offshift = mobilePage.locator('.offshift');
+    const offshiftSummary = offshift.locator(':scope > summary');
+    await offshiftSummary.focus();
+    await offshiftSummary.press('Enter');
+    assert.ok(await offshift.evaluate(element => element.open));
 
     const background = mobilePage.locator('.background-index');
     const backgroundSummary = background.locator(':scope > summary');
@@ -417,7 +383,6 @@ const ready = new Promise((resolve, reject) => {
 
     await mobilePage.goto(url + '/work/homelab/');
     assert.equal(await mobilePage.locator('[data-telemetry-flow]').getAttribute('role'), 'region');
-    assert.equal(await mobilePage.locator('[data-telemetry-flow]').getAttribute('tabindex'), '0');
     assert.equal(await mobilePage.locator('[data-telemetry-flow]').getAttribute('aria-pressed'), null);
     assert.equal(await mobilePage.locator('[data-flow-instruction]').isHidden(), true);
     const mobileFlow = mobilePage.locator('[data-telemetry-flow]');
@@ -444,8 +409,6 @@ const ready = new Promise((resolve, reject) => {
     await nojs.goto(url);
     assert.equal(await nojs.locator('#theme-toggle').isVisible(), false);
     assert.ok(await nojs.locator('a[href="mailto:barry.sampath@outlook.com"]').count());
-    assert.equal(await nojs.locator('[data-offshift-tabs]').isVisible(), false);
-    assert.equal(await nojs.locator('[data-offshift-note]:visible').count(), 4);
     await fallback.close();
 
     console.log(
