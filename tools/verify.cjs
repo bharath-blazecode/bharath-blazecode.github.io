@@ -8,7 +8,7 @@ assert.ok(!/https:\/\/fonts\./.test(html),'External font service remains');
 for(const im of html.matchAll(/<img\b[^>]+>/g)){assert.match(im[0],/\balt="[^"]*"/);assert.match(im[0],/\bwidth="\d+"/);assert.match(im[0],/\bheight="\d+"/);}}
 for(const m of read('css/site.css').matchAll(/url\(['"]?([^)'"\s]+)/g)){if(m[1].startsWith('data:'))continue;assert.ok(fs.existsSync(path.resolve(root,'css',m[1])),'Missing CSS asset '+m[1]);checked++;}
 const home=read('index.html'),lab=read('work/homelab/index.html'),quest=read('work/classquest/index.html'),luna=read('work/luna/index.html');
-assert.match(home,/update pending/);assert.match(home,/subject to student visa conditions/);assert.match(home,/role="log"/);
+assert.match(home,/Download résumé \(PDF\)/);assert.doesNotMatch(home,/update pending|needs updating|June 2026 résumé/);assert.match(home,/subject to student visa conditions/);assert.match(home,/role="log"/);
 assert.match(home,/Field notes<br>2026 edition/);assert.doesNotMatch(home,/Vol\. 01/);
 assert.match(home,/train in boxing/);assert.match(home,/beginner on guitar/);
 assert.match(home,/class="background-index"/);assert.match(home,/class="background-ledger"/);assert.match(home,/Tools in use/);assert.match(home,/Identity and automation/);

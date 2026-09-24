@@ -51,7 +51,7 @@ css/site.css                responsive, theme and print styles
 js/theme.js                 early theme restoration
 js/site.js                  motion, navigation and terminal enhancements
 assets/                     project media, fonts and social preview
-resume/                     June 2026 resume, marked as needing an update
+resume/                     Downloadable résumé PDF
 tools/                      verification, build and preview scripts
 tests/browser.cjs           Playwright browser checks
 ```
@@ -77,7 +77,7 @@ Repository changes should preserve the distinction between completed work, share
 - ClassQuest was built by a five-person team, and the People's Choice Award belongs to the team. My individual contribution is supported by the ten linked pull requests.
 - LUNA is shared work with Zhirui Lu. Individual, shared and vendor contributions should remain attributed.
 - DissentKit is presented as an early experiment without a claim of independently established effectiveness.
-- The included resume is from June 2026 and is explicitly marked as needing an update. It should not be presented as the current source of truth.
+- The downloadable résumé is stored in `resume/` and linked from the Contact section.
 
 ## Build and deployment
 
