@@ -319,11 +319,11 @@
   const log = document.getElementById('terminal-log');
   const terminal = document.getElementById('terminal');
   const replies = {
-    help: 'whoami — a short introduction\nwork or ls — the three projects\ncontact — email and profiles\nresume — the existing PDF and its update status\nmfa · grc · nmap · eicar · sqli · xss — small security notes\nsudo — nice try\nclear — clear this log\nexit — close the terminal',
+    help: 'whoami — a short introduction\nwork or ls — the three projects\ncontact — email and profiles\nresume — where to find the downloadable PDF\nmfa · grc · nmap · eicar · sqli · xss — small security notes\nsudo — nice try\nclear — clear this log\nexit — close the terminal',
     whoami: 'Barry Sampath. Bharath personally. Cybersecurity & IT Automation Analyst at ScienceGears, based in Brisbane. Curious about systems; careful with the details.',
     work: '01 ITDR home lab — Phase 1 telemetry collection complete; development paused.\n02 ClassQuest — five-person hackathon build; ten merged PRs from me.\n03 LUNA — Raspberry Pi robot, built with Zhirui Lu.\nUse the Work links above to inspect each case study.',
     contact: 'Email: barry.sampath@outlook.com\nLinkedIn: linkedin.com/in/barrysampath\nGitHub: github.com/bharath-blazecode\nOpen to suitable 2027 internships and early-career opportunities. Work rights remain subject to student visa conditions.',
-    resume: 'The linked résumé is from June 2026 and needs updating. GPA, graduation date and lab-status claims are superseded by this site. Find the labelled PDF in Contact.',
+    resume: 'Open the Contact section to download my current résumé as a PDF.',
     mfa: 'Multi-factor authentication asks for more than one kind of proof. It is one part of an access-control system, alongside permissions and the conditions under which access is allowed.',
     grc: 'Governance, risk and compliance: deciding which controls are needed, who owns them, and what evidence shows that they work.',
     nmap: 'Nmap helps inspect network services. Only scan systems you own or have explicit permission to test. This sandbox performs no scans.',
