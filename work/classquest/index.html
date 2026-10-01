@@ -48,7 +48,7 @@
   <section class="spine upload-decision" id="upload-decision" aria-labelledby="upload-title">
     <div class="sg"><span class="sn">One decision</span><span class="rail" aria-hidden="true"></span><p class="upload-rail-note">PR #12<br>Merged 22 Aug 2026</p></div>
     <div>
-      <h2 id="upload-title">A filename is a label.<br><em>Should it choose a path?</em></h2>
+      <h2 id="upload-title"><span class="hl">A filename is a label.</span><span class="hl"><em>Should it choose a path?</em></span></h2>
       <p class="upload-summary">I changed the upload handler so the server chooses where a file is stored, while keeping its original name for display. I also bounded the application read and added regression tests. The useful part is the boundary: a familiar label should not decide where bytes get written.</p>
       <p class="upload-credit">My patch, within a five-person team’s build. Miguel Pineda led the technical work; the People’s Choice Award belongs to the team.</p>
 

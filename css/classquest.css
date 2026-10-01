@@ -7,6 +7,7 @@
 .upload-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
 .upload-controls button { min-height: 72px; min-width: 0; padding: 12px 18px; border: 0; border-right: 1px solid var(--line); background: transparent; text-align: left; font: 700 .9375rem/1.35 var(--sans); touch-action: manipulation; }
 .upload-controls button:last-child { border-right: 0; }
+.upload-controls button { text-wrap: balance; }
 .upload-controls button span { display: block; margin-bottom: 4px; font: .6875rem/1.4 var(--mono); }
 .upload-controls button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); box-shadow: inset 0 -3px 0 var(--accent-ink); }
 .upload-controls button:focus-visible { position: relative; z-index: 1; outline-offset: -6px; outline-color: var(--ink); }
@@ -60,8 +61,13 @@
   .upload-sheet.is-enhanced .upload-panels { display: block; }
   .upload-sheet.is-enhanced .upload-panel[aria-hidden="true"] { display: none; }
 }
+/* Touch-sized links; desktop spacing is untouched. */
+@media (max-width: 850px), (pointer: coarse) {
+  .upload-evidence-link, .upload-source a { min-height: 44px; }
+}
 @media (max-width: 600px) {
   .upload-controls button { padding: 12px 10px; font-size: .8125rem; }
+  .upload-panel pre { padding: 12px 14px; font-size: .75rem; }
   .upload-panel { padding: 24px 18px; }
   .upload-panel h3 { font-size: 2rem; }
   .upload-path-pair { grid-template-columns: minmax(0, 1fr); gap: 10px; }

@@ -15,7 +15,7 @@
       <p>Phase 1 was complete once the agent enrolled, telemetry reached the indexer and Windows events appeared in the dashboard. Reaching that point exposed four separate infrastructure faults.</p>
 
       <div class="diagram telemetry-flow" data-telemetry-flow tabindex="0" role="region" aria-label="Lab architecture diagram showing Windows endpoint telemetry moving through the Wazuh server, indexer and dashboard" aria-describedby="telemetry-caption">
-        <svg viewBox="0 0 800 200" role="img" aria-labelledby="dgt dgd">
+        <svg class="diagram-wide" viewBox="0 0 800 200" role="img" aria-labelledby="dgt dgd">
           <title id="dgt">ITDR home lab architecture</title>
           <desc id="dgd">A Windows 11 virtual machine running Sysmon and the Wazuh agent ships telemetry to an Ubuntu 22.04 virtual machine, where the Wazuh server analyses events, the indexer stores them, and the dashboard queries them.</desc>
 
@@ -55,6 +55,43 @@
 
           <text class="dcap" x="6" y="164">BRIDGED — 192.168.1.0/24</text>
           <text class="dcap" x="640" y="164">HTTPS — LOCAL ONLY</text>
+        </svg>
+        <svg class="diagram-narrow" viewBox="0 0 300 386" role="img" aria-labelledby="dgt2 dgd2">
+          <title id="dgt2">ITDR home lab architecture</title>
+          <desc id="dgd2">A Windows 11 virtual machine running Sysmon and the Wazuh agent ships telemetry to an Ubuntu 22.04 virtual machine, where the Wazuh server analyses events, the indexer stores them, and the dashboard queries them.</desc>
+
+          <rect x="6" y="84" width="288" height="296" rx="2" fill="none" stroke="currentColor" stroke-dasharray="3 4" opacity=".28"/>
+          <text class="dcap" x="16" y="102">UBUNTU SERVER 22.04</text>
+          <text class="dcap" x="16" y="114">WAZUH 4.9.2 ALL-IN-ONE</text>
+
+          <path class="dpath" d="M262,60 L262,124"/>
+          <path class="dpath" d="M262,124 l-4,-6 M262,124 l4,-6"/>
+          <path class="dpath" d="M262,178 L262,212"/>
+          <path class="dpath" d="M262,212 l-4,-6 M262,212 l4,-6"/>
+          <path class="dpath" d="M262,266 L262,300"/>
+          <path class="dpath" d="M262,300 l-4,-6 M262,300 l4,-6"/>
+
+          <text class="dcap" x="30" y="76">BRIDGED · 192.168.1.0/24</text>
+          <text class="dcap" x="250" y="96" text-anchor="end">AGENT</text>
+          <text class="dcap" x="250" y="199" text-anchor="end">INDEX</text>
+          <text class="dcap" x="250" y="287" text-anchor="end">QUERY</text>
+
+          <rect class="dnode dnode-hot" x="30" y="6" width="240" height="54" rx="2"/>
+          <text class="dlabel" x="44" y="30">Windows 11</text>
+          <text class="dsub" x="44" y="48">SYSMON 15.20 + AGENT</text>
+
+          <rect class="dnode" x="30" y="124" width="240" height="54" rx="2"/>
+          <text class="dlabel" x="44" y="148">Server</text>
+          <text class="dsub" x="44" y="166">DECODERS + RULES</text>
+
+          <rect class="dnode" x="30" y="212" width="240" height="54" rx="2"/>
+          <text class="dlabel" x="44" y="236">Indexer</text>
+          <text class="dsub" x="44" y="254">EVENT STORAGE</text>
+
+          <rect class="dnode" x="30" y="300" width="240" height="54" rx="2"/>
+          <text class="dlabel" x="44" y="324">Dashboard</text>
+          <text class="dsub" x="44" y="342">SEARCH + TRIAGE</text>
+          <text class="dcap" x="16" y="372">HTTPS — LOCAL ONLY</text>
         </svg>
       </div>
       <p id="telemetry-caption" style="font-size:.9rem;color:var(--muted);margin-top:-6px">Fig. 1 — where telemetry goes. The diagram follows Windows endpoint telemetry through analysis, storage and search. It illustrates the collection path, not a recorded incident. On wider screens, the packet flow repeats every eight seconds.<span data-flow-instruction aria-live="polite" hidden></span></p>
@@ -137,7 +174,7 @@
         <li><a href="mailto:barry.sampath@outlook.com?subject=ITDR%20lab%20build%20notes"><span class="et">Phase 1 build notes, on request</span><span class="eu">Email</span></a></li>
       </ul>
     </div>
-  </div><section class="example-section" id="example"><p class="eyebrow">Learning example / Illustrative, not a recorded incident</p><h2>Word opens PowerShell.<br>What would you check?</h2><p>This condensed example shows how process telemetry can become a question worth investigating. It is separate from the completed Phase 1 lab. Rule development and response exercises remain planned work.</p><div class="example-grid"><div><details open><summary>01 / Observe the process</summary><p>In this sample event, <code>WINWORD.EXE</code> starts <code>powershell.exe</code> with encoded arguments. That parent–child relationship is worth inspecting; it does not prove malicious activity by itself.</p><pre><code>Sample Windows process event
+  </div><section class="example-section" id="example"><p class="eyebrow">Learning example / Illustrative, not a recorded incident</p><h2><span class="hl">Word opens PowerShell.</span><span class="hl">What would you check?</span></h2><p>This condensed example shows how process telemetry can become a question worth investigating. It is separate from the completed Phase 1 lab. Rule development and response exercises remain planned work.</p><div class="example-grid"><div><details open><summary>01 / Observe the process</summary><p>In this sample event, <code>WINWORD.EXE</code> starts <code>powershell.exe</code> with encoded arguments. That parent–child relationship is worth inspecting; it does not prove malicious activity by itself.</p><pre><code>Sample Windows process event
 Parent:  WINWORD.EXE
 Process: powershell.exe
 Flags:   -nop -w hidden -enc
