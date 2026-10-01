@@ -169,6 +169,9 @@
     }
     function syncFlowControl() {
       const available = controlAvailable();
+      // On phones the path is drawn vertically and fits, so the region has nothing to scroll and no reason to take focus.
+      if (wideFlow.matches) diagram.setAttribute('tabindex', '0');
+      else diagram.removeAttribute('tabindex');
       diagram.classList.toggle('has-flow-control', available);
       diagram.classList.toggle('is-user-paused', userPaused);
       if (available) {

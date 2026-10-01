@@ -27,9 +27,6 @@
   .hero { padding-top: 24px; }
   .hero h1 { font-size: 3.3rem; margin: 26px 0; }
   .hero-intro > p { font-size: 1rem; }
-  .hero-baseline { gap: 20px; }
-  .current-note { padding-right: 85px; }
-  .hero-responder { right: 15px; bottom: 99px; transform: scale(.83); }
   .hero-actions { gap: 18px; margin-top: 20px; }
   .hero-actions .text-link { font-size: .875rem; }
   .interest-line { margin-top: 18px; }
@@ -42,9 +39,82 @@
   .hero h1 { font-size: 2.72rem; }
   .hero-actions { gap: 6px; }
   .hero-actions .text-link { font-size: .8rem; }
-  .current-note { padding-right: 65px; }
   /* Give a full project name its own line beside the compact metadata/number row. */
   .project h3 { padding-right: 0; }
   .project-number { top: 0; }
   .project-copy .eyebrow { max-width: calc(100% - 72px); min-height: 3.1em; }
+}
+
+/* ==========================================================================
+   Mobile alignment refinements (homepage)
+   ========================================================================== */
+/* Hit areas grow with padding and an equal negative margin, so layout does not move. */
+@media screen and (max-width: 850px), screen and (pointer: coarse) {
+  .current-note a, .resume-note a { padding-block: 12px; margin-block: -6px; }
+  .social-links a { padding-block: 10px; margin-block: -10px; }
+  .project-copy .text-link, .note-grid .text-link, .experiment .text-link { padding-block: 10px; margin-block: -10px; }
+  .terminal-input-row input, .terminal-input-row button, .terminal-shortcuts button { min-height: 44px; }
+  .offshift > summary, .background-index > summary, .resume-note > summary { min-height: 44px; }
+  .offshift { padding-block: 10px; }
+}
+
+/* One disclosure language in the About column: a title with a +/- marker (44px rows where touch needs them). */
+@media screen {
+  .offshift > summary, .background-index > summary, .resume-note > summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    list-style: none;
+  }
+  .offshift > summary::-webkit-details-marker, .background-index > summary::-webkit-details-marker, .resume-note > summary::-webkit-details-marker { display: none; }
+  .offshift > summary::after, .background-index > summary::after, .resume-note > summary::after {
+    content: '+'; flex-shrink: 0; font: 400 1.4rem/1 var(--sans);
+  }
+  .offshift[open] > summary::after, .background-index[open] > summary::after, .resume-note[open] > summary::after { content: '−'; }
+}
+
+/* Hero, tablet and phone: the responder is a grid cell that stands in its row, not a floated sprite. */
+@media screen and (max-width: 850px) {
+  /* The idle frame has ~37px of transparent padding on its right; trim it so the figure meets the margin. */
+  .hero { overflow-x: clip; }
+  .hero-baseline { grid-template-columns: minmax(0, 1fr) minmax(235px, .62fr); column-gap: clamp(24px, 5vw, 48px); row-gap: 0; align-items: start; }
+  .hero-intro { grid-row: 1; }
+  /* Note and responder share the second column: the note sits at the top, the figure stands on the intro's baseline. */
+  .current-note { grid-column: 2; grid-row: 1; align-self: start; padding: 0; max-width: none; }
+  .hero-responder { position: static; grid-column: 2; grid-row: 1; justify-self: end; align-self: end; max-width: none; transform: none; margin: 0 -37px -5px 0; }
+  .project-copy .eyebrow .seg, .experiment .eyebrow .seg { display: block; }
+  .project-copy .eyebrow .sep, .experiment .eyebrow .sep {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .hero-meta .eyebrow span { display: block; height: 0; margin: 0; overflow: hidden; font-size: 0; }
+  .hero-baseline { grid-template-columns: minmax(0, 1fr) auto; row-gap: 20px; }
+  .hero-intro { grid-column: 1 / -1; grid-row: 1; }
+  .current-note { grid-column: 1; grid-row: 2; align-self: end; }
+  .hero-responder { grid-column: 2; grid-row: 2; }
+  .current-note a { font-size: .8125rem; }
+  .hero-responder { transform: scale(.85); transform-origin: right bottom; margin: 0 -32px -4px 0; }
+  .interest-line .interest-topics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 16px; margin-top: 8px; }
+  .interest-topics .sep { display: none; }
+  /* Numerals use negative tracking, which pushes the last glyph past its box. */
+  .project-number { right: .05em; }
+  .luna-art figcaption { text-align: left; }
+
+  .terminal-disclosure > summary { flex-wrap: wrap; align-items: stretch; gap: 8px 0; padding: 24px 0 0; }
+  .terminal-disclosure > summary > span:first-child { flex: 1 1 100%; }
+  .terminal-invite { flex: 1 1 100%; display: flex; justify-content: space-between; align-items: center; min-height: 52px; max-width: none; text-align: left; border-top: 1px solid #64705a; font-size: .875rem; }
+  .terminal-invite > span { display: inline; margin: 0; font-size: 0; }
+  .terminal-invite > span::after { content: '+'; font-size: 1.75rem; line-height: 1; }
+  .terminal-disclosure[open] .terminal-invite > span::after { content: '−'; }
+  .terminal-layout { padding-top: 18px; }
+  .terminal-layout > div:first-child { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: 8px; }
+  .terminal-layout > div:first-child > .responder { grid-column: 2; grid-row: 1; float: none; margin: -28px -16px 0 0; transform: scale(.85); transform-origin: right bottom; }
+  .terminal-layout > div:first-child > h3 { grid-column: 1; grid-row: 1; margin: 0 0 14px; padding-top: 0; }
+  /* The tablet layout pins .small to column 2; on phones every paragraph spans the full width. */
+  .terminal-layout > div:first-child > p, .terminal-layout > div:first-child > .small, .terminal-layout > div:first-child > noscript { grid-column: 1 / -1; }
+}
+
+/* Keep the Currently link on one line by size on the narrowest screens; enlarged text still wraps. */
+@media screen and (max-width: 360px) {
+  .current-note a { font-size: .75rem; padding-block: 13px; margin-block: -7px; }
 }
