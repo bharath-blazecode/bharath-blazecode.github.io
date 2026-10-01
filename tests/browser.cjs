@@ -27,7 +27,7 @@ const ready = new Promise((resolve, reject) => {
     });
 
     let scans = 0;
-    for (const width of [1440, 320]) {
+    for (const width of [1440, 820, 390, 320]) {
       for (const colorScheme of ['light', 'dark']) {
         for (const route of ['/', '/work/homelab/', '/work/classquest/', '/work/luna/', '/404.html']) {
           const context = await browser.newContext({
@@ -48,6 +48,19 @@ const ready = new Promise((resolve, reject) => {
             `${route} overflows`
           );
           assert.deepEqual(errors, []);
+          if (route === '/') {
+            const titleCollisions = await page.locator('.project').evaluateAll(projects => projects.filter(project => {
+              const number = project.querySelector('.project-number').getBoundingClientRect();
+              const range = document.createRange();
+              range.selectNodeContents(project.querySelector('h3 a'));
+              return [...range.getClientRects()].some(rect => rect.width > 0 && rect.height > 0 &&
+                Math.min(rect.right, number.right) - Math.max(rect.left, number.left) > 2 &&
+                Math.min(rect.bottom, number.bottom) - Math.max(rect.top, number.top) > 2);
+            }).map(project => project.querySelector('h3').textContent));
+            assert.deepEqual(titleCollisions, [], 'Project titles must not overlap decorative numbers');
+            const resumeBox = await page.locator('.hero-actions a[href$=".pdf"]').boundingBox();
+            assert.ok(resumeBox && resumeBox.height >= 44, 'Hero résumé link must have a usable touch target');
+          }
           await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
           const violations = await page.evaluate(async () => (
             await axe.run(document, {
@@ -96,33 +109,14 @@ const ready = new Promise((resolve, reject) => {
     assert.equal(await motionPage.locator('#motion-toggle, .motion-toggle').count(), 0);
     assert.equal(await motionPage.evaluate(() => localStorage.getItem('bs-motion')), null);
 
-    const roleReel = motionPage.locator('#role-reel');
-    await roleReel.scrollIntoViewIfNeeded();
-    await motionPage.waitForFunction(
-      expected => {
-        const item = document.querySelector('#role-reel .role-reel-item');
-        return item?.textContent === expected && !item.classList.contains('changed');
-      },
-      'Blue team · Identity & access · GRC · IT automation · SOC opportunities',
-      { timeout: 6500 }
-    );
-    const settledRole = await roleReel.innerText();
-    await delay(750);
-    assert.equal(await roleReel.innerText(), settledRole, 'Role reel did not settle');
-
+    // Interests are immediately readable and never replaced on viewport re-entry.
+    const interests = motionPage.locator('.interest-topics');
+    const expectedInterests = 'Blue team · Identity & access · GRC · IT automation · SOC';
+    assert.equal(await interests.innerText(), expectedInterests);
     await motionPage.locator('#contact').scrollIntoViewIfNeeded();
-    await delay(500);
-    await roleReel.scrollIntoViewIfNeeded();
-    await motionPage.waitForFunction(
-      () => document.querySelector('#role-reel .role-reel-item')?.textContent === 'Blue team',
-      null,
-      { timeout: 2000 }
-    );
-    await motionPage.waitForFunction(
-      () => document.querySelector('#role-reel .role-reel-item')?.textContent === 'Identity & access',
-      null,
-      { timeout: 2500 }
-    );
+    await interests.scrollIntoViewIfNeeded();
+    assert.equal(await interests.innerText(), expectedInterests);
+    assert.equal(await interests.getAttribute('aria-hidden'), null);
 
     await motionPage.goto(url + '/work/homelab/');
     const flow = motionPage.locator('[data-telemetry-flow]');
@@ -308,8 +302,8 @@ const ready = new Promise((resolve, reject) => {
     const reducedPage = await reducedContext.newPage();
     await reducedPage.goto(url);
     assert.equal(
-      (await reducedPage.locator('#role-reel').innerText()).trim(),
-      'Blue team · Identity & access · GRC · IT automation · SOC opportunities'
+      (await reducedPage.locator('.interest-topics').innerText()).trim(),
+      'Blue team · Identity & access · GRC · IT automation · SOC'
     );
     assert.equal(
       await reducedPage.locator('.responder.is-static.is-complete').count(),
@@ -409,6 +403,15 @@ const ready = new Promise((resolve, reject) => {
     await nojs.goto(url);
     assert.equal(await nojs.locator('#theme-toggle').isVisible(), false);
     assert.ok(await nojs.locator('a[href="mailto:barry.sampath@outlook.com"]').count());
+    assert.ok(await nojs.locator('.hero-actions a[href="resume/Barry_Sampath_Resume.pdf"]').isVisible());
+    assert.match(await nojs.locator('.interest-topics').innerText(), /Identity & access/);
+    await nojs.locator('.mobile-menu > summary').click();
+    const resume = nojs.locator('.mobile-menu a[aria-label="Résumé (PDF)"]');
+    assert.ok(await resume.isVisible());
+    const pdf = await nojs.request.get(new URL(await resume.getAttribute('href'), nojs.url()).href);
+    assert.ok(pdf.ok(), 'Direct résumé link must resolve');
+    assert.match(pdf.headers()['content-type'], /application\/pdf/);
+    assert.equal((await pdf.body()).subarray(0, 5).toString(), '%PDF-');
     await fallback.close();
 
     console.log(

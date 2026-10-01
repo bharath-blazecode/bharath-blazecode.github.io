@@ -37,7 +37,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-The browser suite exercises the homepage, three case studies and 404 page at desktop and 320px widths. It also checks both themes, reduced-motion behavior, keyboard interaction, the scripted sequences, the terminal and the no-JavaScript path. Axe is included for automated accessibility checks, but an automated pass does not establish WCAG conformance or replace assistive-technology testing.
+The browser suite exercises the homepage, three case studies and 404 page at 320, 390, 820 and 1440px widths. It also checks both themes, reduced-motion behavior, keyboard interaction, the scripted sequences, the terminal and the no-JavaScript path. Axe is included for automated accessibility checks, but an automated pass does not establish WCAG conformance or replace assistive-technology testing.
 
 ## Repository map
 
@@ -47,7 +47,8 @@ index.html                  homepage
 work/homelab/index.html     ITDR Home Lab case study
 work/classquest/index.html  ClassQuest case study
 work/luna/index.html        LUNA case study
-css/site.css                responsive, theme and print styles
+css/site.css                shared responsive, theme and print styles
+css/home.css                Focused Field Notes homepage refinements
 js/theme.js                 early theme restoration
 js/site.js                  motion, navigation and terminal enhancements
 assets/                     project media, fonts and social preview
@@ -60,7 +61,7 @@ The HTML files are the editable source of truth. Shared navigation is repeated a
 
 ## Design and accessibility behavior
 
-The primary content and navigation use ordinary HTML. JavaScript progressively adds the theme control, decorative sequences and terminal interaction.
+The primary content and navigation use ordinary HTML. The homepage interests line is immediately visible; project names lead their cards, with personal outcomes and editorial phrases underneath. JavaScript progressively adds the theme control, decorative sequences and terminal interaction.
 
 Day and night themes follow the operating-system preference until the visitor makes a local choice. Most decorative sequences settle within five seconds. On wider screens, the telemetry flow repeats while visible, and the diagram itself can pause or resume it. All motion stops when the page is hidden; an interrupted sequence restarts if it is still in view. With `prefers-reduced-motion`, the page presents the complete static content instead. The homelab diagrams remain understandable without animation.
 
@@ -77,7 +78,7 @@ Repository changes should preserve the distinction between completed work, share
 - ClassQuest was built by a five-person team, and the People's Choice Award belongs to the team. My individual contribution is supported by the ten linked pull requests.
 - LUNA is shared work with Zhirui Lu. Individual, shared and vendor contributions should remain attributed.
 - DissentKit is presented as an early experiment without a claim of independently established effectiveness.
-- The downloadable résumé is stored in `resume/` and linked from the Contact section.
+- The downloadable résumé is stored in `resume/` and linked directly from every masthead, the homepage introduction and the Contact section.
 
 ## Build and deployment
 

@@ -1,0 +1,50 @@
+/* Focused Field Notes: the refined homepage composition. Case layouts use site.css. */
+@media screen {
+  .hero h1 {
+    font-size: clamp(3.4rem, 8.7vw, 8rem);
+    margin-block: 36px;
+  }
+
+  .hero-baseline { gap: 42px; }
+  .current-note { max-width: 360px; }
+  .hero-actions { gap: 24px; }
+  .hero-actions .text-link { padding-block: 12px; }
+  .current-note a, .footer a, .resume-note a { padding-block: 6px; }
+  .current-note a, .resume-note a { display: inline-block; }
+
+  .home-page .project-copy .project-name {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.3rem;
+  }
+
+  .project-name span { font-style: normal; }
+  .interest-line { margin-top: 30px; }
+  .interest-topics { font-weight: 700; }
+}
+
+@media screen and (max-width: 600px) {
+  .hero { padding-top: 24px; }
+  .hero h1 { font-size: 3.3rem; margin: 26px 0; }
+  .hero-intro > p { font-size: 1rem; }
+  .hero-baseline { gap: 20px; }
+  .current-note { padding-right: 85px; }
+  .hero-responder { right: 15px; bottom: 99px; transform: scale(.83); }
+  .hero-actions { gap: 18px; margin-top: 20px; }
+  .hero-actions .text-link { font-size: .875rem; }
+  .interest-line { margin-top: 18px; }
+  .work-section { padding-top: 48px; }
+  .project h3 { max-width: none; font-size: 2.8rem; }
+  .project-number { top: 38px; }
+}
+
+@media screen and (max-width: 360px) {
+  .hero h1 { font-size: 2.72rem; }
+  .hero-actions { gap: 6px; }
+  .hero-actions .text-link { font-size: .8rem; }
+  .current-note { padding-right: 65px; }
+  /* Give a full project name its own line beside the compact metadata/number row. */
+  .project h3 { padding-right: 0; }
+  .project-number { top: 0; }
+  .project-copy .eyebrow { max-width: calc(100% - 72px); min-height: 3.1em; }
+}

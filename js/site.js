@@ -129,18 +129,6 @@
   }
 
   const sprites = [...document.querySelectorAll('.responder')];
-  const reel = document.getElementById('role-reel');
-  const roles = ['Blue team', 'Identity & access', 'GRC', 'IT automation', 'SOC opportunities'];
-  const fullRoleList = 'Blue team · Identity & access · GRC · IT automation · SOC opportunities';
-  function showRole(text, changed = false) {
-    if (!reel) return;
-    reel.replaceChildren();
-    const span = document.createElement('span');
-    span.className = 'role-reel-item' + (changed ? ' changed' : '');
-    span.setAttribute('aria-hidden', 'true');
-    span.textContent = text;
-    reel.append(span);
-  }
 
   sprites.forEach(sprite => {
     const pose = sprite.dataset.pose || 'idle';
@@ -163,24 +151,6 @@
       }
     });
   });
-
-  if (reel) {
-    reel.setAttribute('aria-hidden', 'true');
-    createViewportActivity(reel, {
-      duration: 4200,
-      threshold: 0.15,
-      reset() { showRole(roles[0]); },
-      play() {
-        const timers = roles.slice(1).map((role, index) =>
-          setTimeout(() => showRole(role, true), (index + 1) * 720)
-        );
-        timers.push(setTimeout(() => showRole(fullRoleList, true), 3700));
-        return () => timers.forEach(clearTimeout);
-      },
-      settle() { showRole(fullRoleList); },
-      staticState() { showRole(fullRoleList); }
-    });
-  }
 
   const flowDiagrams = [...document.querySelectorAll('[data-telemetry-flow], .diagram')]
     .filter((diagram, index, all) => diagram.querySelector('.dpacket') && all.indexOf(diagram) === index);
@@ -323,7 +293,7 @@
     whoami: 'Barry Sampath. Bharath personally. Cybersecurity & IT Automation Analyst at ScienceGears, based in Brisbane. Curious about systems; careful with the details.',
     work: '01 ITDR home lab — Phase 1 telemetry collection complete; development paused.\n02 ClassQuest — five-person hackathon build; ten merged PRs from me.\n03 LUNA — Raspberry Pi robot, built with Zhirui Lu.\nUse the Work links above to inspect each case study.',
     contact: 'Email: barry.sampath@outlook.com\nLinkedIn: linkedin.com/in/barrysampath\nGitHub: github.com/bharath-blazecode\nOpen to suitable 2027 internships and early-career opportunities. Work rights remain subject to student visa conditions.',
-    resume: 'Open the Contact section to download my current résumé as a PDF.',
+    resume: 'Use Résumé in the navigation or introduction to open my current PDF. It is also available in Contact.',
     mfa: 'Multi-factor authentication asks for more than one kind of proof. It is one part of an access-control system, alongside permissions and the conditions under which access is allowed.',
     grc: 'Governance, risk and compliance: deciding which controls are needed, who owns them, and what evidence shows that they work.',
     nmap: 'Nmap helps inspect network services. Only scan systems you own or have explicit permission to test. This sandbox performs no scans.',
