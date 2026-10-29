@@ -20,6 +20,7 @@ assert.deepEqual([...lab.matchAll(/data-trace-step="(\d)"/g)].map(match=>match[1
 assert.match(lab,/Teaching example, not live telemetry/);
 for(const n of [5,11,12,14,20,21,23,24,25,26])assert.ok(quest.includes('/pull/'+n+'"'),'Missing PR '+n);
 assert.match(luna,/Zhirui/);assert.match(luna,/vendor routine/);
+assert.match(home,/Selected for QUT’s 2026–27 Vacation Research Experience Scheme/);assert.match(home,/starts on 2 November 2026/);assert.match(home,/Dr Gowri Ramachandran/);assert.doesNotMatch(home,/(started|began|commenced)[^.<]{0,40}(VRES|Vacation Research)/i,'The research placement has not started yet');
 const siteScript=read('js/site.js');
 assert.ok(!/\beval\s*\(|new Function|\.innerHTML\s*=/.test(siteScript),'Unsafe terminal rendering primitive');
 assert.doesNotMatch(siteScript,/bs-motion/,'Motion state must not be persisted');
