@@ -13,6 +13,7 @@ The website carries the professional story and project detail. This README is fo
 - [ITDR Home Lab](https://bharath-blazecode.github.io/work/homelab/)
 - [ClassQuest](https://bharath-blazecode.github.io/work/classquest/)
 - [LUNA](https://bharath-blazecode.github.io/work/luna/)
+- [Scoreboard: CTFs and hackathon results](https://bharath-blazecode.github.io/work/competitions/)
 
 Each case study separates project context, my contribution and the evidence available for inspection.
 
@@ -39,7 +40,7 @@ npm run test:classquest
 npm run test:mobile
 ```
 
-The browser suite exercises the homepage, three case studies and 404 page at 320, 390, 820 and 1440px widths. It also checks both themes, reduced-motion behavior, keyboard interaction, the scripted sequences, the terminal and the no-JavaScript path. Axe is included for automated accessibility checks, but an automated pass does not establish WCAG conformance or replace assistive-technology testing.
+The browser suite exercises the homepage, three case studies, the Scoreboard page and the 404 page at 320, 390, 820 and 1440px widths. It also checks both themes, reduced-motion behavior, keyboard interaction, the scripted sequences, the terminal and the no-JavaScript path. Axe is included for automated accessibility checks, but an automated pass does not establish WCAG conformance or replace assistive-technology testing.
 
 ## Repository map
 
@@ -49,21 +50,23 @@ index.html                  homepage
 work/homelab/index.html     ITDR Home Lab case study
 work/classquest/index.html  ClassQuest case study
 work/luna/index.html        LUNA case study
+work/competitions/index.html Scoreboard: CTF and hackathon results with evidence
 css/site.css                shared responsive, theme and print styles
 css/home.css                Focused Field Notes homepage refinements
 css/classquest.css          case-local upload-decision field notes
+css/competitions.css        Scoreboard result blocks and evidence figures
 js/theme.js                 early theme restoration
 js/site.js                  motion, navigation and terminal enhancements
 js/classquest.js            progressive upload-decision controls
-assets/                     project media, fonts and social preview
+assets/                     project media, competition evidence, fonts and social preview
 resume/                     Downloadable résumé PDF
 tools/                      verification, build and preview scripts
 tests/browser.cjs           Playwright browser checks
 tests/classquest.cjs         decision states, keyboard, no-JS and print checks
-tests/mobile.cjs            alignment, touch-target, wrap, responder and diagram checks
+tests/mobile.cjs            alignment, touch-target, wrap, responder, diagram and scoreboard checks
 ```
 
-The HTML files are the editable source of truth. Shared navigation is repeated across the five pages, so a global navigation change must be applied to each one. `npm test` catches broken local links and fragments.
+The HTML files are the editable source of truth. Shared navigation is repeated across the six pages, so a global navigation change must be applied to each one. `npm test` catches broken local links and fragments.
 
 ## Design and accessibility behavior
 
@@ -84,6 +87,7 @@ Small screens are designed rather than shrunk, and "no horizontal overflow" is o
 - **Phrases, not lines, control wraps.** Headlines that were broken with `<br>` use `.hl` blocks (`display: block; text-wrap: balance`), and `"&"` is bound to the next word with a non-breaking space. Project labels are `.seg` segments that stack on small screens while the `.sep` slash stays available to assistive technology. Running copy uses `text-wrap: pretty` up to 850px.
 - **One disclosure language.** Off shift, Training / tools / community and Résumé use the same +/- row as the experience list; an arrow is reserved for links that leave the page.
 - **Diagrams are drawn for the screen.** Below 600px the home-lab path is a second, vertical SVG (`.diagram-narrow`) instead of a 650px scroller; it keeps the same node classes and has no animated packets. The LUNA architecture image is drawn for a 680px canvas, so phones also get an "Open the diagram full size" link.
+- **The competition teaser stays small on purpose.** The homepage shows four headline results as one scoreboard strip (four across on desktop, 2 x 2 on tablets, one row each on phones) and links to the Scoreboard page for everything else. The mobile suite fails if the section grows past 840px, if a figure wraps or clips, or if a focused tile loses contrast on its lime fill.
 - **Known limit.** The ClassQuest code excerpt wraps inside its panel at 320px (about 200px of text width) rather than scrolling sideways.
 
 Images have alternative text and explicit dimensions. Fonts are self-hosted, and the deployed site has no runtime dependencies, analytics script or remote font request.
@@ -98,6 +102,9 @@ Repository changes should preserve the distinction between completed work, share
 - ClassQuest PR #12 separated client filenames from server-generated storage names and bounded the application read. Its four added test cases are linked at the merged patch's commit; the existing compatibility test was retained. It did not add malware scanning, parser isolation, upstream request limits or comprehensive upload protection. The page explains historical evidence and does not claim to rerun the team's application tests.
 - LUNA is shared work with Zhirui Lu. Individual, shared and vendor contributions should remain attributed.
 - DissentKit is presented as an early experiment without a claim of independently established effectiveness.
+- The VRES placement is shown as selected for the 2026-27 scheme, with the project starting on 2 November 2026. QUT publishes no acceptance rate, so the page does not call it selective, and the project's expected outputs are aims rather than results. Update the wording once the placement is under way.
+- Competition results are team results (Team SushiShield for the CTFs; the ClassQuest team for the hackathon), and the notes on the Scoreboard page describe my own work in the first person. ByteMe CTF is a participation certificate with no placement, and nothing may suggest one. Do not describe any event as unaided, solo or fully completed: the Holmes certificate records eight of 111 challenges, and the TryHackMe tabletop score (86% across 15 decisions) is not an overall event score. The "How I worked" note is deliberately general ("AI tools as a guide on some events"); keep it accurate if events are added. Event dates were checked against the organisers' pages (CSAW, TryHackMe, Hack The Box) and the certificates (Holmes, ByteMe) on 29 October 2026. `npm test` pins every result line, so a changed figure fails until it is re-checked against its source.
+- Competition evidence in `assets/competitions/` is the owner's own certificates and result screenshots, recompressed. The leaderboard is cropped to its panel; nothing in them is edited. Teammates named on the Scoreboard page (Alan Nguyen, Akira Hasuo) are credited as in the public LinkedIn post.
 - The downloadable résumé is stored in `resume/` and linked directly from every masthead, the homepage introduction and the Contact section.
 
 ## Build and deployment

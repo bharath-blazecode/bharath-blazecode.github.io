@@ -118,3 +118,69 @@
 @media screen and (max-width: 360px) {
   .current-note a { font-size: .75rem; padding-block: 13px; margin-block: -7px; }
 }
+
+/* ==========================================================================
+   Competition results: a compact scoreboard that opens the full page on request
+   ========================================================================== */
+@media screen {
+  .competitions { padding-top: 0; padding-bottom: 110px; }
+  .competitions .section-heading { margin-bottom: 40px; }
+  .scoreboard {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 3px solid var(--ink); border-bottom: 1px solid var(--line);
+  }
+  .scoreboard li { margin: 0; min-width: 0; border-left: 1px solid var(--line); }
+  .scoreboard li:first-child { border-left: 0; }
+  .scoreboard a {
+    display: flex; flex-direction: column; gap: 8px; height: 100%; min-height: 44px;
+    padding: 22px 22px 24px; text-decoration: none;
+  }
+  .scoreboard b { font: 900 clamp(2.4rem, 1.5rem + 2.6vw, 3.9rem)/1 var(--display); letter-spacing: -.045em; }
+  .scoreboard .tile-kind { font: .75rem/1.5 var(--mono); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); text-wrap: balance; }
+  .scoreboard .tile-name { margin-top: auto; padding-top: 14px; font-size: .9375rem; font-weight: 700; line-height: 1.4; text-wrap: balance; }
+  .scoreboard .tile-name span { display: block; margin-top: 2px; font-size: .8125rem; font-weight: 400; color: var(--muted); }
+  /* The first tile in each row aligns its text with the section's left edge. */
+  .scoreboard li:first-child a { padding-left: 0; }
+  .scoreboard a:focus-visible { outline-offset: -4px; background: var(--accent); color: var(--accent-ink); }
+  .scoreboard a:focus-visible .tile-kind, .scoreboard a:focus-visible .tile-name span { color: var(--accent-ink); }
+  .board-more { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 28px; margin: 24px 0 0; }
+  .board-more .text-link { padding-block: 12px; }
+  .board-more > span { font-size: .8125rem; color: var(--muted); }
+}
+
+@media screen and (hover: hover) {
+  .scoreboard a:hover { background: var(--accent); color: var(--accent-ink); }
+  .scoreboard a:hover .tile-kind, .scoreboard a:hover .tile-name span { color: var(--accent-ink); }
+}
+
+@media screen and (max-width: 1100px) {
+  .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .scoreboard li:nth-child(odd) { border-left: 0; }
+  .scoreboard li:nth-child(odd) a { padding-left: 0; }
+  .scoreboard li:nth-child(n + 3) { border-top: 1px solid var(--line); }
+}
+
+@media screen and (max-width: 850px) {
+  .competitions { padding-bottom: 65px; }
+  .competitions .section-heading { margin-bottom: 30px; }
+}
+
+/* Phones: one row per result, the figure on the left and its label beside it. */
+@media screen and (max-width: 600px) {
+  .scoreboard { grid-template-columns: minmax(0, 1fr); }
+  .scoreboard li, .scoreboard li:nth-child(odd) { border-left: 0; }
+  .scoreboard li + li { border-top: 1px solid var(--line); }
+  .scoreboard a {
+    display: grid; grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr); grid-template-areas: "num kind" "num name";
+    align-items: center; column-gap: 16px; row-gap: 2px; padding: 16px 0;
+  }
+  .scoreboard b { grid-area: num; font-size: 2.1rem; }
+  .scoreboard .tile-kind { grid-area: kind; align-self: end; }
+  .scoreboard .tile-name { grid-area: name; align-self: start; margin-top: 0; padding-top: 0; font-size: .875rem; }
+}
+
+/* "Practice, with" needs about 290px at the shared headline size. */
+@media screen and (max-width: 340px) {
+  .competitions h2 { font-size: 2.35rem; }
+}

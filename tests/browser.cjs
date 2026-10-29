@@ -29,7 +29,7 @@ const ready = new Promise((resolve, reject) => {
     let scans = 0;
     for (const width of [1440, 820, 390, 320]) {
       for (const colorScheme of ['light', 'dark']) {
-        for (const route of ['/', '/work/homelab/', '/work/classquest/', '/work/luna/', '/404.html']) {
+        for (const route of ['/', '/work/homelab/', '/work/classquest/', '/work/luna/', '/work/competitions/', '/404.html']) {
           const context = await browser.newContext({
             viewport: { width, height: 900 },
             colorScheme,

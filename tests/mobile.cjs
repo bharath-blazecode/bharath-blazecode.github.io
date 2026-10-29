@@ -22,7 +22,7 @@ const ready = new Promise((resolve, reject) => {
 });
 
 const WIDTHS = [320, 360, 390, 430, 768, 820];
-const PAGES = ['/', '/work/homelab/', '/work/classquest/', '/work/luna/'];
+const PAGES = ['/', '/work/homelab/', '/work/classquest/', '/work/luna/', '/work/competitions/'];
 // 44px is the target; 43 absorbs sub-pixel rounding of full-width display links.
 const MIN_TARGET = 43;
 
@@ -75,7 +75,8 @@ async function load(browser, route, width, colorScheme) {
   await page.evaluate(async () => {
     const height = document.documentElement.scrollHeight;
     for (let y = 0; y < height; y += 500) { window.scrollTo(0, y); await new Promise(resolve => setTimeout(resolve, 30)); }
-    await Promise.all([...document.images].map(image => image.decode().catch(() => {})));
+    // An image inside a closed <details> never loads, so its decode() would wait forever; bound each wait.
+    await Promise.all([...document.images].map(image => Promise.race([image.decode().catch(() => {}), new Promise(resolve => setTimeout(resolve, 1500))])));
     window.scrollTo(0, 0);
   });
   return { context, page, errors };
@@ -91,7 +92,7 @@ async function checkEveryPage(page, label, width) {
   // Touch-sized, standalone controls. Inline links inside running text, heading links and image links are exempt.
   const small = await page.evaluate(min => [...document.querySelectorAll('a[href], button, summary, input, [role="button"]')]
     .filter(window.__visible)
-    .filter(element => !element.matches('.skip, .project-art > a, .case-media a') && !element.closest('h1, h2, h3'))
+    .filter(element => !element.matches('.skip, .project-art > a, .case-media a, .event-art a') && !element.closest('h1, h2, h3'))
     .filter(element => !(getComputedStyle(element).display === 'inline' && element.closest('p, li, figcaption, dd')))
     .map(element => {
       // The effective hit area includes an absolutely positioned ::after that extends the control.
@@ -202,15 +203,35 @@ async function checkHome(page, label, width) {
   if (phone) assert.ok(interests.grid === 'grid' && interests.sepsHidden, `${label}: interests grid`);
 
   // Headlines: balanced phrases never strand a word or end a line on "&".
-  const headlines = await page.evaluate(() => [...document.querySelectorAll('.note-grid h2 .hl, .experience h2 .hl')].map(block => {
+  const headlines = await page.evaluate(() => [...document.querySelectorAll('.note-grid h2 .hl, .experience h2 .hl, .competitions h2 .hl')].map(block => {
     const lines = window.__lines(block);
     return { text: lines.map(line => line.join(' ')).join(' / '), badEnd: lines.slice(0, -1).some(line => line[line.length - 1] === '&'), stranded: window.__stranded(lines) };
   }));
-  assert.equal(headlines.length, 4, `${label}: balanced headline phrases`);
+  assert.equal(headlines.length, 6, `${label}: balanced headline phrases`);
   for (const item of headlines) {
     assert.ok(!item.badEnd, `${label}: headline line ends on "&": ${item.text}`);
     assert.ok(!item.stranded, `${label}: headline strands a word: ${item.text}`);
   }
+
+  // Competition scoreboard: four result tiles that fit their cells, one column on phones, two on tablets.
+  const board = await page.evaluate(() => {
+    const list = document.querySelector('.competitions .scoreboard');
+    const tiles = [...list.querySelectorAll('a')];
+    return {
+      count: tiles.length,
+      columns: new Set(tiles.map(tile => Math.round(tile.getBoundingClientRect().left))).size,
+      clipped: tiles.filter(tile => [tile, ...tile.querySelectorAll('b, span')].some(element => element.scrollWidth > element.clientWidth + 1)).map(tile => tile.textContent.trim().slice(0, 30)),
+      tallest: Math.max(...tiles.map(tile => tile.getBoundingClientRect().height)),
+      figures: tiles.map(tile => { const figure = tile.querySelector('b'); return figure.getBoundingClientRect().height <= parseFloat(getComputedStyle(figure).fontSize) * 1.3; }),
+      section: document.querySelector('.competitions').getBoundingClientRect().height
+    };
+  });
+  assert.equal(board.count, 4, `${label}: scoreboard tiles`);
+  assert.equal(board.columns, phone ? 1 : 2, `${label}: scoreboard columns`);
+  assert.deepEqual(board.clipped, [], `${label}: scoreboard text clipped`);
+  assert.ok(board.figures.every(Boolean), `${label}: a headline figure wrapped onto two lines`);
+  // The teaser stays compact (about 620-810px across widths, under half the Experience section): it must not grow into a second ledger.
+  assert.ok(board.section < 840, `${label}: scoreboard section is ${Math.round(board.section)}px tall`);
 
   // One disclosure language: +/- markers, no outbound arrow on a disclosure, 44px rows on small screens.
   const disclosures = await page.evaluate(() => ['.offshift', '.background-index', '.resume-note'].map(selector => {
@@ -324,6 +345,20 @@ async function checkCase(page, route, label, width) {
     }
   }
 
+  if (route === '/work/competitions/') {
+    const h1 = await page.locator('h1').evaluate(element => ({ single: element.getBoundingClientRect().height < parseFloat(getComputedStyle(element).fontSize) * 1.5, fits: element.scrollWidth <= element.clientWidth + 1 }));
+    assert.ok(h1.single && h1.fits, `${label}: "Scoreboard" breaks mid-word`);
+    const events = await page.locator('.event').count();
+    assert.equal(events, 6, `${label}: events on the page`);
+    const results = await page.locator('.event-result b').evaluateAll(items => items.map(item => ({ text: item.textContent, single: item.getBoundingClientRect().height < parseFloat(getComputedStyle(item).fontSize) * 1.3, fits: item.scrollWidth <= item.clientWidth + 1 })));
+    assert.ok(results.length === 5 && results.every(item => item.single && item.fits), `${label}: result figures ${JSON.stringify(results)}`);
+    const art = await page.locator('.event-art img').evaluateAll(images => images.map(image => { const box = image.getBoundingClientRect(); return { loaded: image.naturalWidth > 0, inside: box.left >= 0 && box.right <= innerWidth + 1, alt: image.alt.length > 40 }; }));
+    assert.equal(art.length, 4, `${label}: evidence images`);
+    assert.ok(art.every(item => item.loaded && item.inside && item.alt), `${label}: evidence images ${JSON.stringify(art)}`);
+    const full = await page.locator('.event-art a').evaluateAll(links => links.map(link => link.getAttribute('href')));
+    for (const href of full) assert.equal((await page.request.get(new URL(href, page.url()).href)).status(), 200, `${label}: full-size image ${href}`);
+  }
+
   // Case navigation targets (breadcrumb, section index, next/previous) are touch-sized on small screens.
   if (width <= 850) {
     const nav = await page.evaluate(() => [...document.querySelectorAll('.crumb a, .case-index a, .next-case a, .case-contact > a')].map(link => link.getBoundingClientRect().height));
@@ -368,6 +403,22 @@ async function checkCase(page, route, label, width) {
       assert.equal(desktop.sprite, 'relative', 'Desktop hero responder keeps its three-column placement');
       assert.equal(desktop.eyebrowStacked, false, 'Desktop project labels stay inline');
       assert.ok(desktop.menuHidden, 'Desktop keeps the full navigation');
+      // The competition teaser is four across on desktop, and a focused tile keeps every line legible on its fill.
+      const columns = await page.locator('.scoreboard a').evaluateAll(tiles => new Set(tiles.map(tile => Math.round(tile.getBoundingClientRect().left))).size);
+      assert.equal(columns, 4, 'Desktop scoreboard is four across');
+      await page.locator('.scoreboard a').nth(1).focus();
+      const focused = await page.evaluate(() => {
+        const tile = document.querySelector('.scoreboard a:focus-visible');
+        if (!tile) return null;
+        const channels = value => value.match(/[\d.]+/g).slice(0, 3).map(Number);
+        const luminance = value => { const [r, g, b] = channels(value).map(c => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+        const fill = getComputedStyle(tile).backgroundColor;
+        return [...tile.querySelectorAll('b, .tile-kind, .tile-name, .tile-name span')].map(element => {
+          const [light, dark] = [luminance(getComputedStyle(element).color), luminance(fill)].sort((a, b) => b - a);
+          return +((light + 0.05) / (dark + 0.05)).toFixed(1);
+        });
+      });
+      assert.ok(focused && focused.every(ratio => ratio >= 4.5), `Focused scoreboard tile contrast ${focused}`);
       await context.close();
       const lab = await load(browser, '/work/homelab/', 1440, colorScheme);
       assert.equal(await lab.page.locator('.diagram-narrow').evaluate(element => getComputedStyle(element).display), 'none', 'Desktop keeps the wide diagram');
