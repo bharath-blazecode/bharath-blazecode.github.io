@@ -4,4 +4,4 @@ if(fs.existsSync(out)){const real=fs.realpathSync(out);if(real!==out)throw new E
 fs.mkdirSync(out,{recursive:true});
 const entries=['index.html','404.html','favicon.svg','.nojekyll','robots.txt','sitemap.xml','css','js','assets','resume','work'];
 for(const entry of entries)fs.cpSync(path.join(root,entry),path.join(out,entry),{recursive:true});
-console.log('Built a complete static site in dist/. No network, credentials or runtime dependencies needed.');
+console.log('Built a complete static site in dist/. No network, credentials or dependency installation needed to serve it.');

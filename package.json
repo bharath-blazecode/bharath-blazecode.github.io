@@ -3,7 +3,9 @@
   "version": "2.0.0",
   "private": true,
   "description": "Field Notes — Barry Sampath's static portfolio",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node tools/serve.cjs . 48763",
     "build": "node tools/build.cjs",
@@ -15,7 +17,14 @@
     "test:experience": "node tests/experience.cjs",
     "test:homelab": "node tests/homelab.cjs",
     "test:classquest": "node tests/classquest.cjs",
-    "test:mobile": "node tests/mobile.cjs"
+    "test:mobile": "node tests/mobile.cjs",
+    "bundle:desk": "node tools/bundle-desk.cjs",
+    "test:desk": "node tests/desk.cjs"
   },
-  "devDependencies": { "axe-core": "4.10.3", "playwright": "1.62.1" }
+  "devDependencies": {
+    "axe-core": "4.10.3",
+    "esbuild": "0.28.2",
+    "playwright": "1.62.1",
+    "three": "0.187.0"
+  }
 }
