@@ -92,12 +92,12 @@
   const experiencePath = document.querySelector('[data-experience-path]');
   const experienceStops = document.querySelector('[data-experience-stops]');
   const experienceRoles = document.querySelector('[data-experience-roles]');
+  const experienceEmpty = document.querySelector('[data-experience-empty]');
   const experienceHead = document.querySelector('[data-experience-detail-head]');
   const experienceClose = document.querySelector('[data-experience-close]');
   const experienceStatus = document.querySelector('[data-experience-status]');
-  // Order by start month rather than suggesting that overlapping roles were sequential.
-  const roles = experienceRoles ? [...experienceRoles.querySelectorAll(':scope > .role')]
-    .sort((a, b) => (b.dataset.pathStart || '').localeCompare(a.dataset.pathStart || '')) : [];
+  // The HTML order puts the most relevant work first; dates remain visible.
+  const roles = experienceRoles ? [...experienceRoles.querySelectorAll(':scope > .role')] : [];
   const roleInfo = roles.map(role => {
     const summary = role.querySelector(':scope > summary');
     const time = summary && summary.querySelector('.role-time');
@@ -105,8 +105,8 @@
     const title = summary && summary.querySelector(':scope > span:nth-child(2) > span');
     return { role, time, organisation, title, date: time && time.firstChild.textContent.trim() };
   });
-  if (experience && experiencePath && experienceStops && experienceRoles && experienceHead && experienceClose && experienceStatus &&
-      roleInfo.length && roleInfo.every(item => item.role.id && /^\d{4}-\d{2}$/.test(item.role.dataset.pathStart || '') && item.role.dataset.pathLabel && item.date && item.organisation && item.title)) {
+  if (experience && experiencePath && experienceStops && experienceRoles && experienceEmpty && experienceHead && experienceClose && experienceStatus &&
+      roleInfo.length && roleInfo.every(item => item.role.id && item.role.dataset.pathLabel && item.date && item.organisation && item.title)) {
     let selectedRole = null;
     let printingExperience = false;
     const buttons = roleInfo.map(({ role, date, organisation, title }) => {
@@ -149,6 +149,7 @@
       });
       experienceHead.hidden = !next;
       experienceRoles.hidden = !next;
+      experienceEmpty.hidden = Boolean(next);
       experienceStatus.textContent = next ? `${next.querySelector('strong').textContent} role details opened below.` : 'Role details closed.';
       if (restoreFocus && previous) buttons[roles.indexOf(previous)].focus();
     }
@@ -178,17 +179,10 @@
     }));
     window.addEventListener('beforeprint', () => { printingExperience = true; });
     window.addEventListener('afterprint', () => { printingExperience = false; });
-    const initiallyOpen = roles.find(role => role.open) || null;
     experience.classList.add('has-experience-path');
-    selectRole(initiallyOpen);
+    selectRole(null);
     experienceStatus.textContent = '';
     experiencePath.hidden = false;
-    if (initiallyOpen) requestAnimationFrame(() => {
-      if (matchMedia('(max-width: 600px)').matches) {
-        const initialButton = buttons[roles.indexOf(initiallyOpen)];
-        experienceStops.scrollLeft = initialButton.offsetLeft - (experienceStops.clientWidth - initialButton.offsetWidth) / 2;
-      }
-    });
   }
 
   /*

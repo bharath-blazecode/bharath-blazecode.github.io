@@ -20,7 +20,7 @@ assert.deepEqual([...lab.matchAll(/data-trace-step="(\d)"/g)].map(match=>match[1
 assert.match(lab,/Teaching example, not live telemetry/);
 for(const n of [5,11,12,14,20,21,23,24,25,26])assert.ok(quest.includes('/pull/'+n+'"'),'Missing PR '+n);
 assert.match(luna,/Zhirui/);assert.match(luna,/vendor routine/);
-assert.match(home,/Selected for QUT’s 2026–27 Vacation Research Experience Scheme/);assert.match(home,/starts on 2 November 2026/);assert.match(home,/Dr Gowri Ramachandran/);assert.doesNotMatch(home,/(started|began|commenced)[^.<]{0,40}(VRES|Vacation Research)/i,'The research placement has not started yet');
+const vres=(home.match(/<details class="role" id="experience-research"[\s\S]*?<\/details>/)||[''])[0];assert.match(vres,/Nov 2026–present/);assert.match(vres,/QUT’s 2026–27 Vacation Research Experience Scheme/);assert.match(vres,/large language models can analyse security evidence/);assert.match(vres,/ASD Essentials/);assert.match(vres,/Helping design and evaluate experiments/);assert.match(vres,/Dr Gowri Sankar Ramachandran/);assert.match(vres,/Atticus D’Mello and Kat McCrabb of Flame Tree Cyber/);assert.doesNotMatch(vres,/starts on 2 November 2026/i,'The research placement is already underway');
 const comps=read('work/competitions/index.html');
 const eventIds=[...comps.matchAll(/<section class="spine event" id="([a-z]+)"/g)].map(m=>m[1]);assert.deepEqual(eventIds,['downtime','byteme','csaw','holmes','hackathon','cimctf'],'Scoreboard events are missing or out of order');
 const homeComps=(home.match(/<section class="shell competitions"[\s\S]*?<\/section>/)||[''])[0];assert.ok(homeComps,'Homepage competition teaser is missing');

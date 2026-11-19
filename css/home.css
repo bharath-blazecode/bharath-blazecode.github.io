@@ -23,6 +23,9 @@
   .experience-stop-name { font: 700 clamp(.95rem, .8rem + .4vw, 1.2rem)/1.2 var(--sans); letter-spacing: -.02em; overflow-wrap: anywhere; }
   .experience-stop-role { font-size: .8125rem; line-height: 1.45; color: var(--muted); }
   .experience.has-experience-path .experience-layout { margin-top: 54px; }
+  .experience-empty { border-block: 1px solid var(--line); padding: 24px 0; }
+  .experience-empty .eyebrow { margin-bottom: 8px; color: var(--muted); }
+  .experience-empty > p:last-child { color: var(--muted); font-size: .9375rem; }
   .experience-detail-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 10px; }
   .experience-detail-head .eyebrow { margin: 0; color: var(--muted); }
   .experience-detail-head button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); background: var(--paper); font: .75rem/1 var(--mono); }
@@ -66,7 +69,7 @@
 }
 
 @media print {
-  .experience-path, .experience-detail-head { display: none !important; }
+  .experience-path, .experience-detail-head, .experience-empty { display: none !important; }
   .experience.has-experience-path .role-list[hidden], .experience.has-experience-path .role[hidden] { display: block !important; }
 }
 

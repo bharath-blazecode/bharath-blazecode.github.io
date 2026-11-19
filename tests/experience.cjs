@@ -8,13 +8,13 @@ const root = path.resolve(__dirname, '..');
 const port = Number(process.env.EXPERIENCE_PORT) || 48769;
 const origin = `http://127.0.0.1:${port}`;
 const entries = [
-  { id: 'experience-research', start: '2026-11', text: 'Dr Gowri Ramachandran' },
-  { id: 'experience-tech', start: '2026-10', text: 'Coordinate two Technical Officers' },
-  { id: 'experience-engagement', start: '2026-09', text: 'Engagement Coordinator' },
-  { id: 'experience-sciencegears', start: '2026-04', text: 'Conditional Access' },
-  { id: 'experience-dynamx', start: '2026-04', text: 'Power Platform business system' },
-  { id: 'experience-events', start: '2026-03', text: 'up to 40 participants' },
-  { id: 'experience-coles', start: '2025-05', text: 'more than 20 team members' }
+  { id: 'experience-research', text: 'Dr Gowri Sankar Ramachandran' },
+  { id: 'experience-sciencegears', text: 'Conditional Access' },
+  { id: 'experience-tech', text: 'Coordinate two Technical Officers' },
+  { id: 'experience-dynamx', text: 'Power Platform business system' },
+  { id: 'experience-engagement', text: 'Engagement Coordinator' },
+  { id: 'experience-events', text: 'up to 40 participants' },
+  { id: 'experience-coles', text: 'more than 20 team members' }
 ];
 const server = spawn(process.execPath, [path.join(root, 'tools/serve.cjs'), root, String(port)], {
   stdio: ['ignore', 'pipe', 'inherit']
@@ -34,7 +34,15 @@ async function checkSelected(page, entry, label) {
   const detail = page.locator(`#${entry.id}`);
   assert.equal(await detail.evaluate(element => element.open), true, `${label}: detail is open`);
   assert.ok((await detail.locator('.role-detail').innerText()).includes(entry.text), `${label}: retained role information`);
+  assert.equal(await page.locator('[data-experience-empty]').isVisible(), false, `${label}: prompt hidden while a role is selected`);
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${label}: page overflow`);
+}
+
+async function checkNothingSelected(page, label) {
+  assert.equal(await page.locator('[data-experience-roles]').isVisible(), false, `${label}: no role detail visible`);
+  assert.equal(await page.locator('[data-experience-empty]').isVisible(), true, `${label}: selection prompt visible`);
+  assert.equal(await page.locator('[data-experience-target][aria-expanded="true"]').count(), 0, `${label}: no point selected`);
+  assert.equal(await page.locator('[data-experience-roles] .role[open]').count(), 0, `${label}: all disclosures closed`);
 }
 
 (async () => {
@@ -53,19 +61,18 @@ async function checkSelected(page, entry, label) {
         await page.goto(origin);
         await page.evaluate(() => document.fonts.ready);
         await page.evaluate(() => new Promise(requestAnimationFrame));
-        assert.equal(await page.evaluate(() => scrollY), 0, `${label}: initial selection must not scroll the page`);
+        assert.equal(await page.evaluate(() => scrollY), 0, `${label}: initialization must not scroll the page`);
         assert.equal(await page.locator('[data-experience-path]').isVisible(), true, `${label}: path is visible`);
         const targets = await page.locator('[data-experience-target]').evaluateAll(buttons => buttons.map(button => button.dataset.experienceTarget));
-        assert.deepEqual(targets, entries.map(entry => entry.id), `${label}: ordered by start month`);
-        assert.deepEqual(await page.locator('[data-experience-target]').evaluateAll(buttons => buttons.map(button => document.getElementById(button.dataset.experienceTarget).dataset.pathStart)), entries.map(entry => entry.start));
-        await checkSelected(page, entries[3], `${label}: default selection`);
+        assert.deepEqual(targets, entries.map(entry => entry.id), `${label}: AI, cybersecurity and technical work lead`);
+        await checkNothingSelected(page, `${label}: initial state`);
         if (width <= 600) {
           const geometry = await page.locator('[data-experience-stops]').evaluate(container => {
-            const selected = container.querySelector('[aria-expanded="true"]');
-            const frame = container.getBoundingClientRect(), button = selected.getBoundingClientRect();
-            return { scrollable: container.scrollWidth > container.clientWidth, visible: button.left >= frame.left - 1 && button.right <= frame.right + 1 };
+            const first = container.querySelector('[data-experience-target="experience-research"]');
+            const frame = container.getBoundingClientRect(), button = first.getBoundingClientRect();
+            return { scrollable: container.scrollWidth > container.clientWidth, visible: button.left >= frame.left - 1 && button.right <= frame.right + 1, scrollLeft: container.scrollLeft };
           });
-          assert.ok(geometry.scrollable && geometry.visible, `${label}: mobile path keeps the selected role in view`);
+          assert.ok(geometry.scrollable && geometry.visible && geometry.scrollLeft === 0, `${label}: mobile path starts at the first role`);
           const scroller = page.locator('[data-experience-stops]');
           await scroller.scrollIntoViewIfNeeded();
           await scroller.evaluate(element => { element.scrollLeft = 0; });
@@ -99,7 +106,7 @@ async function checkSelected(page, entry, label) {
         const labels = await page.locator('.experience-stop-name').evaluateAll(elements => elements.map(element => element.scrollWidth <= element.clientWidth + 1));
         assert.ok(labels.every(Boolean), `${label}: role names fit their cards`);
         await page.locator('[data-experience-close]').click();
-        assert.equal(await page.locator('[data-experience-roles]').isVisible(), false, `${label}: close hides the detail`);
+        await checkNothingSelected(page, `${label}: closed`);
         assert.ok(await page.locator('[data-experience-target="experience-coles"]').evaluate(element => element === document.activeElement), `${label}: close returns focus`);
         const first = page.locator('[data-experience-target="experience-research"]');
         await first.click();
@@ -118,14 +125,14 @@ async function checkSelected(page, entry, label) {
     const touchScroller = touch.locator('[data-experience-stops]');
     await touchScroller.scrollIntoViewIfNeeded();
     await touchScroller.evaluate(element => { element.scrollLeft = 0; });
-    const touchPoint = touch.locator('[data-experience-target="experience-tech"]');
+    const touchPoint = touch.locator('[data-experience-target="experience-sciencegears"]');
     const pointBox = await touchPoint.boundingBox();
     const frameBox = await touchScroller.boundingBox();
     assert.ok(pointBox.x < frameBox.x + frameBox.width && pointBox.x + pointBox.width > frameBox.x + frameBox.width, 'Touch target starts partially visible');
     await touch.touchscreen.tap(pointBox.x + 5, pointBox.y + 20);
     await touch.waitForFunction(() => {
       const frame = document.querySelector('[data-experience-stops]').getBoundingClientRect();
-      const point = document.querySelector('[data-experience-target="experience-tech"]').getBoundingClientRect();
+      const point = document.querySelector('[data-experience-target="experience-sciencegears"]').getBoundingClientRect();
       return point.left >= frame.left - 1 && point.right <= frame.right + 1;
     });
     await checkSelected(touch, entries[1], 'touch with motion');
@@ -138,6 +145,10 @@ async function checkSelected(page, entry, label) {
     await research.focus();
     await research.press('Enter');
     await checkSelected(keyboard, entries[0], 'keyboard Enter');
+    const researchText = await keyboard.locator('#experience-research .role-detail').innerText();
+    for (const fact of ['large language models', 'ASD Essentials', 'design and evaluate experiments', 'Atticus D’Mello', 'Kat McCrabb', 'Flame Tree Cyber']) {
+      assert.ok(researchText.includes(fact), `Research description retains ${fact}`);
+    }
     await research.press('Space');
     assert.equal(await keyboard.locator('[data-experience-roles]').isVisible(), false, 'Space closes selected role');
     await research.press('Enter');
@@ -152,6 +163,10 @@ async function checkSelected(page, entry, label) {
     assert.ok(await research.evaluate(element => element === document.activeElement), 'Closing the summary restores focus');
     const reduced = await research.locator('.experience-marker').evaluate(element => getComputedStyle(element, '::before').transitionDuration);
     assert.equal(reduced, '0s', 'Reduced motion disables marker transitions');
+    await research.press('Enter');
+    await checkSelected(keyboard, entries[0], 'before refresh');
+    await keyboard.reload();
+    await checkNothingSelected(keyboard, 'after refresh');
     await keyboard.close();
 
     // Without JavaScript, the original disclosures and their content remain usable.
@@ -160,7 +175,7 @@ async function checkSelected(page, entry, label) {
     await nojs.goto(origin);
     assert.equal(await nojs.locator('[data-experience-path]').isVisible(), false);
     for (const entry of entries) assert.ok(await nojs.locator(`#${entry.id}`).isVisible(), `${entry.id}: no-JavaScript disclosure`);
-    assert.equal(await nojs.locator('#experience-sciencegears').evaluate(element => element.open), true);
+    assert.equal(await nojs.locator('.experience .role[open]').count(), 0, 'No role starts open without JavaScript');
     await nojs.locator('#experience-research > summary').click();
     assert.ok((await nojs.locator('#experience-research .role-detail').innerText()).includes(entries[0].text));
     await fallback.close();
@@ -168,6 +183,13 @@ async function checkSelected(page, entry, label) {
     // The beforeprint/afterprint lifecycle shows every role and restores the selected state.
     const print = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
     await print.goto(origin);
+    await print.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
+    await print.emulateMedia({ media: 'print' });
+    for (const entry of entries) assert.ok(await print.locator(`#${entry.id} .role-detail`).isVisible(), `${entry.id}: print detail when nothing is selected`);
+    assert.equal(await print.locator('[data-experience-empty]').isVisible(), false, 'Print omits the selection prompt');
+    await print.evaluate(() => window.dispatchEvent(new Event('afterprint')));
+    await print.emulateMedia({ media: 'screen' });
+    await checkNothingSelected(print, 'after printing with no selection');
     await print.locator('[data-experience-target="experience-tech"]').click();
     await print.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
     await print.emulateMedia({ media: 'print' });
@@ -178,7 +200,7 @@ async function checkSelected(page, entry, label) {
     assert.equal(await print.locator('[data-experience-path]').isVisible(), false, 'Print omits controls');
     await print.evaluate(() => window.dispatchEvent(new Event('afterprint')));
     await print.emulateMedia({ media: 'screen' });
-    await checkSelected(print, entries[1], 'after printing');
+    await checkSelected(print, entries[2], 'after printing');
     await print.close();
 
     // Check the expanded path with axe in both themes.
