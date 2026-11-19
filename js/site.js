@@ -32,6 +32,39 @@
     });
   });
 
+  // A decorative thread tracks the chapters already in the document. The
+  // regular navigation remains available even without this enhancement.
+  const chapterRail = document.querySelector('[data-chapter-rail]');
+  const chapterProgress = document.querySelector('[data-chapter-progress]');
+  const chapters = ['work', 'experience', 'competitions', 'about', 'contact'].map(id => document.getElementById(id));
+  const chapterStops = chapterRail ? [...chapterRail.querySelectorAll('.chapter-rail-stop')] : [];
+  if (chapterRail && chapterProgress && chapters.every(Boolean) && chapterStops.length === chapters.length) {
+    let scheduled = false;
+    function updateChapterThread() {
+      scheduled = false;
+      const readingLine = innerHeight * .38;
+      let current = -1;
+      chapters.forEach((chapter, index) => {
+        if (chapter.getBoundingClientRect().top <= readingLine) current = index;
+      });
+      chapterStops.forEach((stop, index) => {
+        stop.classList.toggle('is-current', index === current);
+        stop.classList.toggle('is-past', index < current);
+      });
+      chapterProgress.style.transform = `scaleY(${Math.max(current, 0) / (chapters.length - 1)})`;
+      chapterRail.classList.toggle('is-intro', current < 0);
+    }
+    function scheduleChapterThread() {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(updateChapterThread);
+    }
+    updateChapterThread();
+    chapterRail.hidden = false;
+    window.addEventListener('scroll', scheduleChapterThread, { passive: true });
+    window.addEventListener('resize', scheduleChapterThread);
+  }
+
   // A cached failed response can leave both uses of a project image broken.
   // Retry each affected image once with a fresh URL; keep failures bounded.
   document.querySelectorAll('#work .project-folder img, #work .project-art img').forEach(image => {
@@ -285,23 +318,52 @@
 
   sprites.forEach(sprite => {
     const pose = sprite.dataset.pose || 'idle';
+    const gesture = sprite.dataset.gesture;
     const poseDurations = { idle: 2400, point: 2400, scan: 3600 };
     createViewportActivity(sprite, {
       duration: Number(sprite.dataset.motionDuration) || poseDurations[pose] || 2800,
       threshold: 0.15,
       reset() {
+        if (gesture) sprite.dataset.pose = pose;
         sprite.classList.remove('is-active', 'is-complete', 'is-static');
         restartAnimation(sprite);
       },
-      play() { sprite.classList.add('is-active'); },
+      play() {
+        if (gesture) sprite.dataset.pose = gesture;
+        sprite.classList.add('is-active');
+      },
       settle() {
         sprite.classList.remove('is-active');
+        if (gesture) sprite.dataset.pose = pose;
         sprite.classList.add('is-complete');
       },
       staticState() {
         sprite.classList.remove('is-active');
+        if (gesture) sprite.dataset.pose = pose;
         sprite.classList.add('is-static', 'is-complete');
       }
+    });
+  });
+
+  const heroSketch = document.querySelector('.hero-sketch');
+  if (heroSketch) {
+    createViewportActivity(heroSketch, {
+      duration: 1500,
+      threshold: .15,
+      reset() { heroSketch.classList.remove('is-drawing'); },
+      play() { heroSketch.classList.add('is-drawing'); },
+      settle() { heroSketch.classList.remove('is-drawing'); },
+      staticState() { heroSketch.classList.remove('is-drawing'); }
+    });
+  }
+  document.querySelectorAll('.chapter-label').forEach(label => {
+    createViewportActivity(label, {
+      duration: 800,
+      threshold: .15,
+      reset() { label.classList.remove('is-inking'); },
+      play() { label.classList.add('is-inking'); },
+      settle() { label.classList.remove('is-inking'); },
+      staticState() { label.classList.remove('is-inking'); }
     });
   });
 
