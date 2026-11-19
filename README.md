@@ -40,6 +40,7 @@ npm run test:projects
 npm run test:field-notes
 npm run test:desk
 npm run test:journey
+npm run test:gravity
 npm run test:responder-tray
 npm run test:experience
 npm run test:homelab
@@ -71,7 +72,8 @@ css/competitions.css        Scoreboard result blocks and evidence figures
 js/theme.js                 early theme restoration
 js/site.js                  motion, navigation and terminal enhancements
 js/investigation-desk.js    progressive 3D desk loading and link handling
-js/signal-journey.js        scroll progress and pointer effects
+js/signal-journey.js        scroll progress and touch feedback
+js/punctuation-gravity.js   decorative copies of opening text drawn toward the desk
 js/responder-tray.js        contextual guide and quick-index motion
 js/homelab.js               notebook pages and investigation enhancements
 js/classquest.js            progressive upload-decision controls
@@ -83,7 +85,8 @@ tests/browser.cjs           Playwright browser checks
 tests/projects.cjs          folder, summary, keyboard and fallback checks
 tests/field-notes.cjs       opening, chapter thread and reduced-motion checks
 tests/desk.cjs              3D desk, links, fallback and accessibility checks
-tests/journey.cjs           scroll, pointer, touch and fallback checks
+tests/journey.cjs           scroll, touch and fallback checks
+tests/punctuation-gravity.cjs  particle motion, source content and fallback checks
 tests/responder-tray.cjs    guide, quick index, motion and accessibility checks
 tests/experience.cjs        experience path, role detail and fallback checks
 tests/homelab.cjs           notebook, evidence, investigation and fallback checks
@@ -104,7 +107,7 @@ The opening uses a hand-drawn underline and a brief responder gesture. Decorativ
 
 The homepage investigation desk is an original procedural 3D illustration, not a live system or dashboard. The monitor, notebook, folder and figures open the security lab, AI research, projects and experience. The same destinations are ordinary text links and work on touch and keyboard. The locally bundled 3D scene loads only when the desk is in view; a static illustration remains if JavaScript, the bundle or WebGL is unavailable. Reduced-motion visitors get a still scene, and rendering stops offscreen and in a background tab. Selecting the AI research link opens that role; no experience role is selected by default.
 
-The question-to-evidence path uses normal scrolling and keeps every step readable without JavaScript. Its progress line, the project-folder entrance and the arrows in the illustrative field note add motion without hiding content. Small signals respond to a pointer over the desk or a touch; the coordinates stay in the browser and are not sent anywhere. Reduced-motion visitors see the complete static version, and decorative movement pauses in background tabs.
+The question-to-evidence path uses normal scrolling and keeps every step readable without JavaScript. Its progress line, the project-folder entrance and the arrows in the illustrative field note add motion without hiding content. As a mouse approaches the desk, decorative copies of visible opening punctuation and the dots on letters move towards it; inside the field map they turn yellow, then return when the pointer leaves. The underlying text is never changed, and the approximate source positions of letter dots depend on the font. Touch retains a brief tap signal. Pointer coordinates stay in the browser and are not sent anywhere. Reduced-motion visitors see the complete static version, and decorative movement stops in background tabs.
 
 Opening a project also gives the responder a short, project-specific cue. A compact quick index provides links to the work, experience, contact and résumé; on smaller screens it sits within the page. Closing the index briefly scatters decorative fragments, and Escape closes it and returns focus to its control. The gesture and fragments do not loop and are omitted for reduced motion. The index is a native disclosure, so its links remain usable without JavaScript; the original project summaries remain readable as well.
 

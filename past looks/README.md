@@ -11,6 +11,6 @@ node tools/capture-past-looks.cjs 2026-11-19-example before
 node tools/capture-past-looks.cjs 2026-11-19-example after
 ```
 
-For the project and ITDR sections, add `projects` after `before` and `after` in those commands.
+For the project and ITDR sections, add `projects` after `before` and `after` in those commands. Use `signals` to capture the desktop pointer effect at rest, on approach, inside the desk and on return, plus a reduced-motion phone view.
 
 Use a new dated folder for each change. Existing captures are never overwritten. If the standard preview port is occupied, set `SNAPSHOT_PORT` to another local port. To use a locally installed Chrome, set `BROWSER_CHANNEL=chrome`.

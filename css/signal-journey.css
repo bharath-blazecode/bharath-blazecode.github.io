@@ -2,11 +2,11 @@
 @media screen {
   .desk-signals { position: absolute; z-index: 2; inset: 0; pointer-events: none; }
   .desk-signals span { position: absolute; left: var(--signal-x, 50%); top: var(--signal-y, 50%); width: 7px; height: 7px; border: 1px solid #dce64e; border-radius: 50%; background: #dce64e; opacity: 0; transform: translate(-50%, -50%); }
-  .desk-signals span:nth-child(2) { width: 4px; height: 4px; transform: translate(-18px, 9px); }
-  .desk-signals span:nth-child(3) { width: 4px; height: 4px; transform: translate(13px, -14px); }
-  .desk-signals span:nth-child(4) { width: 28px; height: 1px; border: 0; border-radius: 0; transform: translate(-12px, -5px) rotate(-36deg); transform-origin: center; }
-  .desk-signals.is-tracking span { opacity: .9; }
   .desk-signals.is-pulsing span:first-child { opacity: 1; }
+
+  .punctuation-gravity { position: fixed; z-index: 19; inset: 0; overflow: hidden; pointer-events: none; }
+  .punctuation-gravity > span { position: absolute; top: 0; left: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); opacity: 0; pointer-events: none; }
+  .punctuation-gravity > .is-in-desk, .punctuation-gravity > .gravity-cursor { background: #dce64e; }
 
   .journey-section { padding-top: 66px; padding-bottom: 15px; }
   .journey-heading { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px 35px; }
@@ -47,9 +47,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .desk-signals span { transition: left 130ms ease-out, top 130ms ease-out, opacity 200ms ease; }
-  .desk-signals span:nth-child(2) { transition-duration: 280ms, 280ms, 200ms; }
-  .desk-signals span:nth-child(3), .desk-signals span:nth-child(4) { transition-duration: 420ms, 420ms, 200ms; }
   .desk-signals.is-pulsing span:first-child { animation: signal-pulse 750ms ease-out both; }
   .project-folders.is-journey-visible { animation: journey-arrive 800ms ease-out both; }
   .note-signal.is-drawing path { animation: signal-draw 1.3s ease-out both; }
@@ -61,7 +58,11 @@
   @keyframes signal-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .punctuation-gravity { display: none !important; }
+}
+
 @media print {
-  .desk-signals, .journey-track, .note-signal { display: none !important; }
+  .desk-signals, .punctuation-gravity, .journey-track, .note-signal { display: none !important; }
   .journey-steps { list-style: decimal; }
 }
