@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340">
+  <title>Illustration of a desk with a monitor, notebook, folder and two small figures</title>
+  <ellipse cx="300" cy="300" rx="230" ry="25" fill="#111a14" opacity=".4"/>
+  <path d="M70 225 323 150 541 225 284 309Z" fill="#d8dfcf" stroke="#eff4e8" stroke-width="2"/>
+  <path d="M70 225v17l214 84v-17zm214 84v17l257-84v-17z" fill="#73836c"/>
+  <path d="M193 95 360 120v112l-167-27z" fill="#101c16" stroke="#d3ddd0" stroke-width="3"/>
+  <path d="M207 110 347 131v84l-140-22z" fill="#2d4335"/>
+  <path d="m219 127 44 7m-44 14 44 7m-44 14 44 7m12-39 57 8m-57 8 42 6m-42 10 53 8m-53 8 38 6" fill="none" stroke="#a2b9a1" stroke-width="4" stroke-linecap="round"/>
+  <path d="m219 148 44 7m12 14 53 8" fill="none" stroke="#dce64e" stroke-width="4" stroke-linecap="round"/>
+  <path d="m265 220 29 5v32l-29-7z" fill="#65745f"/>
+  <path d="m231 252 50-14 51 17-52 15z" fill="#8b9c84"/>
+  <path d="m99 222 75-23 62 20-75 24z" fill="#dce64e" stroke="#20271e" stroke-width="2"/>
+  <path d="m113 224 60-18m-44 24 51-15" stroke="#53614e" stroke-width="2"/>
+  <path d="m363 235 80-23 65 22-80 24z" fill="#8fa68a" stroke="#20271e" stroke-width="2"/>
+  <path d="m369 225 75-21 58 20-76 22z" fill="#f2f3ee"/>
+  <path d="m377 217 69-20 53 18-69 21z" fill="#dce64e"/>
+  <path d="m215 271 94-27 62 21-94 28z" fill="#72816d"/>
+  <g fill="#dce4d6"><path d="m229 269 7-2 6 2-7 2zm14-4 7-2 6 2-7 2zm14-4 7-2 6 2-7 2zm14-4 7-2 6 2-7 2zm14-4 7-2 6 2-7 2zm14-4 7-2 6 2-7 2z"/><path d="m243 274 7-2 6 2-7 2zm14-4 7-2 6 2-7 2zm14-4 7-2 6 2-7 2zm14-4 7-2 6 2-7 2zm14-4 7-2 6 2-7 2zm14-4 7-2 6 2-7 2z"/></g>
+  <path d="M425 175v25m20-18v22" stroke="#92a88e" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="425" cy="165" r="9" fill="#dce64e"/><circle cx="445" cy="173" r="8" fill="#f2f3ee"/>
+</svg>

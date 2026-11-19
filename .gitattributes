@@ -3,3 +3,4 @@
 *.jpg binary
 *.pdf binary
 *.woff2 binary
+assets/desk/desk-scene.js linguist-generated=true whitespace=-trailing-space,-space-before-tab

@@ -38,6 +38,7 @@ npx playwright install chromium
 npm run test:browser
 npm run test:projects
 npm run test:field-notes
+npm run test:desk
 npm run test:experience
 npm run test:homelab
 npm run test:classquest
@@ -45,6 +46,8 @@ npm run test:mobile
 ```
 
 The browser suite exercises the homepage, three case studies, the Scoreboard page and the 404 page at 320, 390, 820 and 1440px widths. It also checks both themes, reduced-motion behavior, keyboard interaction, the scripted sequences, the terminal and the no-JavaScript path. Axe is included for automated accessibility checks, but an automated pass does not establish WCAG conformance or replace assistive-technology testing.
+
+The 3D desk is bundled in the repository, so serving or building the site does not require npm. After editing `src/desk-scene.js`, install the development dependencies and run `npm run bundle:desk` to regenerate its self-hosted bundle. Three.js 0.187.0 is MIT-licensed; its license is in `assets/desk/THREE-LICENSE.txt`.
 
 ## Repository map
 
@@ -57,19 +60,23 @@ work/luna/index.html        LUNA case study
 work/competitions/index.html Scoreboard: CTF and hackathon results with evidence
 css/site.css                shared responsive, theme and print styles
 css/home.css                Focused Field Notes homepage refinements
+css/investigation-desk.css  responsive homepage field map
 css/homelab.css             lab notebook and illustrative investigation styles
 css/classquest.css          case-local upload-decision field notes
 css/competitions.css        Scoreboard result blocks and evidence figures
 js/theme.js                 early theme restoration
 js/site.js                  motion, navigation and terminal enhancements
+js/investigation-desk.js    progressive 3D desk loading and link handling
 js/homelab.js               notebook pages and investigation enhancements
 js/classquest.js            progressive upload-decision controls
 assets/                     project media, competition evidence, fonts and social preview
+src/desk-scene.js           source for the locally bundled Three.js scene
 resume/                     Downloadable résumé PDF
 tools/                      verification, build and preview scripts
 tests/browser.cjs           Playwright browser checks
 tests/projects.cjs          folder, summary, keyboard and fallback checks
 tests/field-notes.cjs       opening, chapter thread and reduced-motion checks
+tests/desk.cjs              3D desk, links, fallback and accessibility checks
 tests/experience.cjs        experience path, role detail and fallback checks
 tests/homelab.cjs           notebook, evidence, investigation and fallback checks
 tests/classquest.cjs         decision states, keyboard, no-JS and print checks
@@ -86,6 +93,8 @@ The primary content and navigation use ordinary HTML. The homepage interests lin
 The folder papers fan out on hover and keyboard focus. A connector and summary transition make the selected case file clearer; its button also changes from “View summary” to “Close summary”. Reduced-motion visitors see the same folders and summaries without the movement. If a project thumbnail or summary image fails to load, JavaScript retries it once using a fresh URL; a persistent connection or hosting failure can still prevent it from loading. The focused project suite checks image decoding and recovery, as well as switching projects, keyboard and touch-sized controls, focus return, reduced motion, printing, and the no-JavaScript path. To check a deployed site instead of starting a local server, set `PROJECTS_ORIGIN` to its origin before running `npm run test:projects`.
 
 The opening uses a hand-drawn underline and a brief responder gesture. Decorative chapter marks connect the homepage sections; a small rail also follows the current section on wide screens. These do not replace navigation or hide content. On smaller screens the in-page marks remain and the floating rail is omitted. The underline and marks are static for reduced motion and without JavaScript. Reproducible before-and-after captures are documented in [`past looks/`](past%20looks/README.md).
+
+The homepage investigation desk is an original procedural 3D illustration, not a live system or dashboard. The monitor, notebook, folder and figures open the security lab, AI research, projects and experience. The same destinations are ordinary text links and work on touch and keyboard. The locally bundled 3D scene loads only when the desk is in view; a static illustration remains if JavaScript, the bundle or WebGL is unavailable. Reduced-motion visitors get a still scene, and rendering stops offscreen and in a background tab. Selecting the AI research link opens that role; no experience role is selected by default.
 
 The experience path leads with AI and cybersecurity work, followed by technical leadership, placement, community and customer-service roles; the dates remain visible and may overlap. It starts with no role selected. Selecting a point or its name opens the role detail; selecting it again, choosing Close or pressing Escape closes it. The QUT research detail presents its question, work and concern as three connected notes, followed by the collaborators and project link. On phones the path scrolls horizontally and keeps the selected point in view. Without JavaScript the original disclosures remain available, and printing includes all roles. The HTML order determines the path order, and each role's `data-path-label` supplies its short name; the full name and description remain in the ordinary HTML disclosure.
 
@@ -109,7 +118,7 @@ Small screens are designed rather than shrunk, and "no horizontal overflow" is o
 - **The competition teaser stays small on purpose.** The homepage shows four headline results as one scoreboard strip (four across on desktop, 2 x 2 on tablets, one row each on phones) and links to the Scoreboard page for everything else. The mobile suite fails if the section grows past 840px, if a figure wraps or clips, or if a focused tile loses contrast on its lime fill.
 - **Known limit.** The ClassQuest code excerpt wraps inside its panel at 320px (about 200px of text width) rather than scrolling sideways.
 
-Images have alternative text and explicit dimensions. Fonts are self-hosted, and the deployed site has no runtime dependencies, analytics script or remote font request.
+Images have alternative text and explicit dimensions. Fonts and the 3D scene are self-hosted; the deployed site makes no analytics or remote font requests.
 
 ## Content boundaries
 

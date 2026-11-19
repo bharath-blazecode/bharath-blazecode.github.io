@@ -1,0 +1,36 @@
+/* The field map keeps its links and static illustration even if WebGL is unavailable. */
+@media screen {
+  .investigation-desk { position: relative; max-width: 620px; margin: 30px auto 0; padding: 14px; overflow: hidden; background: #20271e; color: #f2f3ee; border: 1px solid #20271e; box-shadow: 8px 8px 0 var(--accent); }
+  .desk-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .desk-heading .eyebrow { margin: 0; color: #c2cdbd; font-size: .7rem; }
+  .desk-heading h2 { margin: 0; font: italic 400 1.08rem/1.25 var(--serif); letter-spacing: 0; }
+  .desk-stage { position: relative; width: 100%; aspect-ratio: 2.05; margin-top: 8px; overflow: hidden; background: radial-gradient(ellipse at 50% 65%, #3a4c3c, #20271e 70%); }
+  .desk-stage img, .desk-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .desk-stage img { object-fit: contain; }
+  .desk-stage canvas { display: block; opacity: 0; pointer-events: none; touch-action: pan-y; }
+  .investigation-desk.has-3d .desk-stage canvas { opacity: 1; pointer-events: auto; }
+  .investigation-desk.has-3d .desk-stage img { opacity: 0; }
+  .desk-caption { margin: 4px 0 7px; color: #c2cdbd; font: .7rem/1.4 var(--mono); }
+  .desk-map { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .desk-map a { display: flex; flex-direction: column; justify-content: center; min-width: 0; min-height: 48px; padding: 6px 5px; border-top: 1px solid #81917d; color: #f2f3ee; text-decoration: none; }
+  .desk-map a span { color: #c2cdbd; font: .65rem/1.35 var(--mono); }
+  .desk-map a strong { font: 700 .8rem/1.25 var(--sans); overflow-wrap: anywhere; }
+  .desk-map a:hover, .desk-map a.is-desk-hovered { border-color: var(--accent); background: #374735; }
+  .desk-map a:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+}
+
+@media screen and (min-width: 1350px) {
+  .investigation-desk { position: absolute; top: 80px; right: var(--pad); width: min(32vw, 460px); margin: 0; }
+  .hero h1 { max-width: 62%; margin-bottom: 64px; }
+}
+
+@media screen and (max-width: 600px) {
+  .investigation-desk { margin-top: 22px; padding: 12px; }
+  .desk-stage { aspect-ratio: 1.9; }
+  .desk-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .desk-map a { min-height: 44px; }
+}
+
+@media print {
+  .investigation-desk { display: none !important; }
+}
