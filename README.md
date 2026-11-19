@@ -39,6 +39,7 @@ npm run test:browser
 npm run test:projects
 npm run test:field-notes
 npm run test:desk
+npm run test:journey
 npm run test:experience
 npm run test:homelab
 npm run test:classquest
@@ -61,12 +62,14 @@ work/competitions/index.html Scoreboard: CTF and hackathon results with evidence
 css/site.css                shared responsive, theme and print styles
 css/home.css                Focused Field Notes homepage refinements
 css/investigation-desk.css  responsive homepage field map
+css/signal-journey.css      scroll story and decorative desk signals
 css/homelab.css             lab notebook and illustrative investigation styles
 css/classquest.css          case-local upload-decision field notes
 css/competitions.css        Scoreboard result blocks and evidence figures
 js/theme.js                 early theme restoration
 js/site.js                  motion, navigation and terminal enhancements
 js/investigation-desk.js    progressive 3D desk loading and link handling
+js/signal-journey.js        scroll progress and pointer effects
 js/homelab.js               notebook pages and investigation enhancements
 js/classquest.js            progressive upload-decision controls
 assets/                     project media, competition evidence, fonts and social preview
@@ -77,6 +80,7 @@ tests/browser.cjs           Playwright browser checks
 tests/projects.cjs          folder, summary, keyboard and fallback checks
 tests/field-notes.cjs       opening, chapter thread and reduced-motion checks
 tests/desk.cjs              3D desk, links, fallback and accessibility checks
+tests/journey.cjs           scroll, pointer, touch and fallback checks
 tests/experience.cjs        experience path, role detail and fallback checks
 tests/homelab.cjs           notebook, evidence, investigation and fallback checks
 tests/classquest.cjs         decision states, keyboard, no-JS and print checks
@@ -95,6 +99,8 @@ The folder papers fan out on hover and keyboard focus. A connector and summary t
 The opening uses a hand-drawn underline and a brief responder gesture. Decorative chapter marks connect the homepage sections; a small rail also follows the current section on wide screens. These do not replace navigation or hide content. On smaller screens the in-page marks remain and the floating rail is omitted. The underline and marks are static for reduced motion and without JavaScript. Reproducible before-and-after captures are documented in [`past looks/`](past%20looks/README.md).
 
 The homepage investigation desk is an original procedural 3D illustration, not a live system or dashboard. The monitor, notebook, folder and figures open the security lab, AI research, projects and experience. The same destinations are ordinary text links and work on touch and keyboard. The locally bundled 3D scene loads only when the desk is in view; a static illustration remains if JavaScript, the bundle or WebGL is unavailable. Reduced-motion visitors get a still scene, and rendering stops offscreen and in a background tab. Selecting the AI research link opens that role; no experience role is selected by default.
+
+The question-to-evidence path uses normal scrolling and keeps every step readable without JavaScript. Its progress line, the project-folder entrance and the arrows in the illustrative field note add motion without hiding content. Small signals respond to a pointer over the desk or a touch; the coordinates stay in the browser and are not sent anywhere. Reduced-motion visitors see the complete static version, and decorative movement pauses in background tabs.
 
 The experience path leads with AI and cybersecurity work, followed by technical leadership, placement, community and customer-service roles; the dates remain visible and may overlap. It starts with no role selected. Selecting a point or its name opens the role detail; selecting it again, choosing Close or pressing Escape closes it. The QUT research detail presents its question, work and concern as three connected notes, followed by the collaborators and project link. On phones the path scrolls horizontally and keeps the selected point in view. Without JavaScript the original disclosures remain available, and printing includes all roles. The HTML order determines the path order, and each role's `data-path-label` supplies its short name; the full name and description remain in the ordinary HTML disclosure.
 

@@ -76,6 +76,9 @@ const ready = new Promise((resolve, reject) => {
       });
       await page.screenshot({ path: path.join(destination, `${view.name}-home.png`), fullPage: true });
       await page.locator('.hero').screenshot({ path: path.join(destination, `${view.name}-opening.png`) });
+      if (await page.locator('[data-evidence-journey]').count()) {
+        await page.locator('[data-evidence-journey]').screenshot({ path: path.join(destination, `${view.name}-journey.png`) });
+      }
       await page.locator('[data-experience-target="experience-research"]').click();
       await page.locator('#experience').screenshot({ path: path.join(destination, `${view.name}-research.png`) });
       await page.close();
