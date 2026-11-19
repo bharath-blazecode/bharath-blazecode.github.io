@@ -47,8 +47,11 @@ async function checkSelected(page, current, label) {
   for (const project of projects) {
     const selected = project.id === current.id;
     assert.equal(await page.locator(`[data-project="${project.id}"]`).getAttribute('aria-expanded'), String(selected), `${label}: expanded state`);
+    assert.equal(await page.locator(`[data-project="${project.id}"] [data-project-action]`).textContent(), selected ? 'Close summary' : 'View summary', `${label}: folder action`);
+    assert.equal(await page.locator(`[data-project="${project.id}"] .folder-action > [aria-hidden]`).textContent(), selected ? '↑' : '↘', `${label}: action direction`);
     assert.equal(await page.locator(`#${project.id}`).isVisible(), selected, `${label}: visible summary`);
   }
+  assert.equal(await page.locator('[data-project-details]').getAttribute('data-open-project'), current.id, `${label}: connector follows selected folder`);
   const panel = page.locator(`#${current.id}`);
   assert.equal((await panel.locator('h3').innerText()).trim(), current.title);
   assert.equal(await panel.locator('h3 a').getAttribute('href'), current.href);
@@ -92,6 +95,7 @@ async function checkSelected(page, current, label) {
         assert.ok(folderBounds.every(box => box.left >= -1 && box.right <= width + 1 && !box.clipped), `${label}: folder labels fit ${JSON.stringify(folderBounds)}`);
         await page.locator('[data-project-close]').click();
         assert.equal(await page.locator('[data-project-details]').isVisible(), false, `${label}: close`);
+        assert.equal(await page.locator('[data-project-details]').getAttribute('data-open-project'), null, `${label}: close removes connector`);
         assert.ok(await page.locator('[data-project="project-luna"]').evaluate(element => element === document.activeElement), `${label}: close restores focus`);
         await page.locator('[data-project="project-lab"]').click();
         await page.locator('[data-project="project-lab"]').click();

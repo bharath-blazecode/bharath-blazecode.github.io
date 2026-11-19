@@ -13,6 +13,7 @@
     "test:projects": "node tests/projects.cjs",
     "test:field-notes": "node tests/field-notes.cjs",
     "test:experience": "node tests/experience.cjs",
+    "test:homelab": "node tests/homelab.cjs",
     "test:classquest": "node tests/classquest.cjs",
     "test:mobile": "node tests/mobile.cjs"
   },
