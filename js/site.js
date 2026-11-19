@@ -32,6 +32,23 @@
     });
   });
 
+  // A cached failed response can leave both uses of a project image broken.
+  // Retry each affected image once with a fresh URL; keep failures bounded.
+  document.querySelectorAll('#work .project-folder img, #work .project-art img').forEach(image => {
+    let retried = false;
+    function retryImage() {
+      if (retried) return;
+      retried = true;
+      const url = new URL(image.currentSrc || image.src, document.baseURI);
+      if (url.origin !== location.origin) return;
+      url.searchParams.set('image_retry', Date.now().toString(36));
+      image.src = url.href;
+    }
+    image.addEventListener('error', retryImage, { once: true });
+    // An image can fail before this script attaches its listener.
+    if (image.complete && image.currentSrc && !image.naturalWidth) retryImage();
+  });
+
   // The summaries remain ordinary, visible HTML until this enhancement is ready.
   const folders = document.querySelector('[data-project-folders]');
   const projectDetails = document.querySelector('[data-project-details]');
