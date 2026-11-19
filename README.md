@@ -36,6 +36,7 @@ The browser test requires the development dependencies and Chromium:
 npm ci --ignore-scripts
 npx playwright install chromium
 npm run test:browser
+npm run test:projects
 npm run test:classquest
 npm run test:mobile
 ```
@@ -62,6 +63,7 @@ assets/                     project media, competition evidence, fonts and socia
 resume/                     Downloadable résumé PDF
 tools/                      verification, build and preview scripts
 tests/browser.cjs           Playwright browser checks
+tests/projects.cjs          folder, summary, keyboard and fallback checks
 tests/classquest.cjs         decision states, keyboard, no-JS and print checks
 tests/mobile.cjs            alignment, touch-target, wrap, responder, diagram and scoreboard checks
 ```
@@ -70,7 +72,9 @@ The HTML files are the editable source of truth. Shared navigation is repeated a
 
 ## Design and accessibility behavior
 
-The primary content and navigation use ordinary HTML. The homepage interests line is immediately visible; project names lead their cards, with personal outcomes and editorial phrases underneath. JavaScript progressively adds the theme control, decorative sequences and terminal interaction.
+The primary content and navigation use ordinary HTML. The homepage interests line is immediately visible. The selected-work folders use each project's own evidence and reveal one existing summary at a time; the summary links to its full case study. Selecting the open folder again, choosing Close or pressing Escape closes the summary. JavaScript progressively adds this interaction, the theme control, decorative sequences and terminal interaction. Without JavaScript or when printing, all three project summaries remain available.
+
+The folder papers fan out on hover and keyboard focus. Reduced-motion visitors see the same folders and summaries without the movement. The focused project suite covers switching projects, keyboard and touch-sized controls, focus return, reduced motion, printing, and the no-JavaScript path.
 
 Day and night themes follow the operating-system preference until the visitor makes a local choice. Most decorative sequences settle within five seconds. On wider screens, the telemetry flow repeats while visible, and the diagram itself can pause or resume it. All motion stops when the page is hidden; an interrupted sequence restarts if it is still in view. With `prefers-reduced-motion`, the page presents the complete static content instead. The homelab diagrams remain understandable without animation.
 
