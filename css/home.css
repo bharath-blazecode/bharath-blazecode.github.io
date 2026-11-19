@@ -28,10 +28,16 @@
   .experience-empty > p:last-child { color: var(--muted); font-size: .9375rem; }
   .experience-detail-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 10px; }
   .experience-detail-head .eyebrow { margin: 0; color: var(--muted); }
-  .experience-detail-head button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); background: var(--paper); font: .75rem/1 var(--mono); }
+  .experience-detail-head button { flex-shrink: 0; min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); background: var(--paper); font: .75rem/1 var(--mono); white-space: nowrap; }
   .experience-detail-head button span { margin-left: 8px; font: 1.3rem/1 var(--sans); vertical-align: middle; }
   .experience-detail-head button:hover { border-color: var(--ink); }
   .experience.has-experience-path .role { border-bottom: 1px solid var(--line); }
+  .research-thread { display: grid; gap: 10px; margin: 20px 0; padding-left: 20px; border-left: 1px solid var(--line); }
+  .research-thread > div { position: relative; padding: 14px 16px; border: 1px solid var(--line); background: var(--panel); }
+  .research-thread > div::before { content: ''; position: absolute; top: 19px; left: -26px; width: 9px; height: 9px; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); }
+  .research-thread dt { font: .7rem/1.45 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .research-thread dd { margin: 6px 0 0; color: var(--ink); line-height: 1.5; }
+  .research-thread > div:first-child dd { font: italic 400 1.2rem/1.35 var(--serif); }
 }
 
 @media (hover: hover) {
@@ -331,4 +337,44 @@
 /* "Practice, with" needs about 290px at the shared headline size. */
 @media screen and (max-width: 340px) {
   .competitions h2 { font-size: 2.35rem; }
+}
+
+/* The field-notes thread is decorative; headings and navigation stay ordinary text and links. */
+@media screen {
+  .hero-handwritten { position: relative; }
+  .hero-sketch { position: absolute; left: 0; bottom: -.16em; width: 103%; height: .2em; overflow: visible; pointer-events: none; }
+  .hero-sketch path { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 0; }
+  .hero-responder[data-pose="point"] { --cycles: 1; scale: -1 1; transform-origin: center bottom; }
+
+  .chapter-label { display: flex; align-items: center; gap: 10px; }
+  .chapter-label::before {
+    content: ''; flex: 0 0 34px; height: 12px;
+    background: radial-gradient(circle at 5px 50%, var(--ink) 0 2px, transparent 2.5px),
+      linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat;
+    transform-origin: left center;
+  }
+  .chapter-rail { position: fixed; z-index: 10; top: 50%; left: max(20px, calc((100vw - 1536px) / 2 + 20px)); width: 14px; height: 180px; transform: translateY(-50%); display: flex; flex-direction: column; justify-content: space-between; align-items: center; pointer-events: none; }
+  .chapter-rail-line, .chapter-rail-progress { position: absolute; top: 6px; bottom: 6px; left: 6px; width: 1px; background: var(--line); }
+  .chapter-rail-progress { background: var(--ink); transform: scaleY(0); transform-origin: top; }
+  .chapter-rail-stop { position: relative; width: 13px; height: 13px; border: 1px solid var(--muted); border-radius: 50%; background: var(--paper); }
+  .chapter-rail-stop.is-past { background: var(--ink); border-color: var(--ink); }
+  .chapter-rail-stop.is-current { background: var(--ink); border-color: var(--ink); box-shadow: 0 0 0 3px var(--accent); }
+  .chapter-rail.is-intro { opacity: .45; }
+}
+
+@media screen and (max-width: 1179px) {
+  .chapter-rail { display: none !important; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-sketch.is-drawing path { animation: hero-ink 1.4s cubic-bezier(.2, .7, .2, 1) both; }
+  .chapter-label.is-inking::before { animation: chapter-ink .75s ease-out both; }
+  .chapter-rail-progress { transition: transform .45s ease; }
+  .chapter-rail-stop, .chapter-rail { transition: background-color .3s ease, box-shadow .3s ease, opacity .3s ease; }
+  @keyframes hero-ink { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+  @keyframes chapter-ink { from { transform: scaleX(.05); } to { transform: scaleX(1); } }
+}
+
+@media print {
+  .hero-sketch, .chapter-rail { display: none !important; }
 }

@@ -37,6 +37,7 @@ npm ci --ignore-scripts
 npx playwright install chromium
 npm run test:browser
 npm run test:projects
+npm run test:field-notes
 npm run test:experience
 npm run test:classquest
 npm run test:mobile
@@ -65,9 +66,11 @@ resume/                     Downloadable résumé PDF
 tools/                      verification, build and preview scripts
 tests/browser.cjs           Playwright browser checks
 tests/projects.cjs          folder, summary, keyboard and fallback checks
+tests/field-notes.cjs       opening, chapter thread and reduced-motion checks
 tests/experience.cjs        experience path, role detail and fallback checks
 tests/classquest.cjs         decision states, keyboard, no-JS and print checks
 tests/mobile.cjs            alignment, touch-target, wrap, responder, diagram and scoreboard checks
+past looks/                 dated, comparable screenshots of earlier and current designs
 ```
 
 The HTML files are the editable source of truth. Shared navigation is repeated across the six pages, so a global navigation change must be applied to each one. `npm test` catches broken local links and fragments.
@@ -78,7 +81,9 @@ The primary content and navigation use ordinary HTML. The homepage interests lin
 
 The folder papers fan out on hover and keyboard focus. Reduced-motion visitors see the same folders and summaries without the movement. If a project thumbnail or summary image fails to load, JavaScript retries it once using a fresh URL; a persistent connection or hosting failure can still prevent it from loading. The focused project suite checks image decoding and recovery, as well as switching projects, keyboard and touch-sized controls, focus return, reduced motion, printing, and the no-JavaScript path. To check a deployed site instead of starting a local server, set `PROJECTS_ORIGIN` to its origin before running `npm run test:projects`.
 
-The experience path leads with AI and cybersecurity work, followed by technical leadership, placement, community and customer-service roles; the dates remain visible and may overlap. It starts with no role selected. Selecting a point or its name opens the role detail; selecting it again, choosing Close or pressing Escape closes it. On phones the path scrolls horizontally and keeps the selected point in view. Without JavaScript the original disclosures remain available, and printing includes all roles. The HTML order determines the path order, and each role's `data-path-label` supplies its short name; the full name and description remain in the ordinary HTML disclosure.
+The opening uses a hand-drawn underline and a brief responder gesture. Decorative chapter marks connect the homepage sections; a small rail also follows the current section on wide screens. These do not replace navigation or hide content. On smaller screens the in-page marks remain and the floating rail is omitted. The underline and marks are static for reduced motion and without JavaScript. Reproducible before-and-after captures are documented in [`past looks/`](past%20looks/README.md).
+
+The experience path leads with AI and cybersecurity work, followed by technical leadership, placement, community and customer-service roles; the dates remain visible and may overlap. It starts with no role selected. Selecting a point or its name opens the role detail; selecting it again, choosing Close or pressing Escape closes it. The QUT research detail presents its question, work and concern as three connected notes, followed by the collaborators and project link. On phones the path scrolls horizontally and keeps the selected point in view. Without JavaScript the original disclosures remain available, and printing includes all roles. The HTML order determines the path order, and each role's `data-path-label` supplies its short name; the full name and description remain in the ordinary HTML disclosure.
 
 Day and night themes follow the operating-system preference until the visitor makes a local choice. Most decorative sequences settle within five seconds. On wider screens, the telemetry flow repeats while visible, and the diagram itself can pause or resume it. All motion stops when the page is hidden; an interrupted sequence restarts if it is still in view. With `prefers-reduced-motion`, the page presents the complete static content instead. The homelab diagrams remain understandable without animation.
 

@@ -145,6 +145,10 @@ async function checkNothingSelected(page, label) {
     await research.focus();
     await research.press('Enter');
     await checkSelected(keyboard, entries[0], 'keyboard Enter');
+    assert.deepEqual(await keyboard.locator('#experience-research .research-thread dt').allTextContents(), [
+      '01 / The question', '02 / The work', '03 / The concern'
+    ], 'Research is explained in three connected notes');
+    assert.match(await keyboard.locator('#experience-research .research-thread dd').first().innerText(), /Can AI help assess cyber risk\?/);
     const researchText = await keyboard.locator('#experience-research .role-detail').innerText();
     for (const fact of ['large language models', 'ASD Essentials', 'design and evaluate experiments', 'Atticus D’Mello', 'Kat McCrabb', 'Flame Tree Cyber']) {
       assert.ok(researchText.includes(fact), `Research description retains ${fact}`);
@@ -178,6 +182,7 @@ async function checkNothingSelected(page, label) {
     assert.equal(await nojs.locator('.experience .role[open]').count(), 0, 'No role starts open without JavaScript');
     await nojs.locator('#experience-research > summary').click();
     assert.ok((await nojs.locator('#experience-research .role-detail').innerText()).includes(entries[0].text));
+    assert.equal(await nojs.locator('#experience-research .research-thread dd:visible').count(), 3, 'All research notes work without JavaScript');
     await fallback.close();
 
     // The beforeprint/afterprint lifecycle shows every role and restores the selected state.
