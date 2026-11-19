@@ -6,20 +6,42 @@ const path = require('node:path');
 const delay = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 const root = path.resolve(__dirname, '..');
 const port = Number(process.env.PROJECTS_PORT) || 48768;
-const origin = `http://127.0.0.1:${port}`;
+const remote = process.env.PROJECTS_ORIGIN;
+const origin = remote ? new URL(remote).origin : `http://127.0.0.1:${port}`;
 const projects = [
   { id: 'project-lab', title: 'ITDR Home Lab', href: 'work/homelab/' },
   { id: 'project-quest', title: 'ClassQuest', href: 'work/classquest/' },
   { id: 'project-luna', title: 'LUNA', href: 'work/luna/' }
 ];
-const server = spawn(process.execPath, [path.join(root, 'tools/serve.cjs'), root, String(port)], {
+const server = remote ? null : spawn(process.execPath, [path.join(root, 'tools/serve.cjs'), root, String(port)], {
   stdio: ['ignore', 'pipe', 'inherit']
 });
-const ready = new Promise((resolve, reject) => {
+const ready = server ? new Promise((resolve, reject) => {
   server.stdout.once('data', resolve);
   server.once('error', reject);
   server.once('exit', code => reject(new Error(`Preview server exited ${code}`)));
-});
+}) : Promise.resolve();
+
+async function checkImage(page, image, label) {
+  await image.scrollIntoViewIfNeeded();
+  const result = await image.evaluate(async element => {
+    try {
+      await Promise.race([
+        element.decode(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('image decode timed out')), 5000))
+      ]);
+      return { width: element.naturalWidth, height: element.naturalHeight, error: null };
+    } catch (error) {
+      return { width: element.naturalWidth, height: element.naturalHeight, error: error.message };
+    }
+  });
+  assert.equal(result.error, null, `${label}: image must decode`);
+  assert.ok(result.width > 0 && result.height > 0, `${label}: image must have natural dimensions`);
+  const source = await image.getAttribute('src');
+  const response = await page.request.get(new URL(source, page.url()).href);
+  assert.equal(response.status(), 200, `${label}: image response`);
+  assert.match(response.headers()['content-type'] || '', /^image\//, `${label}: image content type`);
+}
 
 async function checkSelected(page, current, label) {
   for (const project of projects) {
@@ -56,8 +78,12 @@ async function checkSelected(page, current, label) {
           const button = page.locator(`[data-project="${project.id}"]`);
           assert.equal(await button.getAttribute('aria-controls'), project.id, label);
           assert.ok((await button.boundingBox()).height >= 44, `${label}: folder touch target`);
+          await checkImage(page, button.locator('.sheet-image img'), `${label} ${project.title} folder`);
+          assert.doesNotMatch(await button.locator('.sheet-image img').getAttribute('src'), /[?&]image_retry=/, `${label}: healthy thumbnail should not retry`);
           await button.click();
           await checkSelected(page, project, label);
+          await checkImage(page, page.locator(`#${project.id} .project-art img`), `${label} ${project.title} summary`);
+          assert.doesNotMatch(await page.locator(`#${project.id} .project-art img`).getAttribute('src'), /[?&]image_retry=/, `${label}: healthy summary should not retry`);
         }
         const folderBounds = await page.locator('.project-folder, .folder-title').evaluateAll(elements => elements.map(element => {
           const box = element.getBoundingClientRect();
@@ -125,6 +151,37 @@ async function checkSelected(page, current, label) {
     await checkSelected(reduced, projects[0], 'reduced motion');
     await reduced.close();
 
+    // Simulate a cached failure for each original image URL. Both the folder
+    // preview and the summary should recover with one fresh request.
+    const recovery = await browser.newContext({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
+    const retriedPaths = new Set();
+    await recovery.route('**/assets/projects/**', async route => {
+      const url = new URL(route.request().url());
+      if (!url.searchParams.has('image_retry')) {
+        await route.fulfill({ status: 404, contentType: 'text/plain', body: 'simulated cached failure' });
+      } else {
+        retriedPaths.add(url.pathname);
+        await route.continue();
+      }
+    });
+    const recoveryPage = await recovery.newPage();
+    await recoveryPage.goto(origin);
+    for (const project of projects) {
+      const folder = recoveryPage.locator(`[data-project="${project.id}"]`);
+      const thumbnail = folder.locator('.sheet-image img');
+      await checkImage(recoveryPage, thumbnail, `${project.title} recovered folder image`);
+      assert.match(await thumbnail.getAttribute('src'), /[?&]image_retry=/, `${project.title}: folder retry`);
+      await folder.click();
+      const summary = recoveryPage.locator(`#${project.id} .project-art img`);
+      await checkImage(recoveryPage, summary, `${project.title} recovered summary image`);
+      assert.match(await summary.getAttribute('src'), /[?&]image_retry=/, `${project.title}: summary retry`);
+      const lastSource = await summary.getAttribute('src');
+      await summary.dispatchEvent('error');
+      assert.equal(await summary.getAttribute('src'), lastSource, `${project.title}: retries stay bounded`);
+    }
+    assert.equal(retriedPaths.size, projects.length, 'Each project image received a fresh request');
+    await recovery.close();
+
     // Printing and the no-JavaScript path retain all summaries and links.
     const fallback = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 320, height: 900 } });
     const nojs = await fallback.newPage();
@@ -133,6 +190,7 @@ async function checkSelected(page, current, label) {
     for (const project of projects) {
       assert.ok(await nojs.locator(`#${project.id}`).isVisible(), `${project.title}: no-JavaScript summary`);
       assert.equal(await nojs.locator(`#${project.id} h3 a`).getAttribute('href'), project.href);
+      await checkImage(nojs, nojs.locator(`#${project.id} .project-art img`), `${project.title} no-JavaScript summary`);
     }
     await fallback.close();
     const print = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
@@ -155,11 +213,10 @@ async function checkSelected(page, current, label) {
       assert.deepEqual(violations, [], `${project.title}: accessibility checks`);
     }
     await accessibility.close();
-    console.log(`PASS: ${scenarios} folder scenarios; switching, keyboard, focus, hover, reduced motion, print, no-JavaScript and expanded accessibility states.`);
+    console.log(`PASS: ${scenarios} folder scenarios; decoded thumbnails and summaries, recovery from cached failures, switching, keyboard, focus, hover, reduced motion, print, no-JavaScript and expanded accessibility states.`);
   } finally {
     if (browser) await Promise.race([browser.close().catch(() => {}), delay(5000)]);
-    server.kill();
-    server.stdout.destroy();
+    if (server) { server.kill(); server.stdout.destroy(); }
   }
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => {
   setTimeout(() => process.exit(Number.isInteger(process.exitCode) ? process.exitCode : 0), 250);
