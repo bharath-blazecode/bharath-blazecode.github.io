@@ -19,7 +19,8 @@
     "test:classquest": "node tests/classquest.cjs",
     "test:mobile": "node tests/mobile.cjs",
     "bundle:desk": "node tools/bundle-desk.cjs",
-    "test:desk": "node tests/desk.cjs"
+    "test:desk": "node tests/desk.cjs",
+    "test:journey": "node tests/journey.cjs"
   },
   "devDependencies": {
     "axe-core": "4.10.3",

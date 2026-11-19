@@ -1,0 +1,67 @@
+/* Signals are decorative; the desk links and all story text remain ordinary HTML. */
+@media screen {
+  .desk-signals { position: absolute; z-index: 2; inset: 0; pointer-events: none; }
+  .desk-signals span { position: absolute; left: var(--signal-x, 50%); top: var(--signal-y, 50%); width: 7px; height: 7px; border: 1px solid #dce64e; border-radius: 50%; background: #dce64e; opacity: 0; transform: translate(-50%, -50%); }
+  .desk-signals span:nth-child(2) { width: 4px; height: 4px; transform: translate(-18px, 9px); }
+  .desk-signals span:nth-child(3) { width: 4px; height: 4px; transform: translate(13px, -14px); }
+  .desk-signals span:nth-child(4) { width: 28px; height: 1px; border: 0; border-radius: 0; transform: translate(-12px, -5px) rotate(-36deg); transform-origin: center; }
+  .desk-signals.is-tracking span { opacity: .9; }
+  .desk-signals.is-pulsing span:first-child { opacity: 1; }
+
+  .journey-section { padding-top: 66px; padding-bottom: 15px; }
+  .journey-heading { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px 35px; }
+  .journey-heading .eyebrow { grid-column: 1 / -1; margin: 0; color: var(--muted); }
+  .journey-heading h2 { font: italic 400 clamp(2rem, 1.4rem + 1.7vw, 3.25rem)/1.2 var(--serif); letter-spacing: -.03em; }
+  .journey-heading > p:last-child { margin: 0 0 4px; color: var(--muted); font-size: .9375rem; }
+  .journey-path { position: relative; margin-top: 30px; }
+  .journey-track { position: absolute; top: 15px; left: 15px; right: calc(25% - 30px); height: 1px; background: var(--line); }
+  .journey-track > span { display: block; width: 100%; height: 100%; background: var(--link); transform: scaleX(var(--journey-progress, 1)); transform-origin: left; }
+  .journey-steps { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; padding: 0; margin: 0; list-style: none; }
+  .journey-steps li { min-width: 0; padding: 0; margin: 0; }
+  .journey-mark { position: relative; display: grid; place-items: center; width: 31px; height: 31px; margin-bottom: 12px; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); color: var(--ink); font: .6rem/1 var(--mono); }
+  .journey-steps li:last-child .journey-mark { background: var(--accent); color: var(--accent-ink); }
+  .journey-steps strong { display: block; font-size: 1rem; }
+  .journey-steps p { margin: 4px 0 0; color: var(--muted); font-size: .8125rem; line-height: 1.45; }
+
+  .note-grid .note-signal { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr) 36px 50px; align-items: center; gap: 10px; max-width: 620px; padding-top: 8px; }
+  .note-signal span, .note-signal strong { display: grid; place-items: center; min-height: 42px; padding: 6px 8px; border: 1px solid #535e50; background: #f2f3ee; color: #20271e; font: .75rem/1.3 var(--mono); overflow-wrap: anywhere; }
+  .note-signal strong { font: 900 1.25rem/1 var(--display); }
+  .note-signal svg { display: block; width: 100%; }
+  .note-signal path { fill: none; stroke: #20271e; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 100; stroke-dashoffset: 0; }
+}
+
+@media screen and (max-width: 600px) {
+  .journey-section { padding-top: 48px; padding-bottom: 0; }
+  .journey-heading { display: block; }
+  .journey-heading .eyebrow { margin-bottom: 10px; }
+  .journey-heading > p:last-child { margin-top: 10px; }
+  .journey-path { margin-top: 24px; }
+  .journey-track { top: 15px; bottom: 15px; left: 15px; right: auto; width: 1px; height: auto; }
+  .journey-track > span { transform: scaleY(var(--journey-progress, 1)); transform-origin: top; }
+  .journey-steps { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .journey-steps li { display: grid; grid-template-columns: 31px minmax(0, 1fr); gap: 14px; align-items: start; }
+  .journey-mark { margin: 0; }
+  .journey-steps p { margin-top: 2px; }
+  .note-grid .note-signal { grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) 24px 38px; gap: 6px; }
+  .note-signal span { padding-inline: 3px; font-size: .62rem; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .desk-signals span { transition: left 130ms ease-out, top 130ms ease-out, opacity 200ms ease; }
+  .desk-signals span:nth-child(2) { transition-duration: 280ms, 280ms, 200ms; }
+  .desk-signals span:nth-child(3), .desk-signals span:nth-child(4) { transition-duration: 420ms, 420ms, 200ms; }
+  .desk-signals.is-pulsing span:first-child { animation: signal-pulse 750ms ease-out both; }
+  .project-folders.is-journey-visible { animation: journey-arrive 800ms ease-out both; }
+  .note-signal.is-drawing path { animation: signal-draw 1.3s ease-out both; }
+  .note-signal.is-drawing svg:nth-of-type(2) path { animation-delay: .2s; }
+  :root[data-motion="paused"] .project-folders.is-journey-visible,
+  :root[data-motion="paused"] .note-signal path { animation-play-state: paused; }
+  @keyframes signal-pulse { from { transform: translate(-50%, -50%) scale(.5); opacity: 1; } to { transform: translate(-50%, -50%) scale(5); opacity: 0; } }
+  @keyframes journey-arrive { from { transform: translateY(12px); } to { transform: translateY(0); } }
+  @keyframes signal-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+}
+
+@media print {
+  .desk-signals, .journey-track, .note-signal { display: none !important; }
+  .journey-steps { list-style: decimal; }
+}
