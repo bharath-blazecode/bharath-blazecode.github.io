@@ -86,6 +86,111 @@
     folders.hidden = false;
   }
 
+  // Build a navigable path from the existing role summaries. Without this
+  // enhancement, the original details elements remain available as a list.
+  const experience = document.getElementById('experience');
+  const experiencePath = document.querySelector('[data-experience-path]');
+  const experienceStops = document.querySelector('[data-experience-stops]');
+  const experienceRoles = document.querySelector('[data-experience-roles]');
+  const experienceHead = document.querySelector('[data-experience-detail-head]');
+  const experienceClose = document.querySelector('[data-experience-close]');
+  const experienceStatus = document.querySelector('[data-experience-status]');
+  // Order by start month rather than suggesting that overlapping roles were sequential.
+  const roles = experienceRoles ? [...experienceRoles.querySelectorAll(':scope > .role')]
+    .sort((a, b) => (b.dataset.pathStart || '').localeCompare(a.dataset.pathStart || '')) : [];
+  const roleInfo = roles.map(role => {
+    const summary = role.querySelector(':scope > summary');
+    const time = summary && summary.querySelector('.role-time');
+    const organisation = summary && summary.querySelector('strong');
+    const title = summary && summary.querySelector(':scope > span:nth-child(2) > span');
+    return { role, time, organisation, title, date: time && time.firstChild.textContent.trim() };
+  });
+  if (experience && experiencePath && experienceStops && experienceRoles && experienceHead && experienceClose && experienceStatus &&
+      roleInfo.length && roleInfo.every(item => item.role.id && /^\d{4}-\d{2}$/.test(item.role.dataset.pathStart || '') && item.role.dataset.pathLabel && item.date && item.organisation && item.title)) {
+    let selectedRole = null;
+    let printingExperience = false;
+    const buttons = roleInfo.map(({ role, date, organisation, title }) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'experience-stop';
+      button.dataset.experienceTarget = role.id;
+      button.setAttribute('aria-controls', role.id);
+      button.setAttribute('aria-expanded', 'false');
+      const fullName = organisation.textContent.trim();
+      const labelName = role.dataset.pathLabel === fullName ? fullName : `${role.dataset.pathLabel}, ${fullName}`;
+      button.setAttribute('aria-label', `${labelName}, ${title.textContent}, ${date}`);
+      const marker = document.createElement('span');
+      marker.className = 'experience-marker';
+      marker.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span');
+      label.className = 'experience-stop-label';
+      for (const [className, value] of [
+        ['experience-stop-date', date],
+        ['experience-stop-name', role.dataset.pathLabel],
+        ['experience-stop-role', title.textContent]
+      ]) {
+        const part = document.createElement('span');
+        part.className = className;
+        part.textContent = value;
+        label.append(part);
+      }
+      button.append(marker, label);
+      experienceStops.append(button);
+      return button;
+    });
+    function selectRole(next, restoreFocus = false) {
+      const previous = selectedRole;
+      selectedRole = next;
+      roles.forEach((role, index) => {
+        const active = role === next;
+        role.hidden = !active;
+        role.open = active;
+        buttons[index].setAttribute('aria-expanded', String(active));
+      });
+      experienceHead.hidden = !next;
+      experienceRoles.hidden = !next;
+      experienceStatus.textContent = next ? `${next.querySelector('strong').textContent} role details opened below.` : 'Role details closed.';
+      if (restoreFocus && previous) buttons[roles.indexOf(previous)].focus();
+    }
+    buttons.forEach((button, index) => button.addEventListener('click', () => {
+      const next = selectedRole === roles[index] ? null : roles[index];
+      selectRole(next);
+      if (next && matchMedia('(max-width: 600px)').matches) {
+        const frame = experienceStops.getBoundingClientRect();
+        const point = button.getBoundingClientRect();
+        if (point.left < frame.left || point.right > frame.right) {
+          const offset = (point.left + point.right - frame.left - frame.right) / 2;
+          experienceStops.scrollTo({ left: experienceStops.scrollLeft + offset, behavior: reduced.matches ? 'auto' : 'smooth' });
+        }
+      }
+    }));
+    experienceClose.addEventListener('click', () => selectRole(null, true));
+    experience.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && selectedRole) {
+        event.preventDefault();
+        selectRole(null, true);
+      }
+    });
+    roles.forEach(role => role.addEventListener('toggle', () => {
+      if (!printingExperience && role === selectedRole && !role.open) {
+        selectRole(null, role.contains(document.activeElement));
+      }
+    }));
+    window.addEventListener('beforeprint', () => { printingExperience = true; });
+    window.addEventListener('afterprint', () => { printingExperience = false; });
+    const initiallyOpen = roles.find(role => role.open) || null;
+    experience.classList.add('has-experience-path');
+    selectRole(initiallyOpen);
+    experienceStatus.textContent = '';
+    experiencePath.hidden = false;
+    if (initiallyOpen) requestAnimationFrame(() => {
+      if (matchMedia('(max-width: 600px)').matches) {
+        const initialButton = buttons[roles.indexOf(initiallyOpen)];
+        experienceStops.scrollLeft = initialButton.offsetLeft - (experienceStops.clientWidth - initialButton.offsetWidth) / 2;
+      }
+    });
+  }
+
   /*
    * Decorative motion begins in view. Most sequences settle within five seconds
    * and only become eligible to replay after fully leaving the viewport. The

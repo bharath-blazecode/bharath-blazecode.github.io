@@ -11,6 +11,7 @@
     "test": "node tools/verify.cjs",
     "test:browser": "node tests/browser.cjs",
     "test:projects": "node tests/projects.cjs",
+    "test:experience": "node tests/experience.cjs",
     "test:classquest": "node tests/classquest.cjs",
     "test:mobile": "node tests/mobile.cjs"
   },
