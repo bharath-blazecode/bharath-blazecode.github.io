@@ -2,23 +2,17 @@
 (() => {
   'use strict';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
   const stage = document.querySelector('.desk-stage');
   const signals = document.querySelector('[data-desk-signals]');
   const journey = document.querySelector('[data-evidence-journey]');
   const folders = document.querySelector('[data-project-folders]');
   const note = document.querySelector('[data-note-signal]');
-  let pointerFrame = 0;
-  let pointer = null;
   let pulseTimer = null;
   let scrollFrame = 0;
 
   function resetPointer() {
-    if (pointerFrame) cancelAnimationFrame(pointerFrame);
-    pointerFrame = 0;
-    pointer = null;
     clearTimeout(pulseTimer);
-    if (signals) signals.classList.remove('is-tracking', 'is-pulsing');
+    if (signals) signals.classList.remove('is-pulsing');
   }
   function locate(event) {
     const rect = stage.getBoundingClientRect();
@@ -33,17 +27,6 @@
     signals.style.setProperty('--signal-y', `${(point.y * 100).toFixed(1)}%`);
   }
   if (stage && signals) {
-    stage.addEventListener('pointermove', event => {
-      if (!finePointer.matches || reduced.matches || document.hidden || event.pointerType !== 'mouse') return;
-      pointer = locate(event);
-      if (!pointer || pointerFrame) return;
-      pointerFrame = requestAnimationFrame(() => {
-        pointerFrame = 0;
-        if (!pointer) return;
-        place(pointer);
-        signals.classList.add('is-tracking');
-      });
-    }, { passive: true });
     stage.addEventListener('pointerdown', event => {
       if (event.pointerType !== 'touch' || reduced.matches || document.hidden) return;
       const point = locate(event);
@@ -55,11 +38,7 @@
       clearTimeout(pulseTimer);
       pulseTimer = setTimeout(() => signals.classList.remove('is-pulsing'), 800);
     }, { passive: true });
-    // Touch pointers leave immediately after a tap; let their pulse finish.
-    stage.addEventListener('pointerleave', event => { if (event.pointerType !== 'touch') resetPointer(); });
     stage.addEventListener('pointercancel', resetPointer);
-    finePointer.addEventListener('change', resetPointer);
-    reduced.addEventListener('change', resetPointer);
   }
 
   function updateJourney() {

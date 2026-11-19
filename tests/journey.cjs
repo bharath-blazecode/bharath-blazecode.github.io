@@ -48,14 +48,6 @@ const ready = new Promise((resolve, reject) => {
     await motion.evaluate(() => window.scrollTo({ top: document.querySelector('[data-evidence-journey]').offsetTop + 500, behavior: 'instant' }));
     await motion.waitForTimeout(150);
     assert.equal(Number(await journey.evaluate(el => el.style.getPropertyValue('--journey-progress'))), 1, 'path completes as the visitor scrolls');
-    const desk = motion.locator('.desk-stage');
-    await desk.scrollIntoViewIfNeeded();
-    const box = await desk.boundingBox();
-    await motion.mouse.move(box.x + box.width * .15, box.y + box.height * .2);
-    await motion.waitForFunction(() => document.querySelector('[data-desk-signals]').classList.contains('is-tracking'));
-    assert.ok(await motion.locator('[data-desk-signals]').evaluate(el => el.style.getPropertyValue('--signal-x').endsWith('%')), 'pointer positions the signal');
-    await motion.mouse.move(0, 0);
-    assert.equal(await motion.locator('[data-desk-signals]').evaluate(el => el.classList.contains('is-tracking')), false, 'signal clears on leaving desk');
     await motion.close();
 
     const touch = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, reducedMotion: 'no-preference' });
@@ -84,7 +76,7 @@ const ready = new Promise((resolve, reject) => {
       assert.deepEqual(violations, [], `${colorScheme}: accessibility checks`);
       await page.close();
     }
-    console.log('PASS: scroll journey, pointer and touch signals, responsive themes, reduced motion, no-JavaScript and accessibility checks.');
+    console.log('PASS: scroll journey, touch signal, responsive themes, reduced motion, no-JavaScript and accessibility checks.');
   } finally {
     if (browser) await browser.close();
     server.kill();
