@@ -37,6 +37,7 @@ npm ci --ignore-scripts
 npx playwright install chromium
 npm run test:browser
 npm run test:projects
+npm run test:experience
 npm run test:classquest
 npm run test:mobile
 ```
@@ -64,6 +65,7 @@ resume/                     Downloadable résumé PDF
 tools/                      verification, build and preview scripts
 tests/browser.cjs           Playwright browser checks
 tests/projects.cjs          folder, summary, keyboard and fallback checks
+tests/experience.cjs        experience path, role detail and fallback checks
 tests/classquest.cjs         decision states, keyboard, no-JS and print checks
 tests/mobile.cjs            alignment, touch-target, wrap, responder, diagram and scoreboard checks
 ```
@@ -75,6 +77,8 @@ The HTML files are the editable source of truth. Shared navigation is repeated a
 The primary content and navigation use ordinary HTML. The homepage interests line is immediately visible. The selected-work folders use each project's own evidence and reveal one existing summary at a time; the summary links to its full case study. Selecting the open folder again, choosing Close or pressing Escape closes the summary. JavaScript progressively adds this interaction, the theme control, decorative sequences and terminal interaction. Without JavaScript or when printing, all three project summaries remain available.
 
 The folder papers fan out on hover and keyboard focus. Reduced-motion visitors see the same folders and summaries without the movement. If a project thumbnail or summary image fails to load, JavaScript retries it once using a fresh URL; a persistent connection or hosting failure can still prevent it from loading. The focused project suite checks image decoding and recovery, as well as switching projects, keyboard and touch-sized controls, focus return, reduced motion, printing, and the no-JavaScript path. To check a deployed site instead of starting a local server, set `PROJECTS_ORIGIN` to its origin before running `npm run test:projects`.
+
+The experience path presents the existing roles by start date, with a note that roles can overlap. Selecting a point or its name opens the original role detail; selecting it again, choosing Close or pressing Escape closes it. On phones the path scrolls horizontally and keeps the selected point in view. Without JavaScript the original disclosures remain available, and printing includes all roles. Each role's `data-path-start` gives its start month for ordering and `data-path-label` supplies the short name on the path; its full name and description remain in the ordinary HTML disclosure.
 
 Day and night themes follow the operating-system preference until the visitor makes a local choice. Most decorative sequences settle within five seconds. On wider screens, the telemetry flow repeats while visible, and the diagram itself can pause or resume it. All motion stops when the page is hidden; an interrupted sequence restarts if it is still in view. With `prefers-reduced-motion`, the page presents the complete static content instead. The homelab diagrams remain understandable without animation.
 
@@ -89,7 +93,7 @@ Small screens are designed rather than shrunk, and "no horizontal overflow" is o
 - **Margins are optical.** The responder sprite's idle frame has about 37px of transparent padding, so it is trimmed with a negative margin and placed in its own grid cell to meet the right margin. The large project numerals use negative tracking; on phones `right: .05em` compensates so the painted glyphs end at the margin.
 - **Touch targets are 44px.** Standalone controls grow with padding plus an equal negative margin (or an absolutely positioned `::after`) so the visible spacing does not move. Rules are scoped to `(max-width: 850px), (pointer: coarse)`, so a mouse at desktop widths keeps the original layout. Inline links inside running text are exempt.
 - **Phrases, not lines, control wraps.** Headlines that were broken with `<br>` use `.hl` blocks (`display: block; text-wrap: balance`), and `"&"` is bound to the next word with a non-breaking space. Project labels are `.seg` segments that stack on small screens while the `.sep` slash stays available to assistive technology. Running copy uses `text-wrap: pretty` up to 850px.
-- **One disclosure language.** Off shift, Training / tools / community and Résumé use the same +/- row as the experience list; an arrow is reserved for links that leave the page.
+- **One disclosure language.** Off shift, Training / tools / community and Résumé use the same +/- row as the experience details; an arrow is reserved for links that leave the page.
 - **Diagrams are drawn for the screen.** Below 600px the home-lab path is a second, vertical SVG (`.diagram-narrow`) instead of a 650px scroller; it keeps the same node classes and has no animated packets. The LUNA architecture image is drawn for a 680px canvas, so phones also get an "Open the diagram full size" link.
 - **The competition teaser stays small on purpose.** The homepage shows four headline results as one scoreboard strip (four across on desktop, 2 x 2 on tablets, one row each on phones) and links to the Scoreboard page for everything else. The mobile suite fails if the section grows past 840px, if a figure wraps or clips, or if a focused tile loses contrast on its lime fill.
 - **Known limit.** The ClassQuest code excerpt wraps inside its panel at 320px (about 200px of text width) rather than scrolling sideways.

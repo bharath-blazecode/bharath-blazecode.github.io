@@ -1,4 +1,75 @@
 /* Focused Field Notes: the refined homepage composition. Case layouts use site.css. */
+/* A connected path makes the existing experience details easier to explore. */
+@media screen {
+  .experience-path-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px 30px; margin-bottom: 24px; }
+  .experience-path-heading p { margin: 0; color: var(--muted); }
+  .experience-path-heading > p:last-child { font-size: .875rem; }
+  .experience-swipe { display: none; }
+  .experience-map { position: relative; min-width: 0; }
+  .experience-wave { position: absolute; z-index: 0; inset: 0 0 auto; width: 100%; height: 100px; overflow: visible; pointer-events: none; }
+  .experience-wave path { fill: none; stroke: var(--muted); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+  .experience-stops { display: grid; position: relative; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; }
+  .experience-stop { position: relative; display: grid; grid-template-rows: 100px auto; align-content: start; min-width: 0; padding: 0; border: 0; background: transparent; color: var(--ink); text-align: left; }
+  .experience-stop:focus-visible { outline-offset: -3px; }
+  .experience-marker { position: relative; z-index: 1; display: block; width: 44px; height: 44px; margin: 6px auto 0; }
+  .experience-stop:nth-child(even) .experience-marker { margin-top: 46px; }
+  .experience-marker::before { content: ''; position: absolute; inset: 10px; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); }
+  .experience-marker::after { content: ''; position: absolute; inset: 19px; border-radius: 50%; background: var(--ink); }
+  .experience-stop[aria-expanded="true"] .experience-marker::before { background: var(--accent); box-shadow: 0 0 0 5px var(--paper), 0 0 0 6px var(--ink); }
+  .experience-stop[aria-expanded="true"] .experience-marker::after { background: var(--accent-ink); }
+  .experience-stop[aria-expanded="true"] .experience-stop-name { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .22em; }
+  .experience-stop-label { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 10px 10px 0; }
+  .experience-stop-date { font: .68rem/1.45 var(--mono); color: var(--muted); }
+  .experience-stop-name { font: 700 clamp(.95rem, .8rem + .4vw, 1.2rem)/1.2 var(--sans); letter-spacing: -.02em; overflow-wrap: anywhere; }
+  .experience-stop-role { font-size: .8125rem; line-height: 1.45; color: var(--muted); }
+  .experience.has-experience-path .experience-layout { margin-top: 54px; }
+  .experience-detail-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 10px; }
+  .experience-detail-head .eyebrow { margin: 0; color: var(--muted); }
+  .experience-detail-head button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); background: var(--paper); font: .75rem/1 var(--mono); }
+  .experience-detail-head button span { margin-left: 8px; font: 1.3rem/1 var(--sans); vertical-align: middle; }
+  .experience-detail-head button:hover { border-color: var(--ink); }
+  .experience.has-experience-path .role { border-bottom: 1px solid var(--line); }
+}
+
+@media (hover: hover) {
+  .experience-stop:hover .experience-marker::before { background: var(--accent); }
+  .experience-stop:hover .experience-marker::after { background: var(--accent-ink); }
+  .experience-stop:hover .experience-stop-name { text-decoration: underline; text-underline-offset: .22em; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .experience-marker::before { transition: background-color 220ms ease, box-shadow 220ms ease; }
+  .experience.has-experience-path .role[open]:not([hidden]) { animation: experience-arrive 350ms ease-out both; }
+  @keyframes experience-arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+}
+
+@media screen and (max-width: 1100px) {
+  .experience-wave { display: none; }
+  .experience-stops { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 22px; }
+  .experience-stop { grid-template-rows: 56px auto; }
+  .experience-stop::before { content: ''; position: absolute; top: 28px; left: 0; right: 0; border-top: 1px solid var(--muted); }
+  .experience-stop:nth-child(even) .experience-marker { margin-top: 6px; }
+}
+
+@media screen and (max-width: 850px) {
+  .experience-stops { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .experience.has-experience-path .experience-layout { margin-top: 42px; }
+}
+
+@media screen and (max-width: 600px) {
+  .experience-path-heading { gap: 8px; margin-bottom: 20px; }
+  .experience-swipe { display: inline; }
+  .experience-stops { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(148px, 48%); overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x proximity; padding-bottom: 16px; scrollbar-width: thin; scrollbar-color: var(--muted) var(--panel); }
+  .experience-stop { scroll-snap-align: start; }
+  .experience-stop-label { padding-inline: 8px; }
+  .experience.has-experience-path .experience-layout { margin-top: 34px; }
+}
+
+@media print {
+  .experience-path, .experience-detail-head { display: none !important; }
+  .experience.has-experience-path .role-list[hidden], .experience.has-experience-path .role[hidden] { display: block !important; }
+}
+
 /* Project folders reuse the site's paper, ink and evidence images. */
 @media screen {
   .project-folders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(18px, 3vw, 48px); }
