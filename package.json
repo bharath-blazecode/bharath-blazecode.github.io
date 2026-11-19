@@ -20,7 +20,8 @@
     "test:mobile": "node tests/mobile.cjs",
     "bundle:desk": "node tools/bundle-desk.cjs",
     "test:desk": "node tests/desk.cjs",
-    "test:journey": "node tests/journey.cjs"
+    "test:journey": "node tests/journey.cjs",
+    "test:responder-tray": "node tests/responder-tray.cjs"
   },
   "devDependencies": {
     "axe-core": "4.10.3",

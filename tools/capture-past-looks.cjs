@@ -46,12 +46,12 @@ const ready = new Promise((resolve, reject) => {
         await page.locator('#project-lab .project-art img').scrollIntoViewIfNeeded();
         await page.locator('#project-lab .project-art img').evaluate(image => image.decode());
         // Hide fixed elements that would cover a stitched section screenshot.
-        await page.addStyleTag({ content: '.masthead, .skip, .chapter-rail { visibility: hidden !important; }' });
+        await page.addStyleTag({ content: '.masthead, .skip, .chapter-rail, .field-tray { visibility: hidden !important; }' });
         await page.locator('#work').screenshot({ path: path.join(destination, `${view.name}-projects.png`) });
 
         await page.goto(`http://127.0.0.1:${port}/work/homelab/`, { waitUntil: 'networkidle' });
         await page.evaluate(() => document.fonts.ready);
-        await page.addStyleTag({ content: '.masthead, .skip, .chapter-rail { visibility: hidden !important; }' });
+        await page.addStyleTag({ content: '.masthead, .skip, .chapter-rail, .field-tray { visibility: hidden !important; }' });
         await page.locator('#evidence img').first().scrollIntoViewIfNeeded();
         await page.locator('#evidence img').first().evaluate(image => image.decode());
         await page.locator('#evidence').screenshot({ path: path.join(destination, `${view.name}-evidence.png`) });
@@ -78,6 +78,20 @@ const ready = new Promise((resolve, reject) => {
       await page.locator('.hero').screenshot({ path: path.join(destination, `${view.name}-opening.png`) });
       if (await page.locator('[data-evidence-journey]').count()) {
         await page.locator('[data-evidence-journey]').screenshot({ path: path.join(destination, `${view.name}-journey.png`) });
+      }
+      await page.locator('[data-project="project-lab"]').click();
+      await page.locator('[data-project-details]').screenshot({ path: path.join(destination, `${view.name}-project-summary.png`) });
+      await page.locator('[data-project-close]').click();
+      if (await page.locator('[data-field-tray]').count()) {
+        await page.locator('[data-field-tray] summary').click();
+        await page.locator('[data-field-tray]').screenshot({ path: path.join(destination, `${view.name}-field-tray.png`) });
+        await page.locator('[data-field-tray] summary').click();
+        await page.emulateMedia({ reducedMotion: 'no-preference' });
+        await page.locator('[data-field-tray] summary').click();
+        await page.locator('[data-tray-close]').click();
+        await page.waitForTimeout(250);
+        await page.screenshot({ path: path.join(destination, `${view.name}-tray-shatter.png`) });
+        await page.emulateMedia({ reducedMotion: 'reduce' });
       }
       await page.locator('[data-experience-target="experience-research"]').click();
       await page.locator('#experience').screenshot({ path: path.join(destination, `${view.name}-research.png`) });
