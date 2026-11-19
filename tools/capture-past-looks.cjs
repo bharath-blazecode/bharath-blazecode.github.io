@@ -6,8 +6,8 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const [change, stage, profile = 'home'] = process.argv.slice(2);
-if (![change, stage].every(value => value && /^[a-z0-9-]+$/i.test(value)) || !['home', 'projects', 'signals'].includes(profile)) {
-  console.error('Usage: node tools/capture-past-looks.cjs <dated-change> <stage> [home|projects|signals]');
+if (![change, stage].every(value => value && /^[a-z0-9-]+$/i.test(value)) || !['home', 'projects', 'signals', 'liquid'].includes(profile)) {
+  console.error('Usage: node tools/capture-past-looks.cjs <dated-change> <stage> [home|projects|signals|liquid]');
   process.exit(1);
 }
 const archive = path.join(root, 'past looks', change);
@@ -39,6 +39,40 @@ const ready = new Promise((resolve, reject) => {
         viewport: { width: view.width, height: view.height },
         colorScheme: 'light', reducedMotion: 'reduce', hasTouch: view.name === 'phone'
       });
+      if (profile === 'liquid') {
+        await page.emulateMedia({ reducedMotion: view.name === 'desktop' ? 'no-preference' : 'reduce' });
+        await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'networkidle' });
+        await page.evaluate(() => document.fonts.ready);
+        await page.locator('[data-investigation-desk]').scrollIntoViewIfNeeded();
+        await page.waitForTimeout(500);
+        await page.screenshot({ path: path.join(destination, `${view.name}-idle.png`) });
+        if (view.name === 'desktop') {
+          const box = await page.locator('[data-investigation-desk]').boundingBox();
+          await page.mouse.move(box.x - 70, box.y + box.height * .5);
+          await page.waitForTimeout(300);
+          await page.screenshot({ path: path.join(destination, 'desktop-approach.png') });
+          await page.mouse.move(box.x + box.width * .3, box.y + box.height * .4, { steps: 8 });
+          await page.waitForTimeout(450);
+          await page.screenshot({ path: path.join(destination, 'desktop-gathering.png') });
+          await page.waitForTimeout(2000);
+          await page.screenshot({ path: path.join(destination, 'desktop-settled.png') });
+          await page.mouse.move(box.x + box.width * .1, box.y + box.height * .35);
+          await page.waitForTimeout(2200);
+          await page.locator('[data-investigation-desk]').screenshot({ path: path.join(destination, 'desktop-detail.png') });
+          await page.mouse.move(box.x + box.width * .72, box.y + box.height * .55);
+          await page.waitForTimeout(120);
+          await page.screenshot({ path: path.join(destination, 'desktop-fast-movement.png') });
+          await page.evaluate(() => document.querySelector('[data-desk-link="projects"]').addEventListener('click', event => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }, { capture: true }));
+          await page.locator('[data-desk-link="projects"]').click();
+          await page.waitForTimeout(170);
+          await page.screenshot({ path: path.join(destination, 'desktop-selection.png') });
+        }
+        await page.close();
+        continue;
+      }
       if (profile === 'signals') {
         await page.emulateMedia({ reducedMotion: view.name === 'desktop' ? 'no-preference' : 'reduce' });
         await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'networkidle' });

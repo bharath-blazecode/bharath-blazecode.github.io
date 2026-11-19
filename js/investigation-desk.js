@@ -8,6 +8,17 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   if (!canvas || !links.length) return;
 
+  // Keep the source pointer information when a 3D object opens its ordinary
+  // link, so optional visual effects can finish before mouse navigation.
+  let canvasPointer = null;
+  canvas.addEventListener('pointerdown', event => {
+    canvasPointer = {
+      pointerType: event.pointerType, button: event.button, isTrusted: event.isTrusted,
+      altKey: event.altKey, ctrlKey: event.ctrlKey, metaKey: event.metaKey, shiftKey: event.shiftKey
+    };
+  }, { capture: true, passive: true });
+  canvas.addEventListener('pointercancel', () => { canvasPointer = null; }, { passive: true });
+
   const research = desk.querySelector('[data-desk-link="research"]');
   if (research) research.addEventListener('click', () => {
     const role = document.querySelector('[data-experience-target="experience-research"]');
@@ -37,7 +48,9 @@
         onHover(key) { links.forEach(link => link.classList.toggle('is-desk-hovered', link.dataset.deskLink === key)); },
         onSelect(key) {
           const link = links.find(item => item.dataset.deskLink === key);
-          if (link) link.click();
+          if (!link) return;
+          const selection = new CustomEvent('fieldmap:select', { cancelable: true, detail: { link, pointer: canvasPointer } });
+          if (desk.dispatchEvent(selection)) link.click();
         }
       });
       sync();
