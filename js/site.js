@@ -96,9 +96,25 @@
     let selected = null;
     function selectProject(button) {
       selected = button;
-      folderButtons.forEach(folder => folder.setAttribute('aria-expanded', String(folder === button)));
+      folderButtons.forEach(folder => {
+        const active = folder === button;
+        folder.setAttribute('aria-expanded', String(active));
+        const action = folder.querySelector('[data-project-action]');
+        const icon = folder.querySelector('.folder-action > span[aria-hidden]');
+        if (action) action.textContent = active ? 'Close summary' : 'View summary';
+        if (icon) icon.textContent = active ? '↑' : '↘';
+      });
       projectPanels.forEach(panel => { panel.hidden = !button || panel.id !== button.dataset.project; });
       projectDetails.hidden = !button;
+      projectDetails.classList.remove('is-opening');
+      if (button) {
+        projectDetails.dataset.openProject = button.dataset.project;
+        // Restart the decorative connector when switching directly between folders.
+        void projectDetails.offsetWidth;
+        projectDetails.classList.add('is-opening');
+      } else {
+        delete projectDetails.dataset.openProject;
+      }
       projectStatus.textContent = button ? `${button.querySelector('.folder-title').textContent} summary opened below.` : 'Project summary closed.';
     }
     folderButtons.forEach(button => button.addEventListener('click', () => selectProject(selected === button ? null : button)));

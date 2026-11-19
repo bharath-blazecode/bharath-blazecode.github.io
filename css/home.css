@@ -99,9 +99,9 @@
   .folder-number { font: .68rem/1.4 var(--mono); letter-spacing: .04em; color: var(--muted); }
   .folder-title { display: block; margin-top: 11px; font: 900 clamp(1.35rem, 1.3rem + .8vw, 2.15rem)/1.06 var(--display); letter-spacing: -.045em; }
   .folder-action { display: block; margin-top: auto; padding-top: 15px; font: .72rem/1.3 var(--mono); }
-  .folder-action span { margin-left: 4px; font-size: 1rem; }
+  .folder-action > span[aria-hidden] { margin-left: 4px; font-size: 1rem; }
   .project-folder[aria-expanded="true"] .folder-front { border-color: var(--ink); box-shadow: 8px 9px 0 var(--accent); }
-  .project-details { margin-top: 70px; border-top: 1px solid var(--line); }
+  .project-details { --project-gap: 70px; position: relative; margin-top: var(--project-gap); border-top: 1px solid var(--line); }
   .project-details-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 42px; padding-top: 16px; }
   .project-details-head .eyebrow { margin: 0; color: var(--muted); }
   .project-details-head button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); background: var(--paper); font: .75rem/1 var(--mono); }
@@ -114,8 +114,13 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .folder-sheet { transition: transform 550ms cubic-bezier(.2, .7, .2, 1); }
-  .project-details-head:not([hidden]) ~ .project:not([hidden]) { animation: project-arrive 420ms ease-out both; }
-  @keyframes project-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .folder-front { transition: box-shadow 350ms ease, border-color 350ms ease, transform 350ms ease; }
+  .project-folder[aria-expanded="true"] .folder-front { transform: translateY(-3px); }
+  .project-details.is-opening .project-details-head { animation: project-arrive 500ms ease-out both; }
+  .project-details-head:not([hidden]) ~ .project:not([hidden]) { animation: project-arrive 600ms ease-out both; }
+  :root[data-motion="paused"] .project-details.is-opening .project-details-head,
+  :root[data-motion="paused"] .project-details-head:not([hidden]) ~ .project:not([hidden]) { animation-play-state: paused; }
+  @keyframes project-arrive { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
   .project-folder:focus-visible .sheet-note { transform: translate(-6%, -24%) rotate(-12deg); }
   .project-folder:focus-visible .sheet-image { transform: translate(5%, -27%) rotate(10deg); }
   .project-folder:focus-visible .sheet-label { transform: translate(0, -14%) rotate(-2deg); }
@@ -132,7 +137,7 @@
   .folder-front { min-height: 136px; padding: 16px; }
   .folder-sheet { padding: 10px; }
   .sheet-image { padding: 5px; }
-  .project-details { margin-top: 55px; }
+  .project-details { --project-gap: 55px; }
 }
 
 @media screen and (max-width: 600px) {
@@ -144,8 +149,28 @@
   .folder-front { min-height: 128px; margin-top: -80px; padding: 14px 12px; }
   .folder-title { font-size: clamp(1.25rem, 5.5vw, 1.65rem); }
   .folder-number, .folder-action { font-size: .64rem; }
-  .project-details { margin-top: 42px; }
+  .project-details { --project-gap: 42px; }
   .project-details-head { margin-bottom: 30px; }
+}
+
+@media screen and (min-width: 601px) {
+  .project-details[data-open-project="project-lab"] { --project-anchor: 16.667%; }
+  .project-details[data-open-project="project-quest"] { --project-anchor: 50%; }
+  .project-details[data-open-project="project-luna"] { --project-anchor: 83.333%; }
+  .project-details[data-open-project]::before {
+    content: ''; position: absolute; left: var(--project-anchor); bottom: 100%; height: var(--project-gap);
+    border-left: 1px solid var(--muted); transform-origin: top; pointer-events: none;
+  }
+  .project-details[data-open-project]::after {
+    content: ''; position: absolute; left: var(--project-anchor); top: -4px; width: 7px; height: 7px;
+    border: 1px solid var(--ink); border-radius: 50%; background: var(--accent); transform: translateX(-50%); pointer-events: none;
+  }
+}
+
+@media screen and (min-width: 601px) and (prefers-reduced-motion: no-preference) {
+  .project-details.is-opening::before { animation: project-thread 600ms ease-out both; }
+  :root[data-motion="paused"] .project-details.is-opening::before { animation-play-state: paused; }
+  @keyframes project-thread { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 }
 
 @media print {

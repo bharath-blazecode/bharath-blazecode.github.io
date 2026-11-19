@@ -39,6 +39,7 @@ npm run test:browser
 npm run test:projects
 npm run test:field-notes
 npm run test:experience
+npm run test:homelab
 npm run test:classquest
 npm run test:mobile
 ```
@@ -56,10 +57,12 @@ work/luna/index.html        LUNA case study
 work/competitions/index.html Scoreboard: CTF and hackathon results with evidence
 css/site.css                shared responsive, theme and print styles
 css/home.css                Focused Field Notes homepage refinements
+css/homelab.css             lab notebook and illustrative investigation styles
 css/classquest.css          case-local upload-decision field notes
 css/competitions.css        Scoreboard result blocks and evidence figures
 js/theme.js                 early theme restoration
 js/site.js                  motion, navigation and terminal enhancements
+js/homelab.js               notebook pages and investigation enhancements
 js/classquest.js            progressive upload-decision controls
 assets/                     project media, competition evidence, fonts and social preview
 resume/                     Downloadable résumé PDF
@@ -68,6 +71,7 @@ tests/browser.cjs           Playwright browser checks
 tests/projects.cjs          folder, summary, keyboard and fallback checks
 tests/field-notes.cjs       opening, chapter thread and reduced-motion checks
 tests/experience.cjs        experience path, role detail and fallback checks
+tests/homelab.cjs           notebook, evidence, investigation and fallback checks
 tests/classquest.cjs         decision states, keyboard, no-JS and print checks
 tests/mobile.cjs            alignment, touch-target, wrap, responder, diagram and scoreboard checks
 past looks/                 dated, comparable screenshots of earlier and current designs
@@ -79,13 +83,15 @@ The HTML files are the editable source of truth. Shared navigation is repeated a
 
 The primary content and navigation use ordinary HTML. The homepage interests line is immediately visible. The selected-work folders use each project's own evidence and reveal one existing summary at a time; the summary links to its full case study. Selecting the open folder again, choosing Close or pressing Escape closes the summary. JavaScript progressively adds this interaction, the theme control, decorative sequences and terminal interaction. Without JavaScript or when printing, all three project summaries remain available.
 
-The folder papers fan out on hover and keyboard focus. Reduced-motion visitors see the same folders and summaries without the movement. If a project thumbnail or summary image fails to load, JavaScript retries it once using a fresh URL; a persistent connection or hosting failure can still prevent it from loading. The focused project suite checks image decoding and recovery, as well as switching projects, keyboard and touch-sized controls, focus return, reduced motion, printing, and the no-JavaScript path. To check a deployed site instead of starting a local server, set `PROJECTS_ORIGIN` to its origin before running `npm run test:projects`.
+The folder papers fan out on hover and keyboard focus. A connector and summary transition make the selected case file clearer; its button also changes from “View summary” to “Close summary”. Reduced-motion visitors see the same folders and summaries without the movement. If a project thumbnail or summary image fails to load, JavaScript retries it once using a fresh URL; a persistent connection or hosting failure can still prevent it from loading. The focused project suite checks image decoding and recovery, as well as switching projects, keyboard and touch-sized controls, focus return, reduced motion, printing, and the no-JavaScript path. To check a deployed site instead of starting a local server, set `PROJECTS_ORIGIN` to its origin before running `npm run test:projects`.
 
 The opening uses a hand-drawn underline and a brief responder gesture. Decorative chapter marks connect the homepage sections; a small rail also follows the current section on wide screens. These do not replace navigation or hide content. On smaller screens the in-page marks remain and the floating rail is omitted. The underline and marks are static for reduced motion and without JavaScript. Reproducible before-and-after captures are documented in [`past looks/`](past%20looks/README.md).
 
 The experience path leads with AI and cybersecurity work, followed by technical leadership, placement, community and customer-service roles; the dates remain visible and may overlap. It starts with no role selected. Selecting a point or its name opens the role detail; selecting it again, choosing Close or pressing Escape closes it. The QUT research detail presents its question, work and concern as three connected notes, followed by the collaborators and project link. On phones the path scrolls horizontally and keeps the selected point in view. Without JavaScript the original disclosures remain available, and printing includes all roles. The HTML order determines the path order, and each role's `data-path-label` supplies its short name; the full name and description remain in the ordinary HTML disclosure.
 
 Day and night themes follow the operating-system preference until the visitor makes a local choice. Most decorative sequences settle within five seconds. On wider screens, the telemetry flow repeats while visible, and the diagram itself can pause or resume it. All motion stops when the page is hidden; an interrupted sequence restarts if it is still in view. With `prefers-reduced-motion`, the page presents the complete static content instead. The homelab diagrams remain understandable without animation.
+
+The home-lab notebook pairs the original Wazuh overview with a collection note, and a labelled illustration with a storage fault documented in the build log. The original image opens directly at full size. Previous and Next controls turn between notes; without JavaScript or when printing, both notes remain visible. The investigation graphic is an illustrative Word-to-PowerShell relationship, not a recorded incident. Its stage links open the corresponding explanations when JavaScript is available; otherwise they lead to the ordinary disclosures. Arrow and page-turn motion respect reduced-motion preferences.
 
 The terminal is a fixed-response text interface. It does not execute commands, scan systems, contact a backend or submit visitor data. User input is inserted as text rather than HTML.
 
