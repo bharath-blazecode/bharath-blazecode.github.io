@@ -156,20 +156,31 @@ async function checkHome(page, label, width) {
   }
   else assert.ok(Math.abs(inkGeometry.bottomVsIntro) <= 8, `${label}: responder does not stand on the intro baseline (${inkGeometry.bottomVsIntro}px)`);
 
-  // Big numerals use negative tracking; their painted glyphs must not pass the right margin on phones.
-  if (phone) {
-    const overshoot = await page.evaluate(() => [...document.querySelectorAll('.project-number')].map(element => {
-      const style = getComputedStyle(element);
-      const canvas = document.createElement('canvas').getContext('2d');
-      canvas.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-      canvas.letterSpacing = style.letterSpacing;
-      const metrics = canvas.measureText(element.textContent.trim());
-      const shell = element.closest('.shell');
-      const contentRight = shell.getBoundingClientRect().right - parseFloat(getComputedStyle(shell).paddingRight);
-      return element.getBoundingClientRect().left + metrics.actualBoundingBoxRight - contentRight;
-    }));
-    assert.ok(overshoot.every(value => value <= 1), `${label}: numeral overshoot ${overshoot.map(value => value.toFixed(1))}`);
+  // Inspect every summary in its visible state: hidden panels have no useful geometry.
+  for (const folder of await page.locator('[data-project]').all()) {
+    await folder.click();
+    if (phone) {
+      const overshoot = await page.locator('.project:not([hidden]) .project-number').evaluate(element => {
+        const style = getComputedStyle(element);
+        const canvas = document.createElement('canvas').getContext('2d');
+        canvas.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        canvas.letterSpacing = style.letterSpacing;
+        const metrics = canvas.measureText(element.textContent.trim());
+        const shell = element.closest('.shell');
+        const contentRight = shell.getBoundingClientRect().right - parseFloat(getComputedStyle(shell).paddingRight);
+        return element.getBoundingClientRect().left + metrics.actualBoundingBoxRight - contentRight;
+      });
+      assert.ok(overshoot <= 1, `${label}: numeral overshoot ${overshoot.toFixed(1)}`);
+    }
+    const eyebrow = await page.locator('.project:not([hidden]) .project-copy .eyebrow').evaluate(element => {
+      const segments = [...element.querySelectorAll('.seg')];
+      const tops = segments.map(segment => segment.getBoundingClientRect().top);
+      return { stacked: tops[1] > tops[0] + 4, sepHidden: getComputedStyle(element.querySelector('.sep')).position === 'absolute', dangling: window.__lines(element).some(line => /^[/·]$/.test(line[0]) || /^[/·]$/.test(line[line.length - 1])) };
+    });
+    if (width <= 850) assert.ok(eyebrow.stacked && eyebrow.sepHidden, `${label}: project label segments should stack`);
+    assert.ok(!eyebrow.dangling, `${label}: project label wraps on a separator`);
   }
+  await page.locator('[data-project-close]').click();
 
   // Hero facts stack on phones instead of breaking at a slash.
   if (phone) {
@@ -182,15 +193,15 @@ async function checkHome(page, label, width) {
     assert.ok(stacked, `${label}: hero facts do not stack`);
   }
 
-  // Project and experiment labels: segments stack up to tablet, and no line starts or ends on a separator.
-  const eyebrows = await page.evaluate(() => [...document.querySelectorAll('.project-copy .eyebrow, .experiment .eyebrow')].map(element => {
+  // The experiment label follows the same wrapping rules as the project summaries.
+  const eyebrows = await page.evaluate(() => [...document.querySelectorAll('.experiment .eyebrow')].map(element => {
     const segments = [...element.querySelectorAll('.seg')];
     const tops = segments.map(segment => segment.getBoundingClientRect().top);
     return { stacked: tops[1] > tops[0] + 4, sepHidden: getComputedStyle(element.querySelector('.sep')).position === 'absolute', dangling: window.__lines(element).some(line => /^[/·]$/.test(line[0]) || /^[/·]$/.test(line[line.length - 1])) };
   }));
-  assert.equal(eyebrows.length, 4, `${label}: project labels`);
-  if (width <= 850) assert.ok(eyebrows.every(item => item.stacked && item.sepHidden), `${label}: project label segments should stack`);
-  assert.ok(eyebrows.every(item => !item.dangling), `${label}: project label wraps on a separator`);
+  assert.equal(eyebrows.length, 1, `${label}: experiment label`);
+  if (width <= 850) assert.ok(eyebrows.every(item => item.stacked && item.sepHidden), `${label}: experiment label segments should stack`);
+  assert.ok(eyebrows.every(item => !item.dangling), `${label}: experiment label wraps on a separator`);
 
   // Interests: a tidy two-column grid on phones; each topic stays on one line everywhere.
   const interests = await page.evaluate(() => {
@@ -394,6 +405,7 @@ async function checkCase(page, route, label, width) {
     // Desktop contract: a fine pointer at desktop widths keeps the original, un-expanded layout.
     for (const colorScheme of ['light', 'dark']) {
       const { context, page } = await load(browser, '/', 1440, colorScheme);
+      await page.locator('[data-project="project-lab"]').click();
       const desktop = await page.evaluate(() => ({
         sprite: getComputedStyle(document.querySelector('.hero-responder')).position,
         eyebrowStacked: document.querySelector('.project-lab .eyebrow .seg').getBoundingClientRect().top < document.querySelector('.project-lab .eyebrow .seg:last-child').getBoundingClientRect().top - 4,
@@ -406,7 +418,9 @@ async function checkCase(page, route, label, width) {
       // The competition teaser is four across on desktop, and a focused tile keeps every line legible on its fill.
       const columns = await page.locator('.scoreboard a').evaluateAll(tiles => new Set(tiles.map(tile => Math.round(tile.getBoundingClientRect().left))).size);
       assert.equal(columns, 4, 'Desktop scoreboard is four across');
-      await page.locator('.scoreboard a').nth(1).focus();
+      // Keyboard navigation must establish :focus-visible after the folder clicks above.
+      await page.locator('.scoreboard a').first().focus();
+      await page.keyboard.press('Tab');
       const focused = await page.evaluate(() => {
         const tile = document.querySelector('.scoreboard a:focus-visible');
         if (!tile) return null;

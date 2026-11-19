@@ -40,7 +40,7 @@ const ready = new Promise((resolve, reject) => {
           page.on('pageerror', error => errors.push(error.message));
           await page.goto(url + route);
           await page.evaluate(() => document.fonts.ready);
-          for (const image of await page.locator('img').all()) await image.scrollIntoViewIfNeeded();
+          for (const image of await page.locator('img').all()) if (await image.isVisible()) await image.scrollIntoViewIfNeeded();
           assert.equal(await page.locator('#motion-toggle, .motion-toggle').count(), 0, `${route} exposes a motion toggle`);
           assert.equal(await page.evaluate(() => localStorage.getItem('bs-motion')), null, `${route} persists motion state`);
           assert.ok(
@@ -49,15 +49,19 @@ const ready = new Promise((resolve, reject) => {
           );
           assert.deepEqual(errors, []);
           if (route === '/') {
-            const titleCollisions = await page.locator('.project').evaluateAll(projects => projects.filter(project => {
-              const number = project.querySelector('.project-number').getBoundingClientRect();
-              const range = document.createRange();
-              range.selectNodeContents(project.querySelector('h3 a'));
-              return [...range.getClientRects()].some(rect => rect.width > 0 && rect.height > 0 &&
-                Math.min(rect.right, number.right) - Math.max(rect.left, number.left) > 2 &&
-                Math.min(rect.bottom, number.bottom) - Math.max(rect.top, number.top) > 2);
-            }).map(project => project.querySelector('h3').textContent));
-            assert.deepEqual(titleCollisions, [], 'Project titles must not overlap decorative numbers');
+            for (const folder of await page.locator('[data-project]').all()) {
+              await folder.click();
+              const titleCollisions = await page.locator('.project:not([hidden])').evaluateAll(projects => projects.filter(project => {
+                const number = project.querySelector('.project-number').getBoundingClientRect();
+                const range = document.createRange();
+                range.selectNodeContents(project.querySelector('h3 a'));
+                return [...range.getClientRects()].some(rect => rect.width > 0 && rect.height > 0 &&
+                  Math.min(rect.right, number.right) - Math.max(rect.left, number.left) > 2 &&
+                  Math.min(rect.bottom, number.bottom) - Math.max(rect.top, number.top) > 2);
+              }).map(project => project.querySelector('h3').textContent));
+              assert.deepEqual(titleCollisions, [], 'Project titles must not overlap decorative numbers');
+            }
+            await page.locator('[data-project-close]').click();
             const resumeBox = await page.locator('.hero-actions a[href$=".pdf"]').boundingBox();
             assert.ok(resumeBox && resumeBox.height >= 44, 'Hero résumé link must have a usable touch target');
           }

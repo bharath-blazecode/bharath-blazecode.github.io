@@ -32,6 +32,43 @@
     });
   });
 
+  // The summaries remain ordinary, visible HTML until this enhancement is ready.
+  const folders = document.querySelector('[data-project-folders]');
+  const projectDetails = document.querySelector('[data-project-details]');
+  const detailsHead = document.querySelector('[data-project-details-head]');
+  const closeProject = document.querySelector('[data-project-close]');
+  const projectStatus = document.querySelector('[data-project-status]');
+  const folderButtons = folders ? [...folders.querySelectorAll('[data-project]')] : [];
+  const projectPanels = projectDetails ? [...projectDetails.querySelectorAll(':scope > .project')] : [];
+  if (folders && projectDetails && detailsHead && closeProject && projectStatus && folderButtons.length &&
+      folderButtons.length === projectPanels.length &&
+      folderButtons.every(button => projectPanels.some(panel => panel.id === button.dataset.project))) {
+    let selected = null;
+    function selectProject(button) {
+      selected = button;
+      folderButtons.forEach(folder => folder.setAttribute('aria-expanded', String(folder === button)));
+      projectPanels.forEach(panel => { panel.hidden = !button || panel.id !== button.dataset.project; });
+      projectDetails.hidden = !button;
+      projectStatus.textContent = button ? `${button.querySelector('.folder-title').textContent} summary opened below.` : 'Project summary closed.';
+    }
+    folderButtons.forEach(button => button.addEventListener('click', () => selectProject(selected === button ? null : button)));
+    closeProject.addEventListener('click', () => {
+      const previous = selected;
+      selectProject(null);
+      if (previous) previous.focus();
+    });
+    folders.closest('#work').addEventListener('keydown', event => {
+      if (event.key === 'Escape' && selected) {
+        event.preventDefault();
+        closeProject.click();
+      }
+    });
+    detailsHead.hidden = false;
+    selectProject(null);
+    projectStatus.textContent = '';
+    folders.hidden = false;
+  }
+
   /*
    * Decorative motion begins in view. Most sequences settle within five seconds
    * and only become eligible to replay after fully leaving the viewport. The

@@ -1,4 +1,78 @@
 /* Focused Field Notes: the refined homepage composition. Case layouts use site.css. */
+/* Project folders reuse the site's paper, ink and evidence images. */
+@media screen {
+  .project-folders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(18px, 3vw, 48px); }
+  .project-folder { min-width: 0; position: relative; display: flex; flex-direction: column; padding: 0; border: 0; background: transparent; text-align: left; }
+  .project-folder:focus-visible { outline-offset: 8px; }
+  .folder-stack { display: block; position: relative; height: clamp(200px, 20vw, 270px); width: 100%; }
+  .folder-back { position: absolute; inset: 26% 0 0; border: 1px solid var(--line); border-radius: 8px 8px 2px 2px; background: var(--panel); }
+  .folder-back::before { content: ''; position: absolute; left: -1px; top: -13px; width: 38%; height: 14px; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; background: var(--panel); }
+  .folder-sheet { position: absolute; display: flex; flex-direction: column; gap: 8px; width: 64%; height: 65%; overflow: hidden; padding: 15px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); box-shadow: 0 4px 12px #00000012; color: var(--ink); transform-origin: 50% 90%; }
+  .folder-sheet > span { font: .62rem/1.3 var(--mono); letter-spacing: .04em; }
+  .folder-sheet strong { font: 900 clamp(.8rem, 1vw, 1rem)/1.15 var(--display); letter-spacing: -.03em; }
+  .folder-sheet i { font: normal .62rem/1.3 var(--mono); color: var(--muted); }
+  .sheet-note { top: 17%; left: 5%; transform: rotate(-7deg); }
+  .sheet-image { top: 6%; left: 29%; width: 65%; padding: 6px; transform: rotate(7deg); }
+  .sheet-image img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+  .sheet-label { top: 25%; left: 17%; transform: rotate(-1deg); }
+  .folder-front { position: relative; z-index: 1; display: flex; flex: 1; flex-direction: column; align-items: start; min-height: 148px; width: 100%; margin-top: -104px; padding: 20px 22px 16px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); box-shadow: 8px 9px 0 #0000000a; }
+  .folder-number { font: .68rem/1.4 var(--mono); letter-spacing: .04em; color: var(--muted); }
+  .folder-title { display: block; margin-top: 11px; font: 900 clamp(1.35rem, 1.3rem + .8vw, 2.15rem)/1.06 var(--display); letter-spacing: -.045em; }
+  .folder-action { display: block; margin-top: auto; padding-top: 15px; font: .72rem/1.3 var(--mono); }
+  .folder-action span { margin-left: 4px; font-size: 1rem; }
+  .project-folder[aria-expanded="true"] .folder-front { border-color: var(--ink); box-shadow: 8px 9px 0 var(--accent); }
+  .project-details { margin-top: 70px; border-top: 1px solid var(--line); }
+  .project-details-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 42px; padding-top: 16px; }
+  .project-details-head .eyebrow { margin: 0; color: var(--muted); }
+  .project-details-head button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); background: var(--paper); font: .75rem/1 var(--mono); }
+  .project-details-head button span { margin-left: 8px; font: 1.3rem/1 var(--sans); vertical-align: middle; }
+  .project-details-head button:hover { border-color: var(--ink); }
+  .project-details-head:not([hidden]) ~ .project { margin: 0; max-width: none; padding-top: 0; border-top: 0; }
+  /* Without JavaScript the original summaries keep their original spacing. */
+  .project-details:has(.project-details-head[hidden]) { margin-top: 0; border: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .folder-sheet { transition: transform 550ms cubic-bezier(.2, .7, .2, 1); }
+  .project-details-head:not([hidden]) ~ .project:not([hidden]) { animation: project-arrive 420ms ease-out both; }
+  @keyframes project-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .project-folder:focus-visible .sheet-note { transform: translate(-6%, -24%) rotate(-12deg); }
+  .project-folder:focus-visible .sheet-image { transform: translate(5%, -27%) rotate(10deg); }
+  .project-folder:focus-visible .sheet-label { transform: translate(0, -14%) rotate(-2deg); }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .project-folder:hover .sheet-note { transform: translate(-6%, -24%) rotate(-12deg); }
+  .project-folder:hover .sheet-image { transform: translate(5%, -27%) rotate(10deg); }
+  .project-folder:hover .sheet-label { transform: translate(0, -14%) rotate(-2deg); }
+}
+
+@media screen and (max-width: 850px) {
+  .project-folders { gap: 18px; }
+  .folder-front { min-height: 136px; padding: 16px; }
+  .folder-sheet { padding: 10px; }
+  .sheet-image { padding: 5px; }
+  .project-details { margin-top: 55px; }
+}
+
+@media screen and (max-width: 600px) {
+  .project-folders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
+  .folder-stack { height: 165px; }
+  .folder-sheet { height: 62%; }
+  .folder-sheet strong { font-size: .75rem; }
+  .folder-sheet i { display: none; }
+  .folder-front { min-height: 128px; margin-top: -80px; padding: 14px 12px; }
+  .folder-title { font-size: clamp(1.25rem, 5.5vw, 1.65rem); }
+  .folder-number, .folder-action { font-size: .64rem; }
+  .project-details { margin-top: 42px; }
+  .project-details-head { margin-bottom: 30px; }
+}
+
+@media print {
+  .project-folders, .project-details-head { display: none !important; }
+  .project-details[hidden], .project-details .project[hidden] { display: block !important; }
+}
+
 @media screen {
   .hero h1 {
     font-size: clamp(3.4rem, 8.7vw, 8rem);
