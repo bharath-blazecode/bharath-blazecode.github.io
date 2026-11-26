@@ -4,7 +4,7 @@
 
 /* Header */
 .ex-head { display: grid; gap: 18px; max-width: 62rem; }
-.ex-note { display: inline-block; justify-self: start; padding: 12px 16px 12px 20px; border: 1px solid var(--ink); border-left-width: 8px; border-radius: var(--radius); background: var(--paper); font-family: var(--mono); font-size: .86rem; line-height: 1.5; box-shadow: 4px 4px 0 var(--ink); }
+.ex-note { display: inline-block; justify-self: start; padding: 12px 16px 12px 20px; border: 1px solid var(--ink); border-left-width: 8px; border-radius: var(--radius); background: var(--paper); font-family: var(--mono); font-size: .94rem; line-height: 1.5; box-shadow: 4px 4px 0 var(--ink); }
 .ex-head h3 { font-size: clamp(1.9rem, 4.4vw, 3.4rem); max-width: 18em; margin-top: 10px; }
 .ex-intro { max-width: 40em; }
 .ex-layers { display: grid; gap: 14px; counter-reset: layer; }
@@ -19,7 +19,7 @@
 .ex-pick-label { margin-bottom: 12px; }
 .ex-tabs { display: grid; gap: 12px; }
 .ex-tab { position: relative; display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 8px 18px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); color: var(--ink); font-weight: 700; text-align: left; line-height: 1.25; box-shadow: 4px 4px 0 var(--ink); transition: transform .15s var(--ease), box-shadow .15s var(--ease); }
-.ex-tab-no { display: grid; place-items: center; flex: none; min-width: 34px; height: 26px; border: 1px solid var(--ink); border-radius: 13px; font-family: var(--mono); font-size: .78rem; font-weight: 400; }
+.ex-tab-no { display: grid; place-items: center; flex: none; min-width: 34px; height: 26px; border: 1px solid var(--ink); border-radius: 13px; font-family: var(--mono); font-size: .94rem; font-weight: 400; }
 .ex-tab:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
 .ex-tab[aria-selected=true] { background: var(--ink); color: var(--paper); transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
 .ex-tab[aria-selected=true] .ex-tab-no { border-color: var(--paper); background: var(--paper); color: var(--ink); }
@@ -38,7 +38,7 @@
 .ex-lines > div { display: grid; grid-template-columns: minmax(6rem, 8.5rem) minmax(0, 1fr); gap: 4px 14px; padding: 7px 0; border-top: 1px dashed var(--line); }
 .ex-lines dt { color: var(--muted); }
 .ex-lines dd { grid-column: 2; overflow-wrap: anywhere; }
-.ex-doc-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--ink); color: var(--muted); font-size: .78rem; }
+.ex-doc-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--ink); color: var(--muted); font-size: .94rem; }
 
 /* The rule that joins the document to its mapping */
 .ex-rail { grid-area: rail; position: relative; height: 36px; }
@@ -58,7 +58,7 @@
 .ex-action { padding-left: 14px; border-left: 4px solid var(--ink); font-size: 1.06rem; line-height: 1.5; }
 .ex-domain { display: inline-block; padding: 2px 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--marker); font-weight: 700; }
 .ex-domain-note { display: block; margin-top: 8px; color: var(--muted); font-size: .9rem; }
-.ex-caveat { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line); color: var(--muted); font-family: var(--mono); font-size: .78rem; }
+.ex-caveat { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line); color: var(--muted); font-family: var(--mono); font-size: .94rem; }
 
 /* Considerations */
 .ex-cons-list > li { display: grid; gap: 8px 20px; padding: 16px 0; border-top: 1px solid var(--line); }
@@ -92,7 +92,7 @@
 .ex-why { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: .96rem; }
 .ex-why b { font-weight: 800; }
 
-.ex-source { max-width: 52rem; margin-top: clamp(32px, 4vw, 52px); padding-top: 14px; border-top: 1px solid var(--ink); color: var(--muted); font-family: var(--mono); font-size: .78rem; line-height: 1.6; }
+.ex-source { max-width: 52rem; margin-top: clamp(32px, 4vw, 52px); padding-top: 14px; border-top: 1px solid var(--ink); color: var(--muted); font-family: var(--mono); font-size: .94rem; line-height: 1.6; }
 
 /* Switching panels */
 @keyframes ex-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
@@ -131,3 +131,6 @@
   .ex-panels { gap: 32px; }
   .ex-doc, .ex-map, .ex-tab { box-shadow: none; }
 }
+
+/* Labels on the yellow marker keep dark text in both themes. */
+.ex-stamp, .ex-domain { color: var(--marker-ink); }

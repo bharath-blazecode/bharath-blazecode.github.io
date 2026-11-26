@@ -106,8 +106,19 @@ body: home
       </article>
     </div>
 
+    <div class="trace-strip reveal">
+      <span class="responder trace-responder" data-pose="scan" aria-hidden="true"></span>
+      <div>
+        <p class="label">From the home lab / illustrative events</p>
+        <p class="trace-line">Word starts PowerShell on a lab machine. The sample logs are in the terminal.</p>
+      </div>
+      <code class="trace-cmd">grep -i powershell logs/*.log</code>
+      <button class="button marker" type="button" data-terminal-run="grep -i powershell logs/*.log" hidden>Run it in the terminal</button>
+      <a class="textlink trace-fallback" href="work/homelab/#example">Read the example</a>
+    </div>
+
     <div class="aside-row reveal">
-      <span class="chip">On the side / early experiment</span>
+      <span class="chip">Agent tooling / early experiment</span>
       <h3>DissentKit</h3>
       <p>An open-source agent critique skill adapted from two MIT-licensed review workflows. I added cross-platform adapters, behavioural fixtures and repository validation. Early-stage tooling; effectiveness has not been independently established.</p>
       <a class="textlink ext" href="https://github.com/bharath-blazecode/dissent-kit">Inspect the experiment<span class="sr-only"> (external site)</span></a>
@@ -195,6 +206,11 @@ body: home
         <a class="textlink ext" href="https://www.qut.edu.au/research/study-with-us/vacation-research-experience-scheme-student-topics/vres/can-ai-be-your-security-consultant-exploring-cyber-risk-assessment-with-llms">Read QUT’s project listing<span class="sr-only"> (external site)</span></a>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section research-lab" aria-label="Research explainer">
+  <div class="shell">
     <!-- @include explainer -->
   </div>
 </section>

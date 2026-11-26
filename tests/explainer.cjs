@@ -128,7 +128,8 @@ async function open(browser, site, options = {}) {
     {
       const { context, page } = await open(browser, site);
       let requests = 0;
-      page.on('request', () => { requests++; });
+      // Sprite frames and the desk scene load on their own schedule after the page loads; they are not caused by switching.
+      page.on('request', request => { if (!request.url().includes('/assets/')) requests++; });
       await page.locator('[role=tab]').nth(1).click();
       await page.keyboard.press('ArrowRight');
       assert.equal(requests, 0, 'no network requests when switching');

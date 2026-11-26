@@ -20,7 +20,7 @@
 
 /* In-page index, used only where a page has several parallel parts. */
 .case-index { display: flex; flex-wrap: wrap; gap: 0 clamp(18px, 2.4vw, 34px); margin-top: clamp(28px, 3.4vw, 48px); border-top: 1px solid var(--line); }
-.case-index a { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--mono); font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; background: linear-gradient(var(--marker), var(--marker)) left 78% / 0 .5em no-repeat; transition: background-size .25s var(--ease); }
+.case-index a { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; font-family: var(--mono); font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; background: linear-gradient(var(--marker), var(--marker)) left 78% / 0 .5em no-repeat; transition: background-size .25s var(--ease); }
 .case-index a:hover, .case-index a:focus-visible { background-size: 100% .5em; }
 [data-theme=dark] .case-index a { background-position: left 88%; background-size: 0 2px; }
 [data-theme=dark] .case-index a:hover, [data-theme=dark] .case-index a:focus-visible { background-size: 100% 2px; }
@@ -107,7 +107,7 @@ pre code { font-size: inherit; }
 .case-close { color-scheme: light; --paper: #f3f4ef; --ink: #1d231c; --muted: #3f4a3b; --line: rgba(29, 35, 28, .28); --link: #1d231c; background: var(--marker); color: var(--ink); padding-block: clamp(48px, 7vw, 100px); }
 .case-close h2 { font-size: clamp(2.3rem, 5.2vw, 4.6rem); }
 .case-close p { max-width: 32em; margin-top: 14px; }
-.case-close .email { display: inline-block; max-width: 100%; margin-top: clamp(18px, 2.4vw, 30px); font-weight: 800; font-size: clamp(1.25rem, 5vw, 3.2rem); line-height: 1.1; letter-spacing: -.035em; overflow-wrap: anywhere; text-decoration: underline; text-decoration-thickness: .06em; text-underline-offset: .12em; }
+.case-close .email { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; margin-top: clamp(18px, 2.4vw, 30px); font-weight: 800; font-size: clamp(1.25rem, 5vw, 3.2rem); line-height: 1.1; letter-spacing: -.035em; overflow-wrap: anywhere; text-decoration: underline; text-decoration-thickness: .06em; text-underline-offset: .12em; }
 .case-close .email:hover { text-decoration-thickness: .12em; }
 .case-close :focus-visible { outline-color: var(--ink); }
 
@@ -188,7 +188,7 @@ pre code { font-size: inherit; }
 .lost-term .prompt { color: var(--marker); margin-right: .6em; }
 .lost-term .term-err { margin-bottom: 14px; color: var(--stage-muted); }
 .lost-term ul { display: flex; flex-wrap: wrap; gap: 0 18px; margin: 0 0 14px 1.6em; }
-.lost-term li a { display: inline-flex; align-items: center; min-height: 44px; transition: transform .2s var(--ease); }
+.lost-term li a { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; transition: transform .2s var(--ease); }
 .lost-term li a:hover { transform: translateX(4px); }
 .lost-term .caret { display: inline-block; width: .6em; height: 1.1em; vertical-align: text-bottom; background: var(--stage-ink); }
 @media (max-width: 900px) {

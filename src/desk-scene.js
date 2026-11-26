@@ -69,7 +69,7 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
   box(monitor, '#101c16', [2.4, 1.5, .15], [0, 1.58, 0]);
   box(monitor, '#2d4335', [2.17, 1.27, .03], [0, 1.58, .095]);
   const rows = [['#b9c8ae', .55, -.66, 2.02], ['#dce64e', .55, -.66, 1.82], ['#789581', .55, -.66, 1.62], ['#8ea992', 1.05, .36, 2.02], ['#8ea992', .76, .22, 1.87], ['#dce64e', .95, .32, 1.62], ['#8ea992', .7, .2, 1.47], ['#8ea992', .9, .3, 1.32], ['#789581', .55, -.66, 1.32]];
-  for (const [color, width, x, y] of rows) box(monitor, color, [width, color === '#dce64e' ? .065 : .04, .025], [x, y, .12]);
+  const lines = rows.map(([color, width, x, y]) => box(monitor, color, [width, color === '#dce64e' ? .065 : .04, .025], [x, y, .12]));
   box(monitor, '#65745f', [.18, .56, .2], [0, .55, 0]);
   box(monitor, '#65745f', [.84, .08, .56], [0, TOP + .04, .12]);
 
@@ -112,9 +112,12 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
     const hub = cylinder(robot, '#1c241d', .08, .13, [x, TOP + .17, z], 10);
     hub.rotation.x = Math.PI / 2;
   }
-  box(robot, '#65745f', [.1, .34, .1], [.22, TOP + .64, 0]);
-  box(robot, '#1c241d', [.3, .2, .26], [.26, TOP + .9, 0]);
-  const lens = cylinder(robot, '#b9c8ae', .07, .06, [.42, TOP + .9, 0], 14);
+  const head = new Group();
+  head.position.set(.22, 0, 0);
+  robot.add(head);
+  box(head, '#65745f', [.1, .34, .1], [0, TOP + .64, 0]);
+  box(head, '#1c241d', [.3, .2, .26], [.04, TOP + .9, 0]);
+  const lens = cylinder(head, '#b9c8ae', .07, .06, [.2, TOP + .9, 0], 14);
   lens.rotation.z = Math.PI / 2;
   for (const z of [-.12, .12]) { const eye = cylinder(robot, '#f2f3ee', .07, .06, [.47, TOP + .36, z], 14); eye.rotation.z = Math.PI / 2; }
 
@@ -157,6 +160,8 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
   let down = null;
   let ready = false;
   let layoutDirty = true;
+  let beatStart = 0;
+  let beatTimer = 0;
   let width = 1;
   let height = 1;
 
@@ -229,6 +234,16 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
       if (Math.abs(dx) > .004 || Math.abs(dz) > .004) moving = true;
     }
 
+    // Every few seconds the robot looks around and a line on the monitor is rewritten.
+    if (beatStart) {
+      const beat = Math.min(1, (now - beatStart) / 1900);
+      head.rotation.y = Math.sin(beat * Math.PI * 2) * .6;
+      lines[5].scale.x = .45 + .55 * Math.abs(Math.cos(beat * Math.PI));
+      lines[7].scale.x = .6 + .4 * Math.abs(Math.cos(beat * Math.PI * 1.5));
+      if (beat < 1) moving = true;
+      else { beatStart = 0; head.rotation.y = 0; lines[5].scale.x = 1; lines[7].scale.x = 1; }
+    }
+
     desk.updateMatrixWorld();
     renderer.render(scene, camera);
     if (layoutDirty || moving) { layout(); layoutDirty = false; }
@@ -268,8 +283,8 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
       targetX = -pointer.y * .05;
       if (raycaster.ray.intersectPlane(surface, point)) {
         desk.worldToLocal(point);
-        inkTarget.x = Math.max(-2.6, Math.min(2.6, point.x));
-        inkTarget.z = Math.max(-1.45, Math.min(1.45, point.z));
+        inkTarget.x = Math.max(-2.4, Math.min(2.4, point.x));
+        inkTarget.z = Math.max(-1.3, Math.min(1.3, point.z));
       }
     }
     requestRender();
@@ -314,9 +329,16 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
   ready = true;
   onReady();
 
+  function scheduleBeat() {
+    clearTimeout(beatTimer);
+    if (!visible || reduced || document.hidden) return;
+    beatTimer = setTimeout(() => { beatStart = performance.now(); requestRender(); scheduleBeat(); }, 5200);
+  }
+
   return {
     setVisible(value) {
       visible = value;
+      scheduleBeat();
       if (!visible && frame) { cancelAnimationFrame(frame); frame = 0; }
       if (visible) {
         if (!woke && !reduced) { wakeStart = performance.now(); woke = true; }
@@ -325,7 +347,8 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
     },
     setReduced(value) {
       reduced = value;
-      if (value) { targetX = 0; targetY = 0; wakeStart = null; }
+      if (value) { targetX = 0; targetY = 0; wakeStart = null; beatStart = 0; head.rotation.y = 0; lines[5].scale.x = 1; lines[7].scale.x = 1; }
+      scheduleBeat();
       layoutDirty = true;
       requestRender();
     },
@@ -344,6 +367,7 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
     },
     dispose() {
       visible = false;
+      clearTimeout(beatTimer);
       if (frame) cancelAnimationFrame(frame);
       if (observer) observer.disconnect();
       else window.removeEventListener('resize', resize);

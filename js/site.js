@@ -23,6 +23,11 @@
     });
   }
 
+  // Move keyboard focus with the skip link, not only the scroll position.
+  const skip = document.querySelector('.skip');
+  const main = document.getElementById('main');
+  if (skip && main) skip.addEventListener('click', () => { main.tabIndex = -1; main.focus(); });
+
   const menu = document.querySelector('.menu');
   if (menu) {
     const close = focus => { if (menu.open) { menu.open = false; if (focus) menu.querySelector('summary').focus(); } };
@@ -64,6 +69,7 @@
     const target = event.target;
     if (target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
     event.preventDefault();
-    openTerminal(document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    const active = document.activeElement;
+    openTerminal(active instanceof HTMLElement && active !== document.body ? active : document.querySelector('[data-terminal-open]'));
   });
 })();

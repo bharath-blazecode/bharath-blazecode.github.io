@@ -46,6 +46,7 @@ html:not(.js) [data-terminal-open], html:not(.js) [data-theme-toggle] { display:
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .skip { position: absolute; left: 12px; top: -80px; z-index: 100; padding: 12px 16px; background: var(--ink); color: var(--paper); border-radius: var(--radius); }
 .skip:focus { top: 12px; }
+main:focus { outline: none; }
 
 /* Small mono label used above headings and on data. */
 .label { font-family: var(--mono); font-size: .72rem; line-height: 1.5; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
@@ -112,10 +113,10 @@ html:not(.js) [data-terminal-open], html:not(.js) [data-theme-toggle] { display:
 .foot-top { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 
 /* Reveal on scroll. Scroll-driven where supported, a class toggle otherwise. */
-@keyframes rise { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+@keyframes rise { from { opacity: .35; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .reveal { animation: rise linear both; animation-timeline: view(); animation-range: cover 0% cover 22%; }
+    .reveal { animation: rise linear both; animation-timeline: view(); animation-range: cover 0% cover 12%; }
   }
   @supports not (animation-timeline: view()) {
     .js .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
@@ -145,5 +146,6 @@ html:not(.js) [data-terminal-open], html:not(.js) [data-theme-toggle] { display:
   .mast, .foot, .skip, [data-terminal-open], [data-theme-toggle] { display: none !important; }
   html { background: #fff; color: #111; }
   .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
+  details::details-content { content-visibility: visible; display: block; }
   a { text-decoration: underline; }
 }

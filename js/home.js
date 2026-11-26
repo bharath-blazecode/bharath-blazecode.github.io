@@ -14,11 +14,22 @@
     responder.classList.add('is-playing');
   }
   if (responder) {
-    responder.addEventListener('animationend', () => { responder.classList.remove('is-playing'); responder.dataset.pose = 'idle'; });
+    const sprite = name => new URL(`../assets/incident-responder/${name}.png`, here).href;
+    responder.addEventListener('animationend', event => {
+      if (event.animationName === 'walk-in') { responder.classList.remove('is-walking'); pose('idle'); return; }
+      responder.classList.remove('is-playing');
+      responder.dataset.pose = 'idle';
+    });
+    // Walk in once the walking frames have arrived, so nothing flashes.
     addEventListener('load', () => {
-      pose('idle');
-      for (const name of ['point', 'scan']) new Image().src = new URL(`../assets/incident-responder/${name}.png`, here).href;
+      const walk = new Image();
+      walk.onload = () => responder.classList.add('is-here', 'is-walking');
+      walk.onerror = () => { responder.classList.add('is-here'); pose('idle'); };
+      walk.src = sprite('walk');
+      for (const name of ['point', 'scan']) new Image().src = sprite(name);
     }, { once: true });
+    responder.addEventListener('pointerenter', () => { if (!responder.classList.contains('is-walking')) pose('point'); });
+    responder.addEventListener('click', () => { const opener = document.querySelector('[data-terminal-open]'); if (opener) opener.click(); });
     const actions = document.querySelector('.hero-actions');
     if (actions) actions.addEventListener('pointerenter', () => pose('point'));
   }

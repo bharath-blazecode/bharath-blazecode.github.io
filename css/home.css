@@ -3,12 +3,12 @@
 /* Opening */
 .hero { padding-block: clamp(30px, 4.4vw, 68px) clamp(34px, 4vw, 58px); }
 .hero-eyebrow { margin-bottom: clamp(12px, 1.6vw, 22px); }
-.hero h1 { isolation: isolate; font-weight: 900; font-size: clamp(2rem, 12.5vw, 11.4rem); line-height: .86; letter-spacing: -.055em; text-wrap: nowrap; }
+.hero h1 { isolation: isolate; font-weight: 900; font-size: clamp(2rem, 12.5vw, 11.4rem); line-height: .93; letter-spacing: -.055em; text-wrap: nowrap; }
 .hl { display: block; }
 .details { position: relative; display: inline-block; padding-right: .05em; letter-spacing: -.04em; }
-.stroke-wrap { position: absolute; z-index: -1; left: -3%; right: -2%; bottom: .02em; height: .34em; overflow: hidden; }
+.stroke-wrap { position: absolute; z-index: -1; left: -2%; right: -1%; bottom: -.15em; height: .2em; overflow: hidden; }
 .stroke { width: 100%; height: 100%; overflow: visible; }
-.stroke path { fill: none; stroke: var(--marker); stroke-width: 15; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.stroke path { fill: none; stroke: var(--marker); stroke-width: 10; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 7.4fr) minmax(0, 4fr); gap: var(--gap); align-items: end; margin-top: clamp(28px, 3.4vw, 50px); }
 .lede .mark { white-space: nowrap; }
 .lede { max-width: 21em; font-size: clamp(1.32rem, 2.35vw, 2rem); line-height: 1.22; font-weight: 550; letter-spacing: -.02em; }
@@ -23,10 +23,13 @@
 .glance small { display: block; color: var(--muted); font-size: .88rem; }
 
 /* The responder stands on the top rule of the list. One sprite sheet per pose. */
-.responder { position: absolute; right: -14px; bottom: calc(100% - 9px); width: 128px; height: 128px; pointer-events: none; image-rendering: pixelated; background: url(../assets/incident-responder/idle.png) 0 0 / auto 128px no-repeat; --frames: 4; --time: 1.3s; --loops: 3; }
+.responder { position: absolute; right: -14px; bottom: calc(100% - 9px); width: 128px; height: 128px; cursor: pointer; image-rendering: pixelated; background: url(../assets/incident-responder/idle.png) 0 0 / auto 128px no-repeat; --frames: 4; --time: 1.3s; --loops: 3; }
 .responder[data-pose=point] { background-image: url(../assets/incident-responder/point.png); --frames: 5; --time: .9s; --loops: 1; }
 .responder[data-pose=scan] { background-image: url(../assets/incident-responder/scan.png); --frames: 9; --time: 1.6s; --loops: 1; }
+[data-theme=dark] .responder { filter: brightness(1.75); }
 @keyframes responder-frames { to { background-position-x: calc(var(--frames) * -128px); } }
+/* The walking frames face left, so they are mirrored while the responder walks in from the left. */
+@keyframes walk-in { from { transform: translateX(-240px) scaleX(-1); } to { transform: scaleX(-1); } }
 
 @keyframes sweep-wrap { from { transform: translateX(-101%); } }
 @keyframes sweep-ink { from { transform: translateX(101%); } }
@@ -40,7 +43,11 @@
   .lede { animation-delay: .08s; } .hero-sub { animation-delay: .14s; } .hero-actions { animation-delay: .2s; }
   .glance > div:nth-child(1) { animation-delay: .16s; } .glance > div:nth-child(2) { animation-delay: .22s; } .glance > div:nth-child(3) { animation-delay: .28s; }
   .glance > div:nth-child(4) { animation-delay: .34s; } .glance > div:nth-child(5) { animation-delay: .4s; }
-  .responder.is-playing { animation: responder-frames var(--time) steps(var(--frames)) var(--loops); }
+  .responder.is-playing, .trace-strip:hover .trace-responder { animation: responder-frames var(--time) steps(var(--frames)) var(--loops); }
+  /* The hero responder walks in along the rule once the page has loaded. */
+  .js .hero .responder { opacity: 0; }
+  .js .hero .responder.is-here { opacity: 1; }
+  .hero .responder.is-walking { --frames: 8; background-image: url(../assets/incident-responder/walk.png); animation: responder-frames .7s steps(8) infinite, walk-in 1.7s linear both; }
 }
 
 /* Three things to check first */
@@ -101,7 +108,7 @@
 .folder-tab { position: absolute; left: -1px; bottom: 100%; display: flex; align-items: center; max-width: 92%; height: 32px; padding: 0 14px; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; background: var(--panel); color: var(--ink); overflow: hidden; white-space: nowrap; }
 .folder-tab::after { content: ""; position: absolute; inset: auto 0 -2px; height: 3px; background: var(--panel); }
 .folder h3 { font-size: clamp(1.7rem, 2.7vw, 2.4rem); }
-.folder h3 a { text-decoration: none; outline: 0; }
+.folder h3 a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; outline: 0; }
 .folder h3 a::after { content: ""; position: absolute; inset: -32px 0 0; z-index: 2; }
 .folder:has(a:focus-visible) .folder-front { outline: 2px solid var(--ink); outline-offset: 4px; }
 .folder p { font-size: .97rem; }
@@ -110,14 +117,32 @@
 .folder-go { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 6px; font-weight: 650; font-size: .94rem; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .28em; }
 .folder.is-linked .folder-front { box-shadow: inset 0 5px 0 var(--marker); }
 
+/* The home lab question, as one line that runs in the terminal. */
+.trace-strip { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 12px 26px; align-items: center; margin-top: clamp(40px, 5vw, 72px); padding: 6px 24px 6px 4px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.trace-responder { position: static; margin: -18px -22px -6px -18px; cursor: default; }
+.trace-line { font-weight: 700; font-size: 1.1rem; letter-spacing: -.01em; }
+.trace-cmd { padding: 8px 12px; border-radius: 4px; background: var(--stage); color: var(--marker); font-size: .82rem; white-space: nowrap; }
+.js .trace-fallback { display: none; }
+
 .aside-row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) auto; gap: 8px var(--gap); align-items: baseline; margin-top: clamp(40px, 5vw, 72px); padding-top: 22px; border-top: 2px solid var(--ink); }
 .aside-row .chip { grid-column: 1 / -1; }
 .aside-row h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); }
 .aside-row p { font-size: .97rem; color: var(--muted); }
 
 /* Experience */
-.roles { border-top: 2px solid var(--ink); }
-.role { border-bottom: 1px solid var(--line); }
+.roles { position: relative; padding-left: 34px; border-top: 2px solid var(--ink); view-timeline: --roles block; }
+.roles::before { content: ""; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--ink); transform-origin: top; }
+.role { position: relative; border-bottom: 1px solid var(--line); view-timeline: --role block; }
+.role::before { content: ""; position: absolute; left: -34px; top: 22px; width: 14px; height: 14px; border-radius: 50%; background: var(--marker); box-shadow: 0 0 0 2px var(--ink); }
+li.role:not(:has(details))::before { top: calc(clamp(26px, 3.4vw, 44px) + 2px); }
+@keyframes rail-draw { from { transform: scaleY(0); } }
+@keyframes rail-dot { from { transform: scale(0); } }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .roles::before { animation: rail-draw linear both; animation-timeline: --roles; animation-range: cover 8% cover 70%; }
+    .role::before { animation: rail-dot linear both; animation-timeline: --role; animation-range: cover 8% cover 24%; }
+  }
+}
 li.role:not(:has(details)) { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 8.4fr); gap: var(--gap); padding: clamp(26px, 3.4vw, 44px) 0; }
 .role-time span { display: block; color: var(--ink); }
 .role h3 { font-size: clamp(1.6rem, 3vw, 2.5rem); }
@@ -143,7 +168,10 @@ details[open] > summary .plus::after { transform: rotate(0deg); }
 
 /* Research sits on a yellow band in both themes, so its tokens are pinned to the light values. */
 .research { color-scheme: light; --paper: #f3f4ef; --panel: #e7eae0; --ink: #1d231c; --muted: #3f4a3b; --line: rgba(29, 35, 28, .28); --link: #1d231c; background: var(--marker); color: var(--ink); }
-.research-grid { display: grid; grid-template-columns: minmax(0, 7.4fr) minmax(0, 4fr); gap: var(--gap); align-items: end; margin-bottom: clamp(40px, 5vw, 72px); }
+.research { padding-bottom: clamp(48px, 6vw, 88px); }
+.research-grid { display: grid; grid-template-columns: minmax(0, 7.4fr) minmax(0, 4fr); gap: var(--gap); align-items: end; }
+.research-lab { padding-top: clamp(48px, 6vw, 88px); background: var(--panel); }
+.research-lab + .competitions { padding-top: var(--section); }
 .research-thread > div { display: grid; grid-template-columns: 8.4em 1fr; gap: 16px; padding: 18px 0 20px; border-top: 1px solid var(--ink); }
 .research-thread dt { padding-top: 4px; }
 .research-thread dd { max-width: 36em; }
@@ -218,6 +246,10 @@ html:not(.js) .chess-move { display: none; }
   .folders { grid-template-columns: 1fr; gap: 124px; }
   .sheet { max-width: 260px; }
   .aside-row { grid-template-columns: 1fr; }
+  .trace-strip { grid-template-columns: auto minmax(0, 1fr); padding: 10px 16px 16px 4px; }
+  .trace-cmd, .trace-strip .button, .trace-fallback { grid-column: 1 / -1; justify-self: start; margin-left: 14px; white-space: normal; }
+  .roles { padding-left: 26px; }
+  .role::before { left: -26px; }
   li.role:not(:has(details)), .role summary, .role-detail { grid-template-columns: 1fr; gap: 6px; }
   .role-time span { display: inline; margin-left: 12px; }
   .role-detail > * { grid-column: 1; }
@@ -229,7 +261,7 @@ html:not(.js) .chess-move { display: none; }
   .glance > div { grid-template-columns: 6.6em 1fr; }
   .responder { right: -6px; }
   .stroke-wrap { left: -2%; right: 0; }
-  .stroke path { stroke-width: 9; }
+  .stroke path { stroke-width: 6; }
   .scoreboard { grid-template-columns: 1fr; }
   .scoreboard li + li { border-left: 0; }
   .scoreboard a { display: grid; grid-template-columns: 5.2em 1fr; gap: 0 14px; align-items: center; padding: 14px 0; }

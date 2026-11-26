@@ -68,8 +68,11 @@ function verify(dir) {
     assert.ok(home.includes(fact), 'Homepage is missing: ' + fact);
   }
   const research = (home.match(/<section class="section research"[\s\S]*?<\/section>/) || [''])[0];
-  for (const fact of ['in progress', 'not a finding', 'large language models can analyse security evidence', 'the ASD Essentials', 'Helping design and evaluate experiments', 'Dr Gowri Sankar Ramachandran', 'Kat McCrabb of Flame Tree Cyber as external supervisor', 'Atticus D’Mello is the QUT contact', 'An illustration of the research question', 'Nothing here is a result or the output of a model']) {
+  for (const fact of ['in progress', 'not a finding', 'large language models can analyse security evidence', 'the ASD Essentials', 'Helping design and evaluate experiments', 'Dr Gowri Sankar Ramachandran', 'Kat McCrabb of Flame Tree Cyber as external supervisor', 'Atticus D’Mello is the QUT contact']) {
     assert.ok(research.includes(fact), 'Research section is missing: ' + fact);
+  }
+  for (const fact of ['An illustration of the research question', 'Nothing here is a result or the output of a model']) {
+    assert.ok(home.includes(fact), 'The explainer must stay labelled: ' + fact);
   }
   assert.doesNotMatch(research, /Essential Eight (?:framework|maturity)/i, 'The research is on the ASD Essentials, not the Essential Eight');
   assert.match(home, /Nov 2026 to present/);
