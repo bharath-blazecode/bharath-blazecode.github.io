@@ -160,7 +160,7 @@ function checkWriting(dir = 'dist') {
     scan(fs.readFileSync(file, 'utf8'), name, 1, out);
     out.files++;
   }
-  for (const name of ['terminal.js', 'terminal-data.js', 'explainer.js']) {
+  for (const name of ['terminal.js', 'terminal-data.js', 'explainer.js', 'site.js', 'home.js', 'homelab.js', 'classquest.js']) {
     const file = path.join(root, 'js', name);
     if (!fs.existsSync(file)) continue;
     checkScript(fs.readFileSync(file, 'utf8'), 'js/' + name, out);

@@ -86,7 +86,7 @@ function lex(line) {
       i += op.length - 1;
     } else if (c === '\\' && i + 1 < line.length) add(line[++i], 1);
     else if (c === '$') i = dollar(i, 0);
-    else if (c === '~' && !cur && (i + 1 === line.length || /[\s/]/.test(line[i + 1]))) add(ENV.HOME, 1);
+    else if (c === '~' && !cur && (i + 1 === line.length || /[\s/]/.test(line[i + 1]))) add(ENV.HOME);
     else add(c);
   }
   if (q) return { err: `bash: unexpected EOF while looking for matching \`${q}'` };

@@ -3,7 +3,7 @@
 /* Opening */
 .hero { padding-block: clamp(30px, 4.4vw, 68px) clamp(34px, 4vw, 58px); }
 .hero-eyebrow { margin-bottom: clamp(12px, 1.6vw, 22px); }
-.hero h1 { isolation: isolate; font-weight: 900; font-size: clamp(2rem, 12.5vw, 11.4rem); line-height: .93; letter-spacing: -.055em; text-wrap: nowrap; }
+.hero h1 { isolation: isolate; font-weight: 900; font-size: clamp(2rem, 12.5vw, 11.4rem); line-height: .93; letter-spacing: -.055em; word-spacing: .07em; text-wrap: nowrap; }
 .hl { display: block; }
 .details { position: relative; display: inline-block; padding-right: .05em; letter-spacing: -.04em; }
 .stroke-wrap { position: absolute; z-index: -1; left: -2%; right: -1%; bottom: -.15em; height: .2em; overflow: hidden; }
@@ -23,11 +23,12 @@
 .glance small { display: block; color: var(--muted); font-size: .88rem; }
 
 /* The responder stands on the top rule of the list. One sprite sheet per pose. */
-.responder { position: absolute; right: -14px; bottom: calc(100% - 9px); width: 128px; height: 128px; cursor: pointer; image-rendering: pixelated; background: url(../assets/incident-responder/idle.png) 0 0 / auto 128px no-repeat; --frames: 4; --time: 1.3s; --loops: 3; }
-.responder[data-pose=point] { background-image: url(../assets/incident-responder/point.png); --frames: 5; --time: .9s; --loops: 1; }
-.responder[data-pose=scan] { background-image: url(../assets/incident-responder/scan.png); --frames: 9; --time: 1.6s; --loops: 1; }
+.responder { position: absolute; right: -14px; bottom: calc(100% - 9px); width: 128px; height: 128px; overflow: hidden; cursor: pointer; --sheet: url(../assets/incident-responder/idle.png); --frames: 4; --time: 1.3s; --loops: 3; }
+.responder::before { content: ""; position: absolute; left: 0; top: 0; width: calc(var(--frames) * 128px); height: 128px; background: var(--sheet) 0 0 / auto 128px no-repeat; image-rendering: pixelated; }
+.responder[data-pose=point] { --sheet: url(../assets/incident-responder/point.png); --frames: 5; --time: .9s; --loops: 1; }
+.responder[data-pose=scan] { --sheet: url(../assets/incident-responder/scan.png); --frames: 9; --time: 1.6s; --loops: 1; }
 [data-theme=dark] .responder { filter: brightness(1.75); }
-@keyframes responder-frames { to { background-position-x: calc(var(--frames) * -128px); } }
+@keyframes responder-frames { to { transform: translateX(-100%); } }
 /* The walking frames face left, so they are mirrored while the responder walks in from the left. */
 @keyframes walk-in { from { transform: translateX(-240px) scaleX(-1); } to { transform: scaleX(-1); } }
 
@@ -43,11 +44,12 @@
   .lede { animation-delay: .08s; } .hero-sub { animation-delay: .14s; } .hero-actions { animation-delay: .2s; }
   .glance > div:nth-child(1) { animation-delay: .16s; } .glance > div:nth-child(2) { animation-delay: .22s; } .glance > div:nth-child(3) { animation-delay: .28s; }
   .glance > div:nth-child(4) { animation-delay: .34s; } .glance > div:nth-child(5) { animation-delay: .4s; }
-  .responder.is-playing, .trace-strip:hover .trace-responder { animation: responder-frames var(--time) steps(var(--frames)) var(--loops); }
+  .responder.is-playing::before, .trace-strip:hover .trace-responder::before { animation: responder-frames var(--time) steps(var(--frames)) var(--loops); }
   /* The hero responder walks in along the rule once the page has loaded. */
   .js .hero .responder { opacity: 0; }
   .js .hero .responder.is-here { opacity: 1; }
-  .hero .responder.is-walking { --frames: 8; background-image: url(../assets/incident-responder/walk.png); animation: responder-frames .7s steps(8) infinite, walk-in 1.7s linear both; }
+  .hero .responder.is-walking { --frames: 8; --sheet: url(../assets/incident-responder/walk.png); animation: walk-in 1.7s linear both; }
+  .hero .responder.is-walking::before { animation: responder-frames .7s steps(8) infinite; }
 }
 
 /* Three things to check first */
@@ -95,8 +97,8 @@
 .folder:hover .sheet-shot, .folder:focus-within .sheet-shot { transform: translate(8%, -96px) rotate(8deg); }
 .folder:hover .sheet-note, .folder:focus-within .sheet-note { transform: translate(-6%, -74px) rotate(-9deg); }
 /* Touch screens have no hover, so the sheets fan out as each folder scrolls through the screen. */
-@keyframes fan-shot { to { transform: translate(8%, -96px) rotate(8deg); } }
-@keyframes fan-note { to { transform: translate(-6%, -74px) rotate(-9deg); } }
+@keyframes fan-shot { to { transform: translate(6%, -58px) rotate(7deg); } }
+@keyframes fan-note { to { transform: translate(-5%, -44px) rotate(-8deg); } }
 @media (hover: none) and (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     .sheet-shot { animation: fan-shot linear both; animation-timeline: view(); animation-range: cover 22% cover 46%; }
@@ -105,7 +107,7 @@
 }
 .folder-front { position: relative; z-index: 1; display: flex; flex-direction: column; flex: 1; gap: 12px; padding: 26px 26px 24px; border: 1px solid var(--line); border-radius: 0 8px 8px 8px; background: var(--panel); transform-origin: 50% 100%; transition: transform .5s var(--ease); }
 .folder:hover .folder-front, .folder:focus-within .folder-front { transform: rotateX(-7deg); }
-.folder-tab { position: absolute; left: -1px; bottom: 100%; display: flex; align-items: center; max-width: 92%; height: 32px; padding: 0 14px; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; background: var(--panel); color: var(--ink); overflow: hidden; white-space: nowrap; }
+.folder-tab { position: absolute; left: -1px; bottom: 100%; display: flex; align-items: center; max-width: 100%; height: 32px; padding: 0 12px; font-size: clamp(.58rem, .92vw, .72rem); letter-spacing: .02em; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; background: var(--panel); color: var(--ink); overflow: hidden; white-space: nowrap; }
 .folder-tab::after { content: ""; position: absolute; inset: auto 0 -2px; height: 3px; background: var(--panel); }
 .folder h3 { font-size: clamp(1.7rem, 2.7vw, 2.4rem); }
 .folder h3 a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; outline: 0; }
@@ -119,7 +121,7 @@
 
 /* The home lab question, as one line that runs in the terminal. */
 .trace-strip { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 12px 26px; align-items: center; margin-top: clamp(40px, 5vw, 72px); padding: 6px 24px 6px 4px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
-.trace-responder { position: static; margin: -18px -22px -6px -18px; cursor: default; }
+.trace-responder { position: relative; right: auto; bottom: auto; margin: -18px -22px -6px -18px; cursor: default; }
 .trace-line { font-weight: 700; font-size: 1.1rem; letter-spacing: -.01em; }
 .trace-cmd { padding: 8px 12px; border-radius: 4px; background: var(--stage); color: var(--marker); font-size: .82rem; white-space: nowrap; }
 .js .trace-fallback { display: none; }
@@ -155,7 +157,7 @@ li.role:not(:has(details)) { display: grid; grid-template-columns: minmax(0, 3fr
 .role summary { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 8.4fr); gap: var(--gap); align-items: baseline; position: relative; padding: 20px 0; cursor: pointer; list-style: none; }
 .role summary::-webkit-details-marker { display: none; }
 .role-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; padding-right: 44px; }
-.role-title strong { font-size: 1.22rem; font-weight: 750; letter-spacing: -.015em; background: linear-gradient(var(--marker), var(--marker)) left 86% / 0 .42em no-repeat; transition: background-size .3s var(--ease); }
+.role-title strong { font-size: 1.22rem; font-weight: 750; letter-spacing: -.015em; background: linear-gradient(var(--marker), var(--marker)) left 86% / 0 .42em no-repeat; }
 .role summary:hover .role-title strong { background-size: 100% .42em; }
 [data-theme=dark] .role summary:hover .role-title strong { background-size: 100% 2px; }
 .role-title .role-org { font-size: 1.06rem; color: var(--muted); }
@@ -243,8 +245,9 @@ html:not(.js) .chess-move { display: none; }
   .desk { aspect-ratio: 1.25; }
   .desk-tags, .desk-hint { display: none; }
   .desk-caption { right: 20px; bottom: auto; top: 14px; }
-  .folders { grid-template-columns: 1fr; gap: 124px; }
-  .sheet { max-width: 260px; }
+  .folders { grid-template-columns: 1fr; gap: 156px; margin-top: 156px; }
+  .sheet { max-width: 200px; }
+  .folder-tab { font-size: .66rem; }
   .aside-row { grid-template-columns: 1fr; }
   .trace-strip { grid-template-columns: auto minmax(0, 1fr); padding: 10px 16px 16px 4px; }
   .trace-cmd, .trace-strip .button, .trace-fallback { grid-column: 1 / -1; justify-self: start; margin-left: 14px; white-space: normal; }
@@ -264,8 +267,9 @@ html:not(.js) .chess-move { display: none; }
   .stroke path { stroke-width: 6; }
   .scoreboard { grid-template-columns: 1fr; }
   .scoreboard li + li { border-left: 0; }
-  .scoreboard a { display: grid; grid-template-columns: 5.2em 1fr; gap: 0 14px; align-items: center; padding: 14px 0; }
-  .scoreboard b { grid-row: span 2; font-size: 1.9rem; }
+  .scoreboard a { display: grid; grid-template-columns: 7.6rem minmax(0, 1fr); gap: 0 14px; align-items: center; padding: 14px 0; }
+  .scoreboard b { grid-row: span 2; font-size: 1.7rem; }
+  .folder-tab { font-size: .6rem; padding: 0 10px; }
   .tile-name { margin-top: 0; }
 }
 

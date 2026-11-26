@@ -4,7 +4,7 @@
 .trail-item { padding: 24px 0 26px; border-bottom: 1px solid var(--line); }
 .case-main .trail-item h3 { margin: 0 0 8px; font-size: clamp(1.3rem, 2.2vw, 1.7rem); }
 .prs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.pr { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--ink); border-radius: var(--radius); font-family: var(--mono); font-size: .76rem; letter-spacing: .03em; text-decoration: none; transition: transform .2s var(--ease), background-color .2s; }
+.pr { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--ink); border-radius: var(--radius); font-family: var(--mono); font-size: .76rem; letter-spacing: .03em; text-decoration: none; transition: transform .2s var(--ease); }
 .case-main a.pr:hover { transform: translateY(-2px); background: var(--marker); color: var(--marker-ink); text-decoration: none; }
 .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px clamp(24px, 3vw, 40px); align-items: start; margin: 44px 0; }
 .gallery .shot { margin-top: 0; }
@@ -19,7 +19,7 @@
 .upload-credit { max-width: 38em; margin-top: 16px; padding-left: 14px; border-left: 4px solid var(--marker); font-size: .95rem; }
 .upload-sheet { margin-top: 36px; padding: clamp(18px, 3vw, 38px); }
 .upload-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-.upload-controls button { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 18px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); color: var(--ink); font-weight: 650; transition: transform .2s var(--ease), background-color .2s, color .2s; }
+.upload-controls button { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 18px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); color: var(--ink); font-weight: 650; transition: transform .2s var(--ease); }
 .upload-controls button span { font-family: var(--mono); font-size: .72rem; }
 .upload-controls button:hover { transform: translateY(-2px); }
 .upload-controls button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }

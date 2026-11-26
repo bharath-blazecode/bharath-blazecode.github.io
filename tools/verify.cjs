@@ -64,7 +64,7 @@ function verify(dir) {
   assert.match(fs.readFileSync(path.join(root, 'js/theme.js'), 'utf8'), /getItem\('bs-shift'\) === 'dark'/);
 
   // Homepage facts.
-  for (const fact of ['2027 internships and early-career roles', 'subject to student visa conditions', 'Cybersecurity and IT Automation Analyst', 'ScienceGears', 'expected December 2027', 'train in boxing', 'beginner on guitar', 'Tools in use', 'Identity and automation', 'Download resume (PDF)', 'effectiveness has not been independently established']) {
+  for (const fact of ['2027 internships and early-career roles', 'ubject to student visa conditions', 'Blue team, SOC, identity and access, GRC, IT automation', 'Cybersecurity and IT Automation Analyst', 'ScienceGears', 'expected December 2027', 'train in boxing', 'beginner on guitar', 'Tools in use', 'Identity and automation', 'Download resume (PDF)', 'effectiveness has not been independently established']) {
     assert.ok(home.includes(fact), 'Homepage is missing: ' + fact);
   }
   const research = (home.match(/<section class="section research"[\s\S]*?<\/section>/) || [''])[0];

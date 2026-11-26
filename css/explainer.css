@@ -18,7 +18,7 @@
 .explainer.is-on .ex-pick { display: block; }
 .ex-pick-label { margin-bottom: 12px; }
 .ex-tabs { display: grid; gap: 12px; }
-.ex-tab { position: relative; display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 8px 18px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); color: var(--ink); font-weight: 700; text-align: left; line-height: 1.25; box-shadow: 4px 4px 0 var(--ink); transition: transform .15s var(--ease), box-shadow .15s var(--ease); }
+.ex-tab { position: relative; display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 8px 18px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); color: var(--ink); font-weight: 700; text-align: left; line-height: 1.25; box-shadow: 4px 4px 0 var(--ink); transition: transform .15s var(--ease); }
 .ex-tab-no { display: grid; place-items: center; flex: none; min-width: 34px; height: 26px; border: 1px solid var(--ink); border-radius: 13px; font-family: var(--mono); font-size: .94rem; font-weight: 400; }
 .ex-tab:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
 .ex-tab[aria-selected=true] { background: var(--ink); color: var(--paper); transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }

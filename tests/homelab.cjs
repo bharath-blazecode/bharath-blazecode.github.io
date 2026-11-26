@@ -58,7 +58,7 @@ async function commonChecks(page, label, theme) {
     assert.deepEqual([...source.matchAll(/data-flow-step="(\d)"/g)].map(match => match[1]), ['1', '2', '3'], 'flow packets in order');
     assert.equal((source.match(/data-flow-packet/g) || []).length, 3, 'three flow packets');
     assert.deepEqual([...source.matchAll(/data-trace-step="(\d)"/g)].map(match => match[1]), ['1', '2', '3', '4', '5'], 'trace rows in order');
-    assert.ok(source.includes('data-terminal-run="grep -i powershell logs/*.log"'), 'home lab keeps its terminal button');
+    assert.ok(source.includes('data-terminal-run="head -n 1 ~/logs/README.txt && grep -i powershell ~/logs/*.log"'), 'home lab keeps its terminal button');
 
     // Home lab: every width and theme.
     for (const width of WIDTHS) {

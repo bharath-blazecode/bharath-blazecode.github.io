@@ -119,7 +119,7 @@
 .investigation-arrow { display: block; width: 100%; overflow: visible; }
 .investigation-arrow path { fill: none; stroke: var(--stage-muted); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .investigation-stages { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
-.investigation-stages a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--stage-line); border-radius: var(--radius); color: var(--stage-ink); font-family: var(--mono); font-size: .74rem; letter-spacing: .03em; text-decoration: none; transition: transform .2s var(--ease), border-color .2s; }
+.investigation-stages a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1px solid var(--stage-line); border-radius: var(--radius); color: var(--stage-ink); font-family: var(--mono); font-size: .74rem; letter-spacing: .03em; text-decoration: none; transition: transform .2s var(--ease); }
 .investigation-stages a:hover { transform: translateY(-2px); border-color: var(--stage-ink); }
 #example:has(#example-observe[open]) [data-guide="observe"],
 #example:has(#example-consider[open]) [data-guide="consider"],

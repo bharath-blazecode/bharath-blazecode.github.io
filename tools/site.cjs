@@ -18,8 +18,7 @@ function listPages(dir = pagesDir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) return listPages(full);
-    // Pages still waiting to be moved onto the shared layout are skipped.
-    return entry.name.endsWith('.html') && read(full).startsWith('<!--page') ? [path.relative(pagesDir, full).replace(/\\/g, '/')] : [];
+    return entry.name.endsWith('.html') ? [path.relative(pagesDir, full).replace(/\\/g, '/')] : [];
   }).sort();
 }
 

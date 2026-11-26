@@ -142,7 +142,7 @@ const paper = page => page.evaluate(() => getComputedStyle(document.documentElem
         page.locator('h1'), page.locator('.hero .lede'), page.locator('.hero .hero-sub'),
         page.locator('.hero a.button[href$=".pdf"]'), page.locator('.hero a[href^="mailto:"]'), page.locator('.glance')
       ];
-      for (const label of ['Looking for', 'Now', 'Studying', 'Based in', 'Work rights']) targets.push(page.locator('.glance dt', { hasText: label }), page.locator('.glance > div', { hasText: label }));
+      for (const label of ['Areas', 'Now', 'Studying', 'Based in', 'Work rights']) targets.push(page.locator('.glance dt', { hasText: label }), page.locator('.glance > div', { hasText: label }));
       for (const target of targets) {
         assert.ok(await target.first().isVisible(), 'hero item is visible: ' + await target.first().evaluate(el => el.className || el.tagName));
         const box = await target.first().boundingBox();
