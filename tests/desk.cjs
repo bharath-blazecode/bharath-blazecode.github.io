@@ -1,117 +1,275 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
-const { spawn } = require('node:child_process');
-const path = require('node:path');
+const { startSite } = require('./helpers/site.cjs');
 
-const root = path.resolve(__dirname, '..');
-const port = Number(process.env.DESK_PORT) || 48774;
-const origin = `http://127.0.0.1:${port}`;
-const server = spawn(process.execPath, [path.join(root, 'tools/serve.cjs'), root, String(port)], { stdio: ['ignore', 'pipe', 'inherit'] });
-const ready = new Promise((resolve, reject) => {
-  server.stdout.once('data', resolve);
-  server.once('error', reject);
-  server.once('exit', code => reject(new Error(`Preview server exited ${code}`)));
+const SCENE = 'desk-scene.js';
+const objects = [['homelab', 'work/homelab/'], ['classquest', 'work/classquest/'], ['luna', 'work/luna/'], ['research', '#research']];
+
+// Counts WebGL draw calls and lets a test pretend the tab is hidden.
+function instruments() {
+  window.__draws = 0;
+  window.__hidden = false;
+  for (const name of ['WebGLRenderingContext', 'WebGL2RenderingContext']) {
+    const proto = window[name] && window[name].prototype;
+    if (!proto) continue;
+    for (const method of ['drawElements', 'drawArrays', 'drawElementsInstanced', 'drawArraysInstanced']) {
+      const original = proto[method];
+      if (original) proto[method] = function (...args) { window.__draws++; return original.apply(this, args); };
+    }
+  }
+  Object.defineProperty(document, 'hidden', { configurable: true, get: () => window.__hidden });
+}
+
+function noWebGL() {
+  const original = HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = function (type, ...rest) {
+    return /webgl/.test(String(type)) ? null : original.call(this, type, ...rest);
+  };
+}
+
+async function open(browser, site, options = {}) {
+  const context = await browser.newContext({
+    viewport: options.viewport || { width: 1440, height: 900 },
+    deviceScaleFactor: options.scale || 1,
+    reducedMotion: options.reducedMotion || 'no-preference',
+    hasTouch: Boolean(options.phone),
+    isMobile: Boolean(options.phone)
+  });
+  await context.addInitScript(instruments);
+  if (options.noWebGL) await context.addInitScript(noWebGL);
+  const page = await context.newPage();
+  const errors = [];
+  const sceneRequests = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('request', request => { if (request.url().includes(SCENE)) sceneRequests.push(request.url()); });
+  if (options.route) await page.route('**/' + SCENE, options.route);
+  await page.goto(site.url + '/', options.wait ? { waitUntil: options.wait } : { waitUntil: 'load' });
+  return { context, page, errors, sceneRequests };
+}
+
+const draws = page => page.evaluate(() => window.__draws);
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function ready(page) {
+  await page.waitForSelector('.desk.has-3d.has-tags', { timeout: 15000 });
+  await page.waitForTimeout(1900); // the objects hop once when the desk first shows
+}
+
+// Fire a pointer move at the canvas directly, which works whether or not it is on screen.
+const nudge = page => page.evaluate(() => {
+  const canvas = document.querySelector('[data-desk-canvas]');
+  const box = canvas.getBoundingClientRect();
+  for (const fraction of [.3, .7]) {
+    canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: box.x + box.width * fraction, clientY: box.y + box.height * .5, pointerType: 'mouse', isPrimary: true, bubbles: true }));
+  }
 });
 
+async function settled(page) {
+  let last = -1;
+  for (let i = 0; i < 20; i++) {
+    const now = await draws(page);
+    if (now === last) return now;
+    last = now;
+    await page.waitForTimeout(300);
+  }
+  assert.fail('the scene keeps drawing when nothing is moving');
+}
+
+// Find a point over the object: first a little down and left of its tag anchor, then outwards in every direction.
+const offsets = [[-6, 24]];
+for (let dy = -60; dy <= 90; dy += 10) for (let dx = -60; dx <= 70; dx += 10) offsets.push([dx, dy]);
+offsets.sort((a, b) => Math.hypot(a[0] + 6, a[1] - 24) - Math.hypot(b[0] + 6, b[1] - 24));
+async function pointOn(page, key) {
+  for (const [dx, dy] of offsets) {
+    const tag = await page.locator(`[data-tag="${key}"]`).boundingBox();
+    const x = tag.x - 10 + dx, y = tag.y + 14 + dy;
+    await page.mouse.move(x - 40, y - 40);
+    await page.mouse.move(x, y, { steps: 4 });
+    await page.waitForTimeout(90);
+    const active = () => page.locator(`[data-tag="${key}"]`).evaluate(el => el.classList.contains('is-active'));
+    if (!(await active())) continue;
+    // The object lifts when hovered, so confirm the point still hits it once it has settled.
+    await page.waitForTimeout(500);
+    let steady = true;
+    for (const [ex, ey] of [[4, 0], [-4, 0], [0, 4], [0, -4], [0, 0]]) {
+      await page.mouse.move(x + ex, y + ey);
+      await page.waitForTimeout(350);
+      steady = steady && await active();
+    }
+    if (steady) return [x, y];
+  }
+  assert.fail(`no point near the ${key} tag marks its folder`);
+}
+
 (async () => {
+  const site = await startSite(48776);
   let browser;
   try {
-    await ready;
-    browser = await chromium.launch({ headless: true, args: ['--enable-unsafe-swiftshader'], ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
-    for (const width of [320, 390, 820, 1180, 1350, 1440]) {
-      for (const colorScheme of ['light', 'dark']) {
-        const label = `${width}px ${colorScheme}`;
-        const page = await browser.newPage({ viewport: { width, height: 900 }, colorScheme, reducedMotion: 'reduce', hasTouch: width <= 820 });
-        const errors = [];
-        page.on('pageerror', error => errors.push(error.message));
-        await page.goto(origin);
-        await page.locator('[data-investigation-desk]').scrollIntoViewIfNeeded();
-        await page.waitForSelector('[data-investigation-desk].has-3d', { timeout: 15000 });
-        assert.ok(await page.locator('#intro-title').isVisible(), `${label}: heading`);
-        assert.ok(await page.locator('.hero-actions a[href$=".pdf"]').isVisible(), `${label}: résumé link`);
-        assert.equal(await page.locator('[data-desk-link]').count(), 4, `${label}: four map links`);
-        assert.equal(await page.locator('[data-experience-target][aria-expanded="true"]').count(), 0, `${label}: no preselected role`);
-        for (const link of await page.locator('[data-desk-link]').all()) {
-          const rect = await link.boundingBox();
-          assert.ok(rect.height >= 44 && rect.x >= -1 && rect.x + rect.width <= width + 1, `${label}: usable map link`);
-        }
-        const shape = await page.locator('[data-desk-canvas]').evaluate(canvas => ({ width: canvas.width, height: canvas.height }));
-        assert.ok(shape.width > 100 && shape.height > 50, `${label}: 3D canvas rendered`);
-        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${label}: no horizontal overflow`);
-        assert.deepEqual(errors, [], `${label}: page errors`);
-        await page.close();
+    browser = await chromium.launch({ headless: true, args: ['--enable-gpu', '--ignore-gpu-blocklist', '--use-angle=d3d11'] });
+
+    // Still image first, then desktop auto-load after the load event.
+    {
+      let release;
+      const gate = new Promise(resolve => { release = resolve; });
+      const { context, page, errors, sceneRequests } = await open(browser, site, {
+        route: async route => { await gate; await route.continue(); }
+      });
+      await page.waitForTimeout(1200);
+      assert.equal(sceneRequests.length, 1, 'scene is requested on a desktop once the page is loaded');
+      const poster = await page.locator('.desk-poster img').evaluate(img => ({ done: img.complete, width: img.naturalWidth, shown: img.getBoundingClientRect().width }));
+      assert.ok(poster.done && poster.width > 0, 'still image is decoded before the scene arrives');
+      assert.ok(!(await page.locator('[data-desk]').evaluate(el => el.classList.contains('has-3d'))), 'no 3D class while the scene is pending');
+      assert.equal(await page.locator('[data-desk-canvas]').evaluate(el => getComputedStyle(el).opacity), '0', 'canvas is invisible until ready');
+      release();
+      await ready(page);
+      const timing = await page.evaluate(scene => ({
+        asked: performance.getEntries().find(entry => entry.name.includes(scene)).startTime,
+        loaded: performance.getEntriesByType('navigation')[0].loadEventStart
+      }), SCENE);
+      assert.ok(timing.asked >= timing.loaded, `scene fetched after the load event (${Math.round(timing.asked)} vs ${Math.round(timing.loaded)})`);
+      assert.deepEqual(errors, [], 'no page errors');
+
+      const desk = await page.locator('[data-desk]').boundingBox();
+      for (const [key] of objects) {
+        const tag = await page.locator(`[data-tag="${key}"]`).boundingBox();
+        assert.ok(tag.x >= desk.x && tag.y >= desk.y && tag.x + tag.width <= desk.x + desk.width && tag.y + tag.height <= desk.y + desk.height,
+          `${key} tag sits inside the desk box (${JSON.stringify(tag)} in ${JSON.stringify(desk)})`);
       }
+      assert.equal(await page.locator('[data-desk-start]').isVisible(), false, 'start button is hidden on desktop');
+      await context.close();
     }
 
-    // Find each real 3D object by moving over the rendered canvas, then click it.
-    const objects = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
-    await objects.goto(origin);
-    await objects.waitForSelector('[data-investigation-desk].has-3d');
-    const coordinates = await objects.locator('[data-desk-canvas]').evaluate(canvas => {
-      const bounds = canvas.getBoundingClientRect();
-      const found = {};
-      for (let y = .1; y < .95; y += .04) for (let x = .08; x < .95; x += .04) {
-        canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: bounds.left + bounds.width * x, clientY: bounds.top + bounds.height * y, pointerType: 'mouse' }));
-        const selected = document.querySelector('[data-desk-link].is-desk-hovered');
-        if (selected && !found[selected.dataset.deskLink]) found[selected.dataset.deskLink] = { x: bounds.left + bounds.width * x, y: bounds.top + bounds.height * y };
+    // Hover and click on each object.
+    for (const [key, target] of objects) {
+      const { context, page } = await open(browser, site);
+      await page.locator('[data-desk]').evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await ready(page);
+      await pointOn(page, key);
+      if (key !== 'research') assert.ok(await page.locator(`.folder[data-object="${key}"]`).evaluate(el => el.classList.contains('is-linked')), `${key}: folder is linked`);
+      for (const [other] of objects) {
+        if (other !== key && other !== 'research') assert.ok(!(await page.locator(`.folder[data-object="${other}"]`).evaluate(el => el.classList.contains('is-linked'))), `${key}: ${other} is not linked`);
       }
-      return found;
-    });
-    assert.deepEqual(Object.keys(coordinates).sort(), ['people', 'projects', 'research', 'security'], 'Each desk object can be targeted');
-    await objects.evaluate(() => {
-      window.__deskClicks = [];
-      document.querySelectorAll('[data-desk-link]').forEach(link => link.addEventListener('click', event => {
-        event.preventDefault();
-        window.__deskClicks.push(link.dataset.deskLink);
-      }, { capture: true }));
-    });
-    for (const key of ['security', 'research', 'projects', 'people']) {
-      await objects.mouse.click(coordinates[key].x, coordinates[key].y);
-      assert.equal(await objects.evaluate(() => window.__deskClicks.at(-1)), key, `${key}: object opens its matching link`);
+      assert.equal(await page.locator('[data-desk-canvas]').evaluate(el => el.style.cursor), 'pointer', `${key}: pointer cursor`);
+      await page.mouse.down();
+      await page.mouse.up();
+      if (target.startsWith('#')) await page.waitForFunction(hash => location.hash === hash, target, { timeout: 3000 });
+      else await page.waitForURL(url => url.pathname.endsWith('/' + target), { timeout: 5000, waitUntil: 'commit' }).catch(error => assert.fail(key + ': click did not follow the link, now at ' + page.url() + ' ' + error.message.slice(0, 80)));
+      await context.close();
     }
-    await objects.close();
 
-    const keyboard = await browser.newPage({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
-    await keyboard.goto(origin);
-    const research = keyboard.locator('[data-desk-link="research"]');
-    await research.focus();
-    await research.press('Enter');
-    assert.equal(await keyboard.locator('[data-experience-target="experience-research"]').getAttribute('aria-expanded'), 'true', 'Research link opens the selected role');
-    await keyboard.reload();
-    assert.equal(await keyboard.locator('[data-experience-target][aria-expanded="true"]').count(), 0, 'Refreshing starts with no role selected');
-    await keyboard.close();
-
-    const fallback = await browser.newPage({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
-    await fallback.route('**/assets/desk/desk-scene.js', route => route.abort());
-    await fallback.goto(origin);
-    await fallback.locator('[data-investigation-desk]').scrollIntoViewIfNeeded();
-    await fallback.waitForTimeout(300);
-    assert.equal(await fallback.locator('[data-investigation-desk]').evaluate(element => element.classList.contains('has-3d')), false, 'Failed 3D load leaves fallback');
-    assert.ok(await fallback.locator('.desk-stage img').isVisible(), 'Static desk illustration remains visible');
-    assert.ok(await fallback.locator('[data-desk-link="security"]').isVisible(), 'Map links survive a failed 3D load');
-    await fallback.close();
-
-    const nojs = await browser.newPage({ viewport: { width: 390, height: 900 }, javaScriptEnabled: false, reducedMotion: 'reduce' });
-    await nojs.goto(origin);
-    assert.ok(await nojs.locator('.desk-stage img').isVisible(), 'Static illustration works without JavaScript');
-    assert.equal(await nojs.locator('[data-desk-link]').count(), 4, 'All links work without JavaScript');
-    assert.equal(await nojs.locator('[data-desk-link="security"]').getAttribute('href'), 'work/homelab/');
-    await nojs.close();
-
-    for (const colorScheme of ['light', 'dark']) {
-      const page = await browser.newPage({ viewport: { width: 390, height: 900 }, colorScheme, reducedMotion: 'reduce' });
-      await page.goto(origin);
-      await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
-      const violations = await page.evaluate(async () => (await axe.run(document, {
-        runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }
-      })).violations.map(violation => ({ id: violation.id, targets: violation.nodes.map(node => node.target) })));
-      assert.deepEqual(violations, [], `${colorScheme}: accessibility checks`);
-      await page.close();
+    // Phone: nothing is fetched until the visitor asks.
+    {
+      const { context, page, errors, sceneRequests } = await open(browser, site, { phone: true, scale: 2, viewport: { width: 390, height: 844 } });
+      await page.waitForTimeout(1500);
+      await page.locator('[data-desk]').evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await page.waitForTimeout(1500);
+      assert.equal(sceneRequests.length, 0, 'scene is not requested on a phone before the button is pressed');
+      const start = page.locator('[data-desk-start]');
+      assert.ok(await start.isVisible(), 'start button is shown on a phone');
+      assert.ok(await page.locator('.desk-poster img').evaluate(img => img.complete && img.naturalWidth > 0), 'still image shows on a phone');
+      await start.tap();
+      await page.waitForSelector('.desk.has-3d', { timeout: 15000 });
+      assert.equal(sceneRequests.length, 1, 'scene is requested once after the tap');
+      assert.ok(!(await start.isVisible()), 'start button goes away once the scene is ready');
+      assert.deepEqual(errors, [], 'no page errors on a phone');
+      await context.close();
     }
-    console.log('PASS: 3D objects and map links, mobile and desktop, themes, keyboard, reduced motion, failed WebGL loading, no-JavaScript and accessibility checks.');
+
+    // WebGL unavailable: the still image stays.
+    {
+      const { context, page, errors } = await open(browser, site, { noWebGL: true });
+      await page.locator('[data-desk]').evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await page.waitForTimeout(2500);
+      assert.ok(!(await page.locator('[data-desk]').evaluate(el => el.classList.contains('has-3d') || el.classList.contains('has-tags'))), 'no 3D or tag classes without WebGL');
+      assert.ok(await page.locator('.desk-poster img').isVisible(), 'still image remains');
+      assert.equal(await page.locator('.desk-poster').evaluate(el => getComputedStyle(el).visibility), 'visible');
+      assert.ok(await page.locator('.folder h3 a').first().isVisible(), 'folders still work');
+      assert.deepEqual(errors, [], 'no page errors without WebGL');
+      await context.close();
+    }
+
+    // Draws stop off screen and while the tab is hidden.
+    {
+      const { context, page } = await open(browser, site);
+      await page.locator('[data-desk]').evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await ready(page);
+      await settled(page);
+      let before = await draws(page);
+      await nudge(page);
+      await page.waitForTimeout(500);
+      assert.ok(await draws(page) > before, 'a pointer move draws a frame while the desk is on screen');
+      await settled(page);
+
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await page.waitForTimeout(500);
+      before = await draws(page);
+      await nudge(page);
+      await page.waitForTimeout(600);
+      assert.equal(await draws(page), before, 'no drawing while the desk is off screen');
+
+      await page.locator('[data-desk]').evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await page.waitForTimeout(500);
+      await settled(page);
+      await page.evaluate(() => { window.__hidden = true; document.dispatchEvent(new Event('visibilitychange')); });
+      before = await draws(page);
+      await nudge(page);
+      await page.waitForTimeout(600);
+      assert.equal(await draws(page), before, 'no drawing while the page is hidden');
+
+      await page.evaluate(() => { window.__hidden = false; document.dispatchEvent(new Event('visibilitychange')); });
+      await page.waitForTimeout(300);
+      before = await draws(page);
+      await nudge(page);
+      await page.waitForTimeout(500);
+      assert.ok(await draws(page) > before, 'drawing resumes when the page is visible again');
+      await context.close();
+    }
+
+    // Reduced motion: the scene is static. The same pointer move tilts it when motion is allowed.
+    {
+      const shot = async page => {
+        const box = await page.locator('[data-desk]').boundingBox();
+        await page.mouse.move(box.x + 24, box.y + 24);
+        await page.mouse.move(box.x + 30, box.y + 30, { steps: 6 });
+        await page.waitForTimeout(1200);
+        const image = await page.screenshot({ clip: box });
+        await page.mouse.move(box.x + box.width - 24, box.y + box.height - 60, { steps: 6 });
+        await page.waitForTimeout(1200);
+        return [image, await page.screenshot({ clip: box })];
+      };
+      const still = await open(browser, site, { reducedMotion: 'reduce' });
+      await still.page.locator('[data-desk]').evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await still.page.waitForSelector('.desk.has-3d.has-tags', { timeout: 15000 });
+      await still.page.waitForTimeout(600);
+      await settled(still.page);
+      const [a, b] = await shot(still.page);
+      assert.ok(a.equals(b), 'reduced motion: moving the pointer does not tilt or move the scene');
+      await settled(still.page);
+      await still.context.close();
+
+      const live = await open(browser, site);
+      await live.page.locator('[data-desk]').evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await ready(live.page);
+      const [c, d] = await shot(live.page);
+      assert.ok(!c.equals(d), 'motion allowed: the same pointer move does change the scene');
+      await live.context.close();
+    }
+
+    // Backing store is at most twice the CSS size, even on a very dense screen.
+    {
+      const { context, page } = await open(browser, site, { scale: 3, viewport: { width: 1200, height: 800 } });
+      await page.locator('[data-desk]').evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await ready(page);
+      const size = await page.locator('[data-desk-canvas]').evaluate(el => ({ w: el.width, h: el.height, cw: el.clientWidth, ch: el.clientHeight, dpr: devicePixelRatio }));
+      assert.equal(size.dpr, 3);
+      assert.ok(size.w <= size.cw * 2 + 1 && size.h <= size.ch * 2 + 1, `canvas ${size.w}x${size.h} is within 2x of ${size.cw}x${size.ch}`);
+      assert.ok(size.w >= size.cw, 'canvas is not smaller than its CSS size');
+      await context.close();
+    }
+
+    console.log('PASS desk: still image, desktop load, tags, hover and click, phone, no WebGL, visibility, reduced motion, canvas size');
   } finally {
     if (browser) await browser.close();
-    server.kill();
-    server.stdout.destroy();
+    site.stop();
   }
-})().catch(error => { console.error(error); process.exitCode = 1; });
+})().catch(error => { console.error(error); process.exit(1); });
