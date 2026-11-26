@@ -1,8 +1,8 @@
 <!--page
 title: Barry Sampath | Cybersecurity and IT automation
 description: Barry Sampath works on identity controls and IT automation in Brisbane and is open to 2027 internships and early-career roles. Projects, case studies and evidence.
-css: base home explainer
-scripts: site home explainer
+css: base home
+scripts: site home
 preload: archivo-variable.woff2 source-serif-italic.woff2
 jsonld: person
 body: home
@@ -36,7 +36,7 @@ body: home
 
 <div class="shell"><section class="proof" aria-label="Three things to check first">
   <a class="proof-item" href="#experience"><span class="label">Current role</span><strong>Identity and access in a live Microsoft 365 environment</strong><span class="proof-detail">Entra ID, MFA, Conditional Access and Python automation at ScienceGears.</span><span class="proof-go">Experience<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span></a>
-  <a class="proof-item" href="#research"><span class="label">Research, in progress</span><strong>Can a large language model assess cyber risk from security evidence?</strong><span class="proof-detail">QUT Vacation Research Experience Scheme, with Flame Tree Cyber.</span><span class="proof-go">The research question<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span></a>
+  <a class="proof-item" href="research/"><span class="label">Research, in progress</span><strong>Can a large language model assess cyber risk from security evidence?</strong><span class="proof-detail">QUT Vacation Research Experience Scheme, with Flame Tree Cyber.</span><span class="proof-go">The research question<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span></a>
   <a class="proof-item" href="work/classquest/"><span class="label">Team result</span><strong>People’s Choice Award, Winter Hackathon 2026</strong><span class="proof-detail">ClassQuest, built by a team of five. Ten pull requests show my part.</span><span class="proof-go">ClassQuest case study<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span></a>
 </section></div>
 
@@ -130,88 +130,66 @@ body: home
   <div class="shell">
     <div class="section-head reveal">
       <h2 id="experience-title">Experience</h2>
-      <p>Paid work, placements and community roles. Relevant roles come first, and dates may overlap.</p>
+      <p>Paid work, placements and community roles. Relevant roles come first, and dates may overlap. Choose a point to read about a role.</p>
     </div>
-    <ol class="roles">
-      <li class="role reveal" id="experience-sciencegears">
-        <p class="role-time label">Apr 2026 to present<span>Paid contract</span></p>
-        <div class="role-body">
-          <h3>Cybersecurity and IT Automation Analyst</h3>
-          <p class="role-org">ScienceGears</p>
-          <p>Identity security and access governance in a live Microsoft 365 environment.</p>
-          <ul class="ticks">
-            <li>Reviewed identity controls and wrote prioritised remediation guidance.</li>
-            <li>Managed MFA, Conditional Access and role-based access controls in Microsoft Entra ID.</li>
-            <li>Built email-triage and IT workflow automations using AI-assisted processing and Python.</li>
-          </ul>
+    <div class="experience-path" data-experience-path hidden>
+      <p class="label experience-swipe">Swipe along the path for more roles</p>
+      <div class="experience-map" data-experience-map>
+        <div class="experience-track">
+          <span class="experience-wave-clip" aria-hidden="true"><svg class="experience-wave" viewBox="0 0 1400 100" preserveAspectRatio="none" focusable="false"><path d="M100 28 C200 28 200 68 300 68 C400 68 400 28 500 28 C600 28 600 68 700 68 C800 68 800 28 900 28 C1000 28 1000 68 1100 68 C1200 68 1200 28 1300 28"/></svg></span>
+          <div class="experience-stops" data-experience-stops role="group" aria-label="Experience roles"></div>
         </div>
-      </li>
-      <li class="role reveal" id="experience-research">
-        <p class="role-time label">Nov 2026 to present<span>Research placement</span></p>
-        <div class="role-body">
-          <h3>AI Cyber Risk Assessment Research</h3>
-          <p class="role-org">QUT Vacation Research Experience Scheme</p>
-          <p>Researching AI-supported cyber risk assessment through QUT’s 2026 to 2027 Vacation Research Experience Scheme. The work is in progress.</p>
-          <a class="textlink" href="#research">Read about the research question<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m0 0-5-5m5 5 5-5"/></svg></a>
-        </div>
-      </li>
-      <li class="role reveal">
-        <details id="experience-tech">
-          <summary><span class="role-time label">Oct 2026 to present<span>Club executive</span></span><span class="role-title"><strong>Technical Lead</strong><span class="role-org">QUT The Emerging Coders Hub (TECH)</span></span><span class="plus" aria-hidden="true"></span></summary>
+      </div>
+      <p class="sr-only" role="status" data-experience-status></p>
+    </div>
+    <div class="experience-layout">
+      <div class="experience-empty" data-experience-empty hidden><p class="label">A closer look</p><p>Choose a role to read about the work behind it.</p></div>
+      <div class="role-list" data-experience-roles>
+        <div class="experience-detail-head" data-experience-detail-head hidden><p class="label">A closer look</p><button class="tool" type="button" data-experience-close>Close</button></div>
+        <details class="role" id="experience-sciencegears" data-path-label="ScienceGears" open>
+          <summary><span class="role-time label">Apr 2026 to present<span>Paid contract</span></span><span class="role-title"><strong>ScienceGears</strong><span>Cybersecurity and IT Automation Analyst</span></span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="role-detail"><p>Identity security and access governance in a live Microsoft 365 environment.</p><ul class="ticks"><li>Reviewed identity controls and wrote prioritised remediation guidance.</li><li>Managed MFA, Conditional Access and role-based access controls in Microsoft Entra ID.</li><li>Built email-triage and IT workflow automations using AI-assisted processing and Python.</li></ul></div>
+        </details>
+        <details class="role" id="experience-research" data-path-label="QUT">
+          <summary><span class="role-time label">Nov 2026 to present<span>Research placement</span></span><span class="role-title"><strong>QUT Vacation Research Experience Scheme</strong><span>AI Cyber Risk Assessment Research</span></span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="role-detail"><p>Researching AI-supported cyber risk assessment through QUT’s 2026 to 2027 Vacation Research Experience Scheme. The work is in progress.</p><p><a class="textlink" href="research/">Read about the research<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></a></p></div>
+        </details>
+        <details class="role" id="experience-tech" data-path-label="QUT TECH">
+          <summary><span class="role-time label">Oct 2026 to present<span>Club executive</span></span><span class="role-title"><strong>QUT The Emerging Coders Hub (TECH)</strong><span>Technical Lead</span></span><span class="plus" aria-hidden="true"></span></summary>
           <div class="role-detail"><p>Coordinate two Technical Officers on practical projects and the technical side of club events.</p><ul class="ticks"><li>Work alongside the team on project development, troubleshoot implementation problems and explain the tools and technical concepts we use.</li><li>Plan project nights and work with the Events team on technical preparation and delivery.</li></ul></div>
         </details>
-      </li>
-      <li class="role reveal">
-        <details id="experience-dynamx">
-          <summary><span class="role-time label">Apr to May 2026<span>Program placement</span></span><span class="role-title"><strong>Technology Consultant, Power Platform</strong><span class="role-org">DynamX Institute</span></span><span class="plus" aria-hidden="true"></span></summary>
+        <details class="role" id="experience-dynamx" data-path-label="DynamX Institute">
+          <summary><span class="role-time label">Apr to May 2026<span>Program placement</span></span><span class="role-title"><strong>DynamX Institute</strong><span>Technology Consultant, Power Platform</span></span><span class="plus" aria-hidden="true"></span></summary>
           <div class="role-detail"><p>Analysed a client scenario, built a Power Platform business system and presented the solution and its design choices to program assessors.</p></div>
         </details>
-      </li>
-      <li class="role reveal">
-        <details id="experience-engagement">
-          <summary><span class="role-time label">Sep 2026 to present<span>Committee role</span></span><span class="role-title"><strong>Engagement Officer</strong><span class="role-org">Code Network</span></span><span class="plus" aria-hidden="true"></span></summary>
+        <details class="role" id="experience-engagement" data-path-label="Code Network">
+          <summary><span class="role-time label">Sep 2026 to present<span>Committee role</span></span><span class="role-title"><strong>Code Network</strong><span>Engagement Officer</span></span><span class="plus" aria-hidden="true"></span></summary>
           <div class="role-detail"><p>Support member participation and a welcoming club community.</p><ul class="ticks"><li>Work with the Engagement Coordinator to welcome new and returning members and help them connect with other attendees.</li><li>Contribute ideas and support activities that make it easier for members to join conversations and get involved.</li></ul></div>
         </details>
-      </li>
-      <li class="role reveal">
-        <details id="experience-events">
-          <summary><span class="role-time label">Mar to Sep 2026<span>Previous committee role</span></span><span class="role-title"><strong>Event Officer</strong><span class="role-org">Code Network</span></span><span class="plus" aria-hidden="true"></span></summary>
+        <details class="role" id="experience-events" data-path-label="Code Network">
+          <summary><span class="role-time label">Mar to Sep 2026<span>Previous committee role</span></span><span class="role-title"><strong>Code Network</strong><span>Event Officer</span></span><span class="plus" aria-hidden="true"></span></summary>
           <div class="role-detail"><p>Coordinated venues, schedules and communication for technology events with up to 40 participants.</p></div>
         </details>
-      </li>
-      <li class="role reveal">
-        <details id="experience-coles">
-          <summary><span class="role-time label">May 2025 to present<span>Part-time</span></span><span class="role-title"><strong>Customer Service Supervisor</strong><span class="role-org">Coles Group</span></span><span class="plus" aria-hidden="true"></span></summary>
+        <details class="role" id="experience-coles" data-path-label="Coles Group">
+          <summary><span class="role-time label">May 2025 to present<span>Part-time</span></span><span class="role-title"><strong>Coles Group</strong><span>Customer Service Supervisor</span></span><span class="plus" aria-hidden="true"></span></summary>
           <div class="role-detail"><p>Supervised customer service, resolved escalated complaints during peak periods and trained more than 20 team members in point-of-sale procedures, refunds and customer communication.</p></div>
         </details>
-      </li>
-    </ol>
-  </div>
-</section>
-
-<section class="section research" id="research" aria-labelledby="research-title">
-  <div class="shell">
-    <div class="section-head reveal">
-      <div><span class="label">QUT Vacation Research Experience Scheme, in progress</span><h2 id="research-title">Research</h2></div>
-      <p>This is a question I am working on, not a finding. There are no results to report yet.</p>
-    </div>
-    <div class="research-grid">
-      <dl class="research-thread reveal">
-        <div><dt class="label">The question</dt><dd class="research-question"><em>Can AI help assess cyber risk?</em></dd></div>
-        <div><dt class="label">The work</dt><dd>Exploring how large language models can analyse security evidence against the ASD Essentials, the Australian Signals Directorate’s framework that succeeds the Essential Eight.</dd></div>
-        <div><dt class="label">The concern</dt><dd>Helping design and evaluate experiments to test how far AI-based assessments can be trusted.</dd></div>
-      </dl>
-      <div class="research-credits reveal">
-        <p>Supervised by Dr Gowri Sankar Ramachandran at QUT, with Kat McCrabb of Flame Tree Cyber as external supervisor. Atticus D’Mello is the QUT contact for the project.</p>
-        <a class="textlink ext" href="https://www.qut.edu.au/research/study-with-us/vacation-research-experience-scheme-student-topics/vres/can-ai-be-your-security-consultant-exploring-cyber-risk-assessment-with-llms">Read QUT’s project listing<span class="sr-only"> (external site)</span></a>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section research-lab" aria-label="Research explainer">
-  <div class="shell">
-    <!-- @include explainer -->
+<section class="section research" id="research" aria-labelledby="research-title">
+  <div class="shell research-teaser reveal">
+    <div>
+      <span class="label">Research, in progress</span>
+      <h2 id="research-title">AI Cyber Risk Assessment Research</h2>
+    </div>
+    <div>
+      <p class="research-question"><em>Can AI help assess cyber risk?</em></p>
+      <p>QUT Vacation Research Experience Scheme. There are no results to report yet.</p>
+      <a class="button" href="research/">Read about the research<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></a>
+    </div>
   </div>
 </section>
 
@@ -239,12 +217,10 @@ body: home
       <p>I grew up in the UAE and moved to Brisbane for university. Starting again in a new country made me comfortable working through unfamiliar systems one piece at a time.</p>
       <p>I’m drawn to blue-team security, identity and access, and the decisions behind security controls. Building something, and keeping useful notes when it goes wrong, is how I make sense of it.</p>
       <div class="chess" data-chess>
-        <div class="chess-board" aria-hidden="true"><span class="chess-trail" data-chess-trail></span><span class="chess-knight" data-chess-knight>N</span></div>
-        <div class="chess-side">
-          <p class="label">Chess</p>
-          <p class="chess-note" data-chess-note aria-live="polite">Knight on g1.</p>
-          <button class="button chess-move" type="button" data-chess-move>Move the knight</button>
-        </div>
+        <p class="label">Chess</p>
+        <p class="chess-intro">A short game against a small search engine. It runs in your browser.</p>
+        <button class="button" type="button" data-chess-start>Play a short game</button>
+        <div class="chess-game" data-chess-game hidden></div>
       </div>
     </div>
     <div class="about-side">

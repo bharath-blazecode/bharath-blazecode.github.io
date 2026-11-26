@@ -131,55 +131,83 @@
 .aside-row h3 { font-size: clamp(1.5rem, 2.4vw, 2rem); }
 .aside-row p { font-size: .97rem; color: var(--muted); }
 
-/* Experience */
-.roles { position: relative; padding-left: 34px; border-top: 2px solid var(--ink); view-timeline: --roles block; }
-.roles::before { content: ""; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--ink); transform-origin: top; }
-.role { position: relative; border-bottom: 1px solid var(--line); view-timeline: --role block; }
-.role::before { content: ""; position: absolute; left: -34px; top: 22px; width: 14px; height: 14px; border-radius: 50%; background: var(--marker); box-shadow: 0 0 0 2px var(--ink); }
-li.role:not(:has(details))::before { top: calc(clamp(26px, 3.4vw, 44px) + 2px); }
-@keyframes rail-draw { from { transform: scaleY(0); } }
-@keyframes rail-dot { from { transform: scale(0); } }
+/* Experience: roles are points on a path; one role at a time opens in the panel below. */
+.experience-path { margin-bottom: clamp(26px, 3vw, 40px); }
+.experience-swipe { display: none; margin-bottom: 10px; }
+.experience-map { view-timeline: --xp block; }
+.experience-track { position: relative; }
+.experience-wave-clip { position: absolute; z-index: 0; inset: 0 0 auto; height: 100px; overflow: hidden; pointer-events: none; }
+.experience-wave { width: 100%; height: 100%; overflow: visible; }
+.experience-wave path { fill: none; stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.experience-stops { position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.experience-stop { position: relative; display: grid; grid-template-rows: 100px auto; align-content: start; min-width: 0; padding: 0; border: 0; background: transparent; color: var(--ink); text-align: left; }
+.experience-stop:focus-visible { outline-offset: -3px; }
+.experience-marker { position: relative; z-index: 1; display: block; width: 44px; height: 44px; margin: 6px auto 0; }
+.experience-stop:nth-child(even) .experience-marker { margin-top: 46px; }
+.experience-marker::before { content: ""; position: absolute; inset: 10px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); }
+.experience-marker::after { content: ""; position: absolute; inset: 18px; border-radius: 50%; background: var(--ink); }
+.experience-stop:hover .experience-marker::before, .experience-stop:focus-visible .experience-marker::before, .experience-stop[aria-expanded=true] .experience-marker::before { background: var(--marker); }
+.experience-stop:hover .experience-marker::after, .experience-stop:focus-visible .experience-marker::after, .experience-stop[aria-expanded=true] .experience-marker::after { background: var(--marker-ink); }
+.experience-stop[aria-expanded=true] .experience-marker::before { box-shadow: 0 0 0 5px var(--paper), 0 0 0 6.5px var(--ink); }
+.experience-stop-label { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; padding: 10px 10px 4px; }
+.experience-stop-date { font: .68rem/1.45 var(--mono); letter-spacing: .03em; text-transform: uppercase; color: var(--muted); }
+.experience-stop-name { position: relative; isolation: isolate; font-weight: 750; font-size: clamp(.95rem, .8rem + .4vw, 1.2rem); line-height: 1.2; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.experience-stop-name::after { content: ""; position: absolute; z-index: -1; left: -.12em; right: -.12em; bottom: .02em; height: .5em; background: var(--marker); transform: scaleX(0); transform-origin: left; transition: transform .25s var(--ease); }
+[data-theme=dark] .experience-stop-name::after { bottom: -.12em; height: 2px; }
+.experience-stop:hover .experience-stop-name::after, .experience-stop:focus-visible .experience-stop-name::after, .experience-stop[aria-expanded=true] .experience-stop-name::after { transform: scaleX(1); }
+.experience-stop-role { font-size: .84rem; line-height: 1.4; color: var(--muted); }
+
+/* The path and its points draw in, in order, as the section scrolls into view. */
+@keyframes point-in { from { transform: scale(0); } }
+@keyframes label-in { from { transform: translateY(16px); } }
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .roles::before { animation: rail-draw linear both; animation-timeline: --roles; animation-range: cover 8% cover 70%; }
-    .role::before { animation: rail-dot linear both; animation-timeline: --role; animation-range: cover 8% cover 24%; }
+    .experience-wave-clip { animation: sweep-wrap linear both; animation-timeline: --xp; animation-range: entry 30% cover 46%; }
+    .experience-wave { animation: sweep-ink linear both; animation-timeline: --xp; animation-range: entry 30% cover 46%; }
+    .experience-marker { animation: point-in linear both; animation-timeline: --xp; }
+    .experience-stop-label { animation: label-in linear both; animation-timeline: --xp; }
+    .experience-stop:nth-child(1) > * { animation-range: cover 16% cover 22%; }
+    .experience-stop:nth-child(2) > * { animation-range: cover 20% cover 26%; }
+    .experience-stop:nth-child(3) > * { animation-range: cover 24% cover 30%; }
+    .experience-stop:nth-child(4) > * { animation-range: cover 28% cover 34%; }
+    .experience-stop:nth-child(5) > * { animation-range: cover 32% cover 38%; }
+    .experience-stop:nth-child(6) > * { animation-range: cover 36% cover 42%; }
+    .experience-stop:nth-child(7) > * { animation-range: cover 40% cover 46%; }
   }
 }
-li.role:not(:has(details)) { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 8.4fr); gap: var(--gap); padding: clamp(26px, 3.4vw, 44px) 0; }
-.role-time span { display: block; color: var(--ink); }
-.role h3 { font-size: clamp(1.6rem, 3vw, 2.5rem); }
-.role-org { font-family: var(--serif); font-style: italic; font-size: 1.22rem; line-height: 1.3; }
-.role-body .role-org { margin: 6px 0 14px; }
-.role-body > p:not(.role-org) { max-width: 40em; }
-.ticks { margin-top: 12px; max-width: 42em; }
-.ticks li { position: relative; padding-left: 1.5em; margin-top: 8px; }
-.ticks li::before { content: ""; position: absolute; left: .1em; top: .58em; width: 7px; height: 7px; background: var(--marker); box-shadow: 0 0 0 1px var(--ink); }
-.role summary { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 8.4fr); gap: var(--gap); align-items: baseline; position: relative; padding: 20px 0; cursor: pointer; list-style: none; }
+
+.experience-layout { border-top: 2px solid var(--ink); }
+.experience-empty { padding: 22px 0; border-bottom: 1px solid var(--line); color: var(--muted); }
+.experience-detail-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 14px; }
+.role { border-bottom: 1px solid var(--line); }
+.role summary { position: relative; display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 8.4fr); gap: var(--gap); align-items: baseline; padding: 20px 0; cursor: pointer; list-style: none; }
 .role summary::-webkit-details-marker { display: none; }
-.role-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; padding-right: 44px; }
-.role-title strong { font-size: 1.22rem; font-weight: 750; letter-spacing: -.015em; background: linear-gradient(var(--marker), var(--marker)) left 86% / 0 .42em no-repeat; }
-.role summary:hover .role-title strong { background-size: 100% .42em; }
-[data-theme=dark] .role summary:hover .role-title strong { background-size: 100% 2px; }
-.role-title .role-org { font-size: 1.06rem; color: var(--muted); }
+.role-time span { display: block; color: var(--ink); }
+.role-title { display: flex; flex-direction: column; gap: 4px; padding-right: 44px; }
+.role-title strong { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.15rem; line-height: 1.3; }
+.role-title > span { font-size: clamp(1.4rem, 2.6vw, 2.1rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.06; }
 .plus { position: absolute; right: 6px; top: 50%; width: 16px; height: 16px; margin-top: -8px; }
 .plus::before, .plus::after { content: ""; position: absolute; left: 0; top: 7px; width: 16px; height: 2px; background: currentColor; transition: transform .3s var(--ease); }
 .plus::after { transform: rotate(90deg); }
 details[open] > summary .plus::after { transform: rotate(0deg); }
-.role-detail { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 8.4fr); gap: 0 var(--gap); padding-bottom: 26px; }
+.role-detail { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 8.4fr); gap: 0 var(--gap); padding-bottom: 28px; }
 .role-detail > * { grid-column: 2; max-width: 42em; }
+.role-detail > * + * { margin-top: 10px; }
+.ticks li { position: relative; padding-left: 1.5em; margin-top: 8px; }
+.ticks li::before { content: ""; position: absolute; left: .1em; top: .58em; width: 7px; height: 7px; background: var(--marker); box-shadow: 0 0 0 1px var(--ink); }
+/* With the path running, the list becomes a single panel and the row toggle is not needed. */
+.has-experience-path .role summary { cursor: default; }
+.has-experience-path .role .plus { display: none; }
+.has-experience-path .role { border-bottom: 0; }
+.has-experience-path .experience-layout { border-bottom: 1px solid var(--line); }
 
-/* Research sits on a yellow band in both themes, so its tokens are pinned to the light values. */
-.research { color-scheme: light; --paper: #f3f4ef; --panel: #e7eae0; --ink: #1d231c; --muted: #3f4a3b; --line: rgba(29, 35, 28, .28); --link: #1d231c; background: var(--marker); color: var(--ink); }
-.research { padding-bottom: clamp(48px, 6vw, 88px); }
-.research-grid { display: grid; grid-template-columns: minmax(0, 7.4fr) minmax(0, 4fr); gap: var(--gap); align-items: end; }
-.research-lab { padding-top: clamp(48px, 6vw, 88px); background: var(--panel); }
-.research-lab + .competitions { padding-top: var(--section); }
-.research-thread > div { display: grid; grid-template-columns: 8.4em 1fr; gap: 16px; padding: 18px 0 20px; border-top: 1px solid var(--ink); }
-.research-thread dt { padding-top: 4px; }
-.research-thread dd { max-width: 36em; }
-.research-question em { font-size: clamp(1.9rem, 4vw, 3.4rem); line-height: 1.02; }
-.research-credits { padding-top: 16px; border-top: 1px solid var(--ink); font-size: .96rem; }
-.research-credits .textlink { margin-top: 8px; }
+/* Research on the homepage is a short teaser on a yellow band; the page at /research/ has the detail. */
+.research { color-scheme: light; --paper: #f3f4ef; --ink: #1d231c; --muted: #3f4a3b; --line: rgba(29, 35, 28, .28); background: var(--marker); color: var(--ink); padding-block: clamp(56px, 7vw, 96px); }
+.research-teaser { display: grid; grid-template-columns: minmax(0, 7.4fr) minmax(0, 4fr); gap: var(--gap); align-items: end; }
+.research h2 { margin-top: 14px; font-size: clamp(2rem, 4.6vw, 4rem); }
+.research-question em { font-size: clamp(1.5rem, 2.4vw, 2.1rem); line-height: 1.1; }
+.research-teaser p + p { margin-top: 8px; color: var(--muted); }
+.research-teaser .button { margin-top: 20px; }
 
 /* Competitions */
 .scoreboard { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--ink); }
@@ -217,14 +245,11 @@ details[open] > summary .plus::after { transform: rotate(0deg); }
 .background-ledger li strong { display: block; font-weight: 650; }
 .background-ledger li span { color: var(--muted); }
 
-/* A knight that makes one legal move per press. */
-.chess { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 22px 28px; margin-top: clamp(34px, 4vw, 56px); }
-.chess-board { position: relative; width: min(100%, 256px); aspect-ratio: 1; flex: none; border: 2px solid var(--ink); background: repeating-conic-gradient(var(--line) 0 25%, var(--paper) 0 50%) 0 0 / 25% 25%; }
-.chess-knight, .chess-trail { position: absolute; left: 0; top: 0; width: 12.5%; height: 12.5%; transform: translate(600%, 700%); }
-.chess-knight { display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--paper); font-weight: 900; font-size: .95rem; line-height: 1; box-shadow: 0 0 0 2px var(--marker); transition: transform .45s var(--ease); }
-.chess-trail { background: var(--marker); opacity: .9; transition: transform 0s .45s; }
-.chess-note { margin: 6px 0 14px; font-size: .97rem; min-height: 3em; max-width: 15em; }
-html:not(.js) .chess-move { display: none; }
+/* Chess: a short intro and a start button. The game itself loads on request. */
+.chess { margin-top: clamp(34px, 4vw, 56px); padding-top: 16px; border-top: 2px solid var(--ink); }
+.chess-intro { margin: 8px 0 16px; max-width: 30em; }
+html:not(.js) [data-chess-start] { display: none; }
+.chess-game { margin-top: 8px; }
 
 /* Contact shares the dark stage with the footer. */
 .contact { --ink: #eef0e6; --muted: #c1c9b8; --line: #4a584a; --link: #dde84a; padding-bottom: clamp(36px, 5vw, 64px); background: var(--stage); color: var(--stage-ink); }
@@ -251,12 +276,15 @@ html:not(.js) .chess-move { display: none; }
   .aside-row { grid-template-columns: 1fr; }
   .trace-strip { grid-template-columns: auto minmax(0, 1fr); padding: 10px 16px 16px 4px; }
   .trace-cmd, .trace-strip .button, .trace-fallback { grid-column: 1 / -1; justify-self: start; margin-left: 14px; white-space: normal; }
-  .roles { padding-left: 26px; }
-  .role::before { left: -26px; }
-  li.role:not(:has(details)), .role summary, .role-detail { grid-template-columns: 1fr; gap: 6px; }
+
+  .role summary, .role-detail, .research-teaser { grid-template-columns: 1fr; gap: 10px; }
   .role-time span { display: inline; margin-left: 12px; }
   .role-detail > * { grid-column: 1; }
-  .research-thread > div { grid-template-columns: 1fr; gap: 4px; }
+  /* Phones keep the path and scroll it sideways. */
+  .experience-swipe { display: block; }
+  .experience-map { overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; margin-inline: calc(var(--pad) * -1); padding-inline: var(--pad); }
+  .experience-track { width: 1060px; }
+  .experience-stop { scroll-snap-align: center; }
   .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .scoreboard li:nth-child(3) { border-left: 0; }
 }
@@ -277,4 +305,6 @@ html:not(.js) .chess-move { display: none; }
   .desk, .folder-sheets, .responder { display: none !important; }
   .folders { margin-top: 40px; }
   details > * { display: block !important; }
+  .experience-path, .experience-empty, .experience-detail-head { display: none !important; }
+  .role-list[hidden], .role-list > details.role[hidden] { display: block !important; }
 }

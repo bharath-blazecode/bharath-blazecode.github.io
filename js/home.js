@@ -34,28 +34,106 @@
     if (actions) actions.addEventListener('pointerenter', () => pose('point'));
   }
 
-  // Chess: each press moves the knight to the unvisited square with the fewest ways out, which walks the whole board.
+  // Chess loads only when asked for.
   const chess = document.querySelector('[data-chess]');
   if (chess) {
-    const knight = chess.querySelector('[data-chess-knight]');
-    const trail = chess.querySelector('[data-chess-trail]');
-    const note = chess.querySelector('[data-chess-note]');
-    const jumps = [[1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]];
-    const name = (col, row) => 'abcdefgh'[col] + (8 - row);
-    let seen = new Set(['6,7']);
-    let at = [6, 7];
-    const moves = (col, row) => jumps.map(([dc, dr]) => [col + dc, row + dr]).filter(([c, r]) => c >= 0 && c < 8 && r >= 0 && r < 8 && !seen.has(c + ',' + r));
-    const place = (item, [col, row]) => { item.style.transform = `translate(${col * 100}%, ${row * 100}%)`; };
-    chess.querySelector('[data-chess-move]').addEventListener('click', () => {
-      let options = moves(at[0], at[1]);
-      if (!options.length) { seen = new Set([at.join(',')]); options = moves(at[0], at[1]); }
-      options.sort((a, b) => moves(a[0], a[1]).length - moves(b[0], b[1]).length);
-      place(trail, at);
-      at = options[0];
-      seen.add(at.join(','));
-      place(knight, at);
-      note.textContent = `Knight to ${name(at[0], at[1])}. Square ${seen.size} of 64.`;
+    const begin = chess.querySelector('[data-chess-start]');
+    const game = chess.querySelector('[data-chess-game]');
+    begin.addEventListener('click', async () => {
+      begin.disabled = true;
+      try {
+        const { startChess } = await import(new URL('chess.js', here).href);
+        startChess(game, { trigger: begin });
+      } catch (_) {
+        begin.disabled = false;
+      }
     });
+  }
+
+  // Experience: each role becomes a point on the path. One role at a time shows in the panel.
+  const experience = document.getElementById('experience');
+  const xpPath = document.querySelector('[data-experience-path]');
+  const xpStops = document.querySelector('[data-experience-stops]');
+  const xpRoles = document.querySelector('[data-experience-roles]');
+  const xpEmpty = document.querySelector('[data-experience-empty]');
+  const xpHead = document.querySelector('[data-experience-detail-head]');
+  const xpClose = document.querySelector('[data-experience-close]');
+  const xpStatus = document.querySelector('[data-experience-status]');
+  const roles = xpRoles ? [...xpRoles.querySelectorAll(':scope > .role')] : [];
+  const roleInfo = roles.map(role => {
+    const summary = role.querySelector(':scope > summary');
+    const time = summary && summary.querySelector('.role-time');
+    return {
+      role,
+      date: time && time.firstChild.textContent.trim(),
+      organisation: summary && summary.querySelector('.role-title > strong'),
+      title: summary && summary.querySelector('.role-title > span')
+    };
+  });
+  if (experience && xpPath && xpStops && xpEmpty && xpHead && xpClose && xpStatus && roleInfo.length &&
+      roleInfo.every(item => item.role.id && item.role.dataset.pathLabel && item.date && item.organisation && item.title)) {
+    let selected = null;
+    let printing = false;
+    const buttons = roleInfo.map(({ role, date, organisation, title }) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'experience-stop';
+      button.dataset.experienceTarget = role.id;
+      button.setAttribute('aria-controls', role.id);
+      button.setAttribute('aria-expanded', 'false');
+      const full = organisation.textContent.trim();
+      const name = role.dataset.pathLabel === full ? full : `${role.dataset.pathLabel}, ${full}`;
+      button.setAttribute('aria-label', `${name}, ${title.textContent}, ${date}`);
+      const marker = document.createElement('span');
+      marker.className = 'experience-marker';
+      marker.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span');
+      label.className = 'experience-stop-label';
+      for (const [className, value] of [['experience-stop-date', date], ['experience-stop-name', role.dataset.pathLabel], ['experience-stop-role', title.textContent]]) {
+        const part = document.createElement('span');
+        part.className = className;
+        part.textContent = value;
+        label.append(part);
+      }
+      button.append(marker, label);
+      xpStops.append(button);
+      return button;
+    });
+    function selectRole(next, restoreFocus = false, announce = true) {
+      const previous = selected;
+      selected = next;
+      roles.forEach((role, index) => {
+        const active = role === next;
+        role.hidden = !active;
+        role.open = active;
+        buttons[index].setAttribute('aria-expanded', String(active));
+      });
+      xpHead.hidden = !next;
+      xpRoles.hidden = !next;
+      xpEmpty.hidden = Boolean(next);
+      if (announce) xpStatus.textContent = next ? `${next.querySelector('.role-title > span').textContent}, ${next.dataset.pathLabel}. Details opened below.` : 'Role details closed.';
+      if (restoreFocus && previous) buttons[roles.indexOf(previous)].focus();
+    }
+    buttons.forEach((button, index) => button.addEventListener('click', () => {
+      const next = selected === roles[index] ? null : roles[index];
+      selectRole(next);
+      // On phones the path scrolls sideways; keep the chosen point in view.
+      if (next) button.scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduced.matches ? 'auto' : 'smooth' });
+    }));
+    xpClose.addEventListener('click', () => selectRole(null, true));
+    experience.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && selected) { event.preventDefault(); selectRole(null, true); }
+    });
+    roles.forEach(role => {
+      role.querySelector('summary').addEventListener('click', event => event.preventDefault());
+      role.addEventListener('toggle', () => { if (!printing && role === selected && !role.open) selectRole(null, role.contains(document.activeElement)); });
+    });
+    addEventListener('beforeprint', () => { printing = true; roles.forEach(role => { role.open = true; }); });
+    addEventListener('afterprint', () => { printing = false; roles.forEach(role => { role.open = role === selected; }); });
+    experience.classList.add('has-experience-path');
+    // The first role is open to begin with, so the panel is never empty on first view.
+    selectRole(roles[0], false, false);
+    xpPath.hidden = false;
   }
 
   const desk = document.querySelector('[data-desk]');
@@ -80,7 +158,7 @@
     folders.forEach((folder, name) => folder.classList.toggle('is-linked', name === key));
   }
   function go(key, event) {
-    if (key === 'research') { location.hash = '#research'; return; }
+    if (key === 'research') { location.href = new URL('../research/', here).href; return; }
     const link = folders.get(key) && folders.get(key).querySelector('h3 a');
     if (!link) return;
     if (event && (event.ctrlKey || event.metaKey || event.shiftKey)) window.open(link.href, '_blank', 'noopener');
