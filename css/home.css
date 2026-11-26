@@ -66,7 +66,7 @@
 .desk-caption, .desk-hint { position: absolute; bottom: 16px; color: var(--stage-muted); }
 .desk-caption { left: 20px; }
 .desk-hint { right: 20px; }
-.desk-start { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); }
+.desk-start { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); white-space: nowrap; }
 .desk-start:hover { transform: translateX(-50%) translateY(-2px); }
 .desk :focus-visible { outline-color: var(--marker); }
 .desk-tag { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px 6px 9px; border-radius: 3px; background: #f3f4ef; color: #1d231c; font-family: var(--mono); font-size: .7rem; letter-spacing: .03em; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .3s linear; will-change: transform; }
@@ -87,6 +87,15 @@
 .sheet-note em { font-size: clamp(1rem, 1.5vw, 1.32rem); line-height: 1.08; }
 .folder:hover .sheet-shot, .folder:focus-within .sheet-shot { transform: translate(8%, -96px) rotate(8deg); }
 .folder:hover .sheet-note, .folder:focus-within .sheet-note { transform: translate(-6%, -74px) rotate(-9deg); }
+/* Touch screens have no hover, so the sheets fan out as each folder scrolls through the screen. */
+@keyframes fan-shot { to { transform: translate(8%, -96px) rotate(8deg); } }
+@keyframes fan-note { to { transform: translate(-6%, -74px) rotate(-9deg); } }
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sheet-shot { animation: fan-shot linear both; animation-timeline: view(); animation-range: cover 22% cover 46%; }
+    .sheet-note { animation: fan-note linear both; animation-timeline: view(); animation-range: cover 22% cover 46%; }
+  }
+}
 .folder-front { position: relative; z-index: 1; display: flex; flex-direction: column; flex: 1; gap: 12px; padding: 26px 26px 24px; border: 1px solid var(--line); border-radius: 0 8px 8px 8px; background: var(--panel); transform-origin: 50% 100%; transition: transform .5s var(--ease); }
 .folder:hover .folder-front, .folder:focus-within .folder-front { transform: rotateX(-7deg); }
 .folder-tab { position: absolute; left: -1px; bottom: 100%; display: flex; align-items: center; max-width: 92%; height: 32px; padding: 0 14px; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; background: var(--panel); color: var(--ink); overflow: hidden; white-space: nowrap; }
