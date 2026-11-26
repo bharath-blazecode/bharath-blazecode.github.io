@@ -38,6 +38,14 @@
     },
     {
       "@type": "CreativeWork",
+      "@id": "https://bharath-blazecode.github.io/research/#work",
+      "name": "AI Cyber Risk Assessment Research",
+      "url": "https://bharath-blazecode.github.io/research/",
+      "description": "A QUT Vacation Research Experience Scheme placement asking whether AI can help assess cyber risk against the ASD Essentials. It is in progress, with no results to report yet.",
+      "contributor": { "@id": "https://bharath-blazecode.github.io/#person" }
+    },
+    {
+      "@type": "CreativeWork",
       "@id": "https://bharath-blazecode.github.io/work/homelab/#work",
       "name": "ITDR Home Lab",
       "url": "https://bharath-blazecode.github.io/work/homelab/",

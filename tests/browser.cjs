@@ -7,7 +7,7 @@ const { startSite } = require('./helpers/site.cjs');
 const root = path.resolve(__dirname, '..');
 const axeSource = fs.readFileSync(path.join(root, 'node_modules', 'axe-core', 'axe.min.js'), 'utf8');
 
-const PAGES = ['/', '/404.html', '/work/homelab/', '/work/classquest/', '/work/luna/', '/work/competitions/'];
+const PAGES = ['/', '/404.html', '/research/', '/work/homelab/', '/work/classquest/', '/work/luna/', '/work/competitions/'];
 const WIDTHS = [1440, 820, 390, 320];
 const THEMES = ['light', 'dark'];
 

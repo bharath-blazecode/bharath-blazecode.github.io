@@ -23,7 +23,10 @@
     "test:writing": "node tests/writing.cjs",
     "check:writing": "node tools/check-writing.cjs",
     "bundle:desk": "node tools/bundle-desk.cjs && node tools/desk-poster.cjs",
-    "images": "node tools/images.cjs"
+    "images": "node tools/images.cjs",
+    "test:experience": "node tests/experience.cjs",
+    "test:research": "node tests/research.cjs",
+    "test:chess": "node tests/chess.cjs"
   },
   "devDependencies": {
     "axe-core": "4.10.3",

@@ -9,7 +9,7 @@ const { checkWriting } = require('./check-writing.cjs');
 function verify(dir) {
   const read = rel => fs.readFileSync(path.join(dir, rel), 'utf8');
   const routes = listPages();
-  for (const expected of ['index.html', '404.html', 'work/homelab/index.html', 'work/classquest/index.html', 'work/luna/index.html', 'work/competitions/index.html']) {
+  for (const expected of ['index.html', '404.html', 'research/index.html', 'work/homelab/index.html', 'work/classquest/index.html', 'work/luna/index.html', 'work/competitions/index.html']) {
     assert.ok(routes.includes(expected), 'Missing page ' + expected);
   }
   let checked = 0;
@@ -67,14 +67,20 @@ function verify(dir) {
   for (const fact of ['2027 internships and early-career roles', 'ubject to student visa conditions', 'Blue team, SOC, identity and access, GRC, IT automation', 'Cybersecurity and IT Automation Analyst', 'ScienceGears', 'expected December 2027', 'train in boxing', 'beginner on guitar', 'Tools in use', 'Identity and automation', 'Download resume (PDF)', 'effectiveness has not been independently established']) {
     assert.ok(home.includes(fact), 'Homepage is missing: ' + fact);
   }
-  const research = (home.match(/<section class="section research"[\s\S]*?<\/section>/) || [''])[0];
-  for (const fact of ['in progress', 'not a finding', 'large language models can analyse security evidence', 'the ASD Essentials', 'Helping design and evaluate experiments', 'Dr Gowri Sankar Ramachandran', 'Kat McCrabb of Flame Tree Cyber as external supervisor', 'Atticus D’Mello is the QUT contact']) {
-    assert.ok(research.includes(fact), 'Research section is missing: ' + fact);
+  // Research has its own page; the homepage keeps a short teaser.
+  const research = read('research/index.html');
+  for (const fact of ['AI Cyber Risk Assessment Research', 'in progress', 'not a finding', 'Can AI help assess cyber risk?', 'large language models can analyse security evidence', 'the ASD Essentials', 'Helping design and evaluate experiments', 'Dr Gowri Sankar Ramachandran', 'Kat McCrabb of Flame Tree Cyber as external supervisor', 'Atticus D’Mello is the QUT contact', 'An illustration of the research question', 'Nothing here is a result or the output of a model']) {
+    assert.ok(research.includes(fact), 'Research page is missing: ' + fact);
   }
-  for (const fact of ['An illustration of the research question', 'Nothing here is a result or the output of a model']) {
-    assert.ok(home.includes(fact), 'The explainer must stay labelled: ' + fact);
+  assert.doesNotMatch(research.replace(/succeeds the Essential Eight/g, ''), /Essential Eight (?:framework|maturity)/i, 'The research is on the ASD Essentials, not the Essential Eight');
+  const teaser = (home.match(/<section class="section research"[\s\S]*?<\/section>/) || [''])[0];
+  for (const fact of ['AI Cyber Risk Assessment Research', 'in progress', 'Can AI help assess cyber risk?', 'There are no results to report yet', 'href="research/"']) {
+    assert.ok(teaser.includes(fact), 'Homepage research teaser is missing: ' + fact);
   }
-  assert.doesNotMatch(research, /Essential Eight (?:framework|maturity)/i, 'The research is on the ASD Essentials, not the Essential Eight');
+  // The role title is the same everywhere it appears.
+  for (const file of ['js/terminal-data.js', 'src/data/person.json', 'llms.txt']) {
+    assert.ok(fs.readFileSync(path.join(root, file), 'utf8').includes('AI Cyber Risk Assessment Research'), file + ' must use the exact research role title');
+  }
   assert.match(home, /Nov 2026 to present/);
   assert.match(home, /QUT’s 2026 to 2027 Vacation Research Experience Scheme/);
   assert.match(home, /The award belongs to the team/);
@@ -137,6 +143,7 @@ function verify(dir) {
   for (const file of ['llms.txt', 'robots.txt', 'sitemap.xml', 'resume/Barry_Sampath_Resume.pdf']) assert.ok(fs.existsSync(path.join(dir, file)), 'Missing ' + file);
   JSON.parse(fs.readFileSync(path.join(root, 'src/data/person.json'), 'utf8'));
   assert.ok(read('sitemap.xml').includes(origin + '/work/homelab/'));
+  assert.ok(read('sitemap.xml').includes(origin + '/research/'));
 
   const writing = checkWriting(dir);
   for (const line of writing.warnings) console.log('warn  ' + line);

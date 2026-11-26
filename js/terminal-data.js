@@ -104,6 +104,9 @@ Identity security and access governance in a live Microsoft 365 environment.
   Reviewed identity controls and wrote prioritised remediation guidance.
   Managed MFA, Conditional Access and role-based access controls in Microsoft Entra ID.
   Built email-triage and IT workflow automations using AI-assisted processing and Python.`,
+    'qut-research.txt': `AI Cyber Risk Assessment Research
+QUT Vacation Research Experience Scheme. Nov 2026 to present. In progress.
+No results to report yet. Try: open ~/research`,
     'tech.txt': `Technical Lead, QUT The Emerging Coders Hub (TECH)
 Oct 2026 to present. Club executive.
 Coordinate two Technical Officers on practical projects and the technical
@@ -123,7 +126,8 @@ and trained more than 20 team members in point-of-sale procedures, refunds and
 customer communication.`
   },
   research: {
-    'question.txt': `QUT Vacation Research Experience Scheme. Nov 2026 to present. In progress.
+    'question.txt': `AI Cyber Risk Assessment Research
+QUT Vacation Research Experience Scheme. Nov 2026 to present. In progress.
 The question: can AI help assess cyber risk?
 The work: exploring how large language models can analyse security evidence
 against the ASD Essentials, the Australian Signals Directorate's framework
@@ -169,12 +173,12 @@ UtcTime="2026-11-12 03:14:09.551" EventID=3 Computer=win11-lab Image="C:\\Window
 // Where each path opens on the site. The nearest parent with an entry wins.
 export const links = {
   '': '',
-  about: '#about', work: '#work', research: '#research', contact: '#contact', experience: '#experience',
+  about: '#about', work: '#work', research: 'research/', contact: '#contact', experience: '#experience',
   'work/homelab': 'work/homelab/', 'work/classquest': 'work/classquest/', 'work/luna': 'work/luna/',
   'work/competitions': 'work/competitions/', logs: 'work/homelab/#example',
   'resume.pdf': 'resume/Barry_Sampath_Resume.pdf',
   'experience/sciencegears.txt': '#experience-sciencegears', 'experience/tech.txt': '#experience-tech',
-  'experience/dynamx.txt': '#experience-dynamx', 'experience/code-network.txt': '#experience-engagement',
+  'experience/qut-research.txt': 'research/', 'experience/dynamx.txt': '#experience-dynamx', 'experience/code-network.txt': '#experience-engagement',
   'experience/coles.txt': '#experience-coles'
 };
 

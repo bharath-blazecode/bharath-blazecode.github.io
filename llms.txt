@@ -6,7 +6,7 @@
 
 - Studying: Bachelor of Information Technology, Cybersecurity and AI, QUT, expected December 2027.
 - Current role: Cybersecurity and IT Automation Analyst at ScienceGears (paid contract, from April 2026). Identity security and access governance in a live Microsoft 365 environment: MFA, Conditional Access and role-based access controls in Microsoft Entra ID, plus email-triage and IT workflow automations in Python.
-- Research (in progress, from November 2026): QUT Vacation Research Experience Scheme, with Flame Tree Cyber. The question is whether AI can help assess cyber risk, by exploring how large language models analyse security evidence against the ASD Essentials. There are no results yet.
+- Research (in progress, from November 2026): AI Cyber Risk Assessment Research, QUT Vacation Research Experience Scheme, with Flame Tree Cyber. The question is whether AI can help assess cyber risk, by exploring how large language models analyse security evidence against the ASD Essentials. There are no results yet.
 - Location: Brisbane, Australia.
 
 ## Case studies
@@ -14,6 +14,10 @@
 - [ITDR Home Lab](https://bharath-blazecode.github.io/work/homelab/): a personal security monitoring lab on one laptop. Windows events reach Wazuh. The lab is paused; detection rules are future work.
 - [ClassQuest](https://bharath-blazecode.github.io/work/classquest/): a three-day hackathon project built by a team of five, which won the People's Choice Award at Winter Hackathon 2026. The award belongs to the team. Barry's part is shown in ten linked pull requests.
 - [LUNA](https://bharath-blazecode.github.io/work/luna/): a Raspberry Pi robot built as a shared university project with Zhirui Lu. Barry's part is offline voice commands that start and stop its existing line-following routine.
+
+## Research
+
+- [AI Cyber Risk Assessment Research](https://bharath-blazecode.github.io/research/): a QUT Vacation Research Experience Scheme placement, in progress. It asks whether AI can help assess cyber risk against the ASD Essentials. There are no results yet. The page includes an illustrative explainer built from invented evidence samples.
 
 ## Scoreboard
 

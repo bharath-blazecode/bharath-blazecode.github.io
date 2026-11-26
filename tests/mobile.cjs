@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const { startSite } = require('./helpers/site.cjs');
 
-const PAGES = ['/', '/404.html', '/work/homelab/', '/work/classquest/', '/work/luna/', '/work/competitions/'];
+const PAGES = ['/', '/404.html', '/research/', '/work/homelab/', '/work/classquest/', '/work/luna/', '/work/competitions/'];
 const WIDTHS = [320, 360, 390, 430, 768, 820];
 const THEMES = ['light', 'dark'];
 const MIN_TARGET = 44;

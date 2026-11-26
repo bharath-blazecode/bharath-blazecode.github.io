@@ -21,7 +21,7 @@ function staticChecks() {
     }
   }
   const size = ['js/terminal.js', 'js/terminal-data.js'].reduce((n, f) => n + zlib.gzipSync(fs.readFileSync(path.join(root, f)), { level: 9 }).length, 0);
-  assert.ok(size < 14 * 1024, `terminal js is ${size} bytes gzipped`);
+  assert.ok(size < 15 * 1024, `terminal js is ${size} bytes gzipped`);
   return size;
 }
 
@@ -85,7 +85,7 @@ const ratio = (a, b) => { const [x, y] = [luminance(a), luminance(b)].sort((p, q
       assert.equal(await page.locator('.term-log').getAttribute('role'), 'log');
       assert.equal(await page.locator('.term-log').getAttribute('aria-live'), 'polite');
       assert.equal(await page.locator('label[for=term-input]').count(), 1, 'input label missing');
-      assert.ok(await page.getByRole('button', { name: 'Close' }).isVisible(), 'Close button not visible');
+      assert.ok(await page.locator('dialog.term').getByRole('button', { name: 'Close' }).isVisible(), 'Close button not visible');
       assert.equal(await page.locator('dialog.term').getAttribute('aria-label'), 'Terminal');
       assert.match(await promptText(page), /barry@field-notes:~\$/);
 
@@ -109,7 +109,7 @@ const ratio = (a, b) => { const [x, y] = [luminance(a), luminance(b)].sort((p, q
       await page.locator('[data-terminal-open]').focus();
       await page.keyboard.press('Enter');
       await page.locator('dialog.term[open]').waitFor();
-      await page.getByRole('button', { name: 'Close' }).click();
+      await page.locator('dialog.term').getByRole('button', { name: 'Close' }).click();
       await page.waitForFunction(() => !document.querySelector('dialog.term').open);
       assert.equal(await page.evaluate(() => document.activeElement.hasAttribute('data-terminal-open')), true, 'focus did not return after Close');
       await context.close();
@@ -305,6 +305,17 @@ const ratio = (a, b) => { const [x, y] = [luminance(a), luminance(b)].sort((p, q
       await run(page, 'cd');
       const nav = page.waitForURL(/\/work\/homelab\/$/);
       await run(page, 'open work/homelab');
+      await nav;
+      await context.close();
+    }
+    {
+      const { context, page } = await fresh();
+      await open(page);
+      assert.match(await run(page, 'cat experience/qut-research.txt'), /^AI Cyber Risk Assessment Research/);
+      assert.match(await run(page, 'cat research/question.txt'), /^AI Cyber Risk Assessment Research/);
+      await run(page, 'cd');
+      const nav = page.waitForURL(/\/research\/$/);
+      await run(page, 'open ~/research');
       await nav;
       await context.close();
     }

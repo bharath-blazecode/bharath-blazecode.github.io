@@ -1,0 +1,15 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://bharath-blazecode.github.io/research/#page",
+  "name": "AI Cyber Risk Assessment Research",
+  "url": "https://bharath-blazecode.github.io/research/",
+  "inLanguage": "en-AU",
+  "description": "A QUT Vacation Research Experience Scheme placement asking whether AI can help assess cyber risk against the ASD Essentials. It is in progress and there are no results to report yet.",
+  "isPartOf": { "@id": "https://bharath-blazecode.github.io/#website" },
+  "author": { "@id": "https://bharath-blazecode.github.io/#person" },
+  "about": {
+    "@type": "Thing",
+    "name": "Using large language models to analyse security evidence against the ASD Essentials"
+  }
+}

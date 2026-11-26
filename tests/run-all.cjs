@@ -6,8 +6,8 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const SUITES = [
-  'tools/verify.cjs', 'tests/writing.cjs', 'tests/browser.cjs', 'tests/home.cjs', 'tests/desk.cjs',
-  'tests/terminal.cjs', 'tests/explainer.cjs', 'tests/homelab.cjs', 'tests/classquest.cjs', 'tests/mobile.cjs'
+  'tools/verify.cjs', 'tests/writing.cjs', 'tests/browser.cjs', 'tests/home.cjs', 'tests/experience.cjs', 'tests/desk.cjs',
+  'tests/terminal.cjs', 'tests/explainer.cjs', 'tests/research.cjs', 'tests/chess.cjs', 'tests/homelab.cjs', 'tests/classquest.cjs', 'tests/mobile.cjs'
 ].map(file => ({ file, name: path.basename(file, '.cjs') }));
 
 const wanted = process.argv.slice(2).map(name => path.basename(name, '.cjs'));

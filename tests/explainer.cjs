@@ -12,7 +12,6 @@ const samples = [
   { tab: 'Incident response plan cover page', id: 'RES-03', name: 'Cyber security incident response', action: 'Use documented, tested and approved cyber security incident response procedures when responding to cyber security incidents.', domain: 'Visibility and response' }
 ];
 const bannedWords = ['delve', 'seamless', 'leverage', 'robust', 'elevate', 'tapestry', 'testament', 'journey', 'crafted', 'passionate', 'cutting-edge', 'game-changer', 'unlock', 'empower', 'meticulous', 'showcase'];
-const tokens = { '--paper': '#f3f4ef', '--panel': '#e7eae0', '--ink': '#1d231c', '--muted': '#3f4a3b', '--line': 'rgba(29,35,28,.28)', '--marker': '#dde84a' };
 
 async function open(browser, site, options = {}) {
   const context = await browser.newContext({
@@ -28,15 +27,9 @@ async function open(browser, site, options = {}) {
   page.on('console', message => { if (message.type() === 'error' && !/Failed to load resource/.test(message.text())) problems.push('console: ' + message.text()); });
   page.on('response', response => { if (response.status() >= 400 && !/\/assets\//.test(response.url())) problems.push('http ' + response.status() + ': ' + response.url()); });
   page.on('requestfailed', request => problems.push('request failed: ' + request.url()));
-  await page.goto(site.url + '/');
+  await page.goto(site.url + '/research/');
   if (options.javaScriptEnabled !== false) {
-    await page.evaluate(([theme, pins]) => {
-      if (theme) document.documentElement.dataset.theme = theme;
-      const band = document.querySelector('.research');
-      for (const [name, value] of Object.entries(pins)) band.style.setProperty(name, value);
-      band.style.background = pins['--marker'];
-      band.style.color = pins['--ink'];
-    }, [options.theme || '', tokens]);
+    if (options.theme) await page.evaluate(theme => { document.documentElement.dataset.theme = theme; }, options.theme);
     await page.evaluate(() => document.fonts.ready);
   }
   return { context, page, problems };
@@ -188,7 +181,7 @@ async function open(browser, site, options = {}) {
       }
     }
 
-    // Layout at four widths: the component has no horizontal overflow (the rest of the page is still being rebuilt), with every sample selected, and without script.
+    // Layout at four widths: the component has no horizontal overflow , with every sample selected, and without script.
     for (const width of [320, 390, 820, 1440]) {
       const { context, page } = await open(browser, site, { width });
       for (let i = 0; i < 3; i++) {
