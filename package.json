@@ -2,12 +2,12 @@
   "name": "barry-sampath-portfolio",
   "version": "2.0.0",
   "private": true,
-  "description": "Field Notes — Barry Sampath's static portfolio",
+  "description": "Barry Sampath's static portfolio",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "start": "node tools/serve.cjs . 48763",
+    "start": "node tools/build.cjs --no-verify && node tools/serve.cjs dist 48763",
     "build": "node tools/build.cjs",
     "preview": "node tools/serve.cjs dist 48763",
     "test": "node tools/verify.cjs",
@@ -18,7 +18,10 @@
     "test:homelab": "node tests/homelab.cjs",
     "test:classquest": "node tests/classquest.cjs",
     "test:mobile": "node tests/mobile.cjs",
-    "bundle:desk": "node tools/bundle-desk.cjs",
+    "bundle:desk": "node tools/bundle-desk.cjs && node tools/desk-poster.cjs",
+    "images": "node tools/images.cjs",
+    "test:explainer": "node tests/explainer.cjs",
+    "test:terminal": "node tests/terminal.cjs",
     "test:desk": "node tests/desk.cjs",
     "test:journey": "node tests/journey.cjs",
     "test:responder-tray": "node tests/responder-tray.cjs",
