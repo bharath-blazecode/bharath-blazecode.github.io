@@ -71,6 +71,7 @@ main:focus { outline: none; }
 .mast { position: sticky; top: 0; z-index: 40; background: var(--paper); border-bottom: 1px solid var(--line); }
 .mast-inner { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 34px); min-height: var(--mast); }
 .brand { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; text-decoration: none; font-weight: 750; letter-spacing: -.01em; }
+.brand-mark::before { content: "b."; }
 .brand-mark { font-weight: 900; font-size: 2.1rem; line-height: .8; letter-spacing: -.06em; transition: transform .3s var(--ease); }
 .brand:hover .brand-mark { transform: rotate(-8deg) scale(1.06); }
 .mast-nav { display: flex; gap: clamp(16px, 2.2vw, 30px); margin-left: auto; font-size: .96rem; }
@@ -112,15 +113,15 @@ main:focus { outline: none; }
 .foot p { color: var(--stage-muted); font-size: .94rem; }
 .foot-top { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 
-/* Reveal on scroll. Scroll-driven where supported, a class toggle otherwise. */
-@keyframes rise { from { opacity: .35; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+/* Reveal on scroll: content slides up into place and is never faded, so text keeps full contrast. Scroll-driven where supported, a class toggle otherwise. */
+@keyframes rise { from { transform: translateY(34px); } to { transform: none; } }
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .reveal { animation: rise linear both; animation-timeline: view(); animation-range: cover 0% cover 12%; }
+    .reveal { animation: rise linear both; animation-timeline: view(); animation-range: cover 0% cover 16%; }
   }
   @supports not (animation-timeline: view()) {
-    .js .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
-    .js .reveal.is-in { opacity: 1; transform: none; }
+    .js .reveal { transform: translateY(34px); transition: transform .7s var(--ease); }
+    .js .reveal.is-in { transform: none; }
   }
   @view-transition { navigation: auto; }
 }
