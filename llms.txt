@@ -1,0 +1,36 @@
+# Barry Sampath
+
+> Barry Sampath is a cybersecurity and AI student at QUT in Brisbane, Australia. He works on identity controls and IT automation, and is open to 2027 internships and early-career roles in blue team, SOC, identity and access, GRC and IT automation. Work rights are subject to student visa conditions.
+
+## About
+
+- Studying: Bachelor of Information Technology, Cybersecurity and AI, QUT, expected December 2027.
+- Current role: Cybersecurity and IT Automation Analyst at ScienceGears (paid contract, from April 2026). Identity security and access governance in a live Microsoft 365 environment: MFA, Conditional Access and role-based access controls in Microsoft Entra ID, plus email-triage and IT workflow automations in Python.
+- Research (in progress, from November 2026): QUT Vacation Research Experience Scheme, with Flame Tree Cyber. The question is whether AI can help assess cyber risk, by exploring how large language models analyse security evidence against the ASD Essentials. There are no results yet.
+- Location: Brisbane, Australia.
+
+## Case studies
+
+- [ITDR Home Lab](https://bharath-blazecode.github.io/work/homelab/): a personal security monitoring lab on one laptop. Windows events reach Wazuh. The lab is paused; detection rules are future work.
+- [ClassQuest](https://bharath-blazecode.github.io/work/classquest/): a three-day hackathon project built by a team of five, which won the People's Choice Award at Winter Hackathon 2026. The award belongs to the team. Barry's part is shown in ten linked pull requests.
+- [LUNA](https://bharath-blazecode.github.io/work/luna/): a Raspberry Pi robot built as a shared university project with Zhirui Lu. Barry's part is offline voice commands that start and stop its existing line-following routine.
+
+## Scoreboard
+
+- [Competitions](https://bharath-blazecode.github.io/work/competitions/): five CTFs and a hackathon in 2026. Placements are team results.
+
+## Resume and contact
+
+- [Resume (PDF)](https://bharath-blazecode.github.io/resume/Barry_Sampath_Resume.pdf)
+- Email: barry.sampath@outlook.com
+- [LinkedIn](https://www.linkedin.com/in/barrysampath)
+- [GitHub](https://github.com/bharath-blazecode)
+
+## How to read claims on this site
+
+- Team results are team results. Competition placements are credited to the team (Team SushiShield for the CTFs, the ClassQuest team for the hackathon), and the site quotes them exactly.
+- The animated telemetry path and sample trace on the home lab page are illustrative examples. They are not live telemetry or a recorded incident.
+- The ITDR Home Lab is paused. Endpoint telemetry collection is complete; detection-rule development has not been done.
+- The research placement is in progress. Its aims are not results.
+- DissentKit, an open-source critique tool on the home page, is an early experiment. Its effectiveness has not been independently established.
+- LUNA is shared work. Individual, shared and vendor contributions are attributed separately.
