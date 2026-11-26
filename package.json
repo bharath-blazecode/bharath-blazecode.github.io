@@ -22,6 +22,8 @@
     "images": "node tools/images.cjs",
     "test:explainer": "node tests/explainer.cjs",
     "test:terminal": "node tests/terminal.cjs",
+    "test:writing": "node tests/writing.cjs",
+    "check:writing": "node tools/check-writing.cjs",
     "test:desk": "node tests/desk.cjs",
     "test:journey": "node tests/journey.cjs",
     "test:responder-tray": "node tests/responder-tray.cjs",

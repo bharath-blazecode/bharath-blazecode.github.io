@@ -23,6 +23,30 @@
     if (actions) actions.addEventListener('pointerenter', () => pose('point'));
   }
 
+  // Chess: each press moves the knight to the unvisited square with the fewest ways out, which walks the whole board.
+  const chess = document.querySelector('[data-chess]');
+  if (chess) {
+    const knight = chess.querySelector('[data-chess-knight]');
+    const trail = chess.querySelector('[data-chess-trail]');
+    const note = chess.querySelector('[data-chess-note]');
+    const jumps = [[1, 2], [2, 1], [2, -1], [1, -2], [-1, -2], [-2, -1], [-2, 1], [-1, 2]];
+    const name = (col, row) => 'abcdefgh'[col] + (8 - row);
+    let seen = new Set(['6,7']);
+    let at = [6, 7];
+    const moves = (col, row) => jumps.map(([dc, dr]) => [col + dc, row + dr]).filter(([c, r]) => c >= 0 && c < 8 && r >= 0 && r < 8 && !seen.has(c + ',' + r));
+    const place = (item, [col, row]) => { item.style.transform = `translate(${col * 100}%, ${row * 100}%)`; };
+    chess.querySelector('[data-chess-move]').addEventListener('click', () => {
+      let options = moves(at[0], at[1]);
+      if (!options.length) { seen = new Set([at.join(',')]); options = moves(at[0], at[1]); }
+      options.sort((a, b) => moves(a[0], a[1]).length - moves(b[0], b[1]).length);
+      place(trail, at);
+      at = options[0];
+      seen.add(at.join(','));
+      place(knight, at);
+      note.textContent = `Knight to ${name(at[0], at[1])}. Square ${seen.size} of 64.`;
+    });
+  }
+
   const desk = document.querySelector('[data-desk]');
   if (!desk) return;
   const canvas = desk.querySelector('[data-desk-canvas]');
@@ -108,12 +132,17 @@
     let near = false;
     const maybe = () => { if (auto && ready && near) idle(load); };
     if (!ready) addEventListener('load', () => { ready = true; maybe(); }, { once: true });
+    // Fetch the scene when the desk is within a screen of the viewport; animate it only while it is on screen.
+    new IntersectionObserver((entries, observer) => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      near = true;
+      observer.disconnect();
+      maybe();
+    }, { rootMargin: '100% 0px' }).observe(desk);
     new IntersectionObserver(entries => {
       inView = entries.some(entry => entry.isIntersecting);
-      near = near || inView;
-      maybe();
       sync();
-    }, { rootMargin: '200px 0px' }).observe(desk);
+    }).observe(desk);
   } else {
     inView = true;
   }

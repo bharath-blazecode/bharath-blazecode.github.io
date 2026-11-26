@@ -305,6 +305,14 @@ export function createDeskScene(canvas, { onSelect, onHover, onFailure, onReady,
   if (observer) observer.observe(canvas);
   else window.addEventListener('resize', resize);
   resize();
+  // Compile and draw the resting pose straight away, so nothing is left to do when the desk scrolls into view.
+  desk.updateMatrixWorld();
+  renderer.compile(scene, camera);
+  renderer.render(scene, camera);
+  layout();
+  layoutDirty = false;
+  ready = true;
+  onReady();
 
   return {
     setVisible(value) {
