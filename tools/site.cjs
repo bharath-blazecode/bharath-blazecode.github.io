@@ -48,7 +48,8 @@ function includes(html, depth = 0) {
 function renderPage(rel) {
   const { meta, body } = parsePage(rel);
   const depth = rel.split('/').length - 1;
-  const base = '../'.repeat(depth);
+  // The 404 page is served at any missing address, so it sets root to / and uses absolute paths.
+  const base = meta.root !== undefined ? meta.root : '../'.repeat(depth);
   const route = '/' + rel.replace(/index\.html$/, '');
   const themeScript = read(path.join(root, 'js', 'theme.js')).trim();
   const css = minifyCss((meta.css || 'base').split(/\s+/).map(name => read(path.join(root, 'css', name + '.css'))).join('\n'))
