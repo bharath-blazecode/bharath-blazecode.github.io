@@ -244,40 +244,40 @@ const paper = page => page.evaluate(() => getComputedStyle(document.documentElem
         assert.equal(await link.getAttribute('href'), `work/${key}/`);
       }
       assert.ok(await page.locator('.desk-poster img').isVisible(), 'desk still image shows');
-      assert.ok(await page.locator('.role-detail').first().evaluate(el => !el.closest('details').open), 'roles stay as native details');
+      assert.equal(await page.locator('[data-experience-path]').isVisible(), false, 'experience path stays hidden');
+      assert.equal(await page.locator('#experience.has-experience-path').count(), 0, 'no path class without JavaScript');
+      const roleOpen = await page.locator('[data-experience-roles] > details.role').evaluateAll(items => items.map(item => item.open));
+      assert.deepEqual(roleOpen, [true, false, false, false, false, false, false], 'seven native details, only the first open');
+      for (const item of await page.locator('[data-experience-roles] > details.role').all()) assert.ok(await item.locator('summary').isVisible(), 'role summary is visible');
+      assert.equal(await page.locator('[data-chess-start]').count(), 1, 'chess start button exists');
+      assert.equal(await page.locator('[data-chess-start]').evaluate(el => getComputedStyle(el).display), 'none', 'chess start button is hidden without JavaScript');
       await context.close();
     }
 
-    // 8. Experience details and chess.
+    // 8. Research teaser, header link and chess on request.
     {
-      const { context, page } = await open(browser, site);
-      assert.equal(await page.locator('.roles > li').count(), await page.locator('.roles details').count() + 2, 'all but the first two roles are details');
-      const summaries = page.locator('.roles details > summary');
-      for (let i = 0; i < await summaries.count(); i++) {
-        const summary = summaries.nth(i);
-        await summary.scrollIntoViewIfNeeded();
-        await summary.focus();
-        await page.keyboard.press('Enter');
-        assert.ok(await summary.evaluate(el => el.parentElement.open), `role ${i} opens with Enter`);
-        assert.ok(await summary.locator('xpath=..').locator('.role-detail').isVisible(), `role ${i} detail is visible`);
-        await page.keyboard.press('Space');
-        assert.ok(!(await summary.evaluate(el => el.parentElement.open)), `role ${i} closes with Space`);
-      }
+      const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+      const page = await context.newPage();
+      const requested = [];
+      page.on('request', request => requested.push(new URL(request.url()).pathname));
+      await page.goto(site.url + '/', { waitUntil: 'load' });
+      await page.waitForTimeout(500);
 
-      const move = page.locator('[data-chess-move]');
-      const note = page.locator('[data-chess-note]');
-      assert.equal((await note.textContent()).trim(), 'Knight on g1.');
-      assert.equal(await note.getAttribute('aria-live'), 'polite');
-      const start = await transform(page, '[data-chess-knight]');
-      await move.focus();
-      await page.keyboard.press('Enter');
-      const first = (await note.textContent()).trim();
-      assert.match(first, /^Knight to [a-h][1-8]\. Square 2 of 64\.$/);
-      await page.waitForFunction(from => getComputedStyle(document.querySelector('[data-chess-knight]')).transform !== from, start, { timeout: 3000 }).catch(() => assert.fail('knight did not move'));
-      await move.click();
-      const second = (await note.textContent()).trim();
-      assert.match(second, /^Knight to [a-h][1-8]\. Square 3 of 64\.$/);
-      assert.notEqual(second.slice(0, 15), first.slice(0, 15), 'knight goes to a new square');
+      const research = page.locator('section#research');
+      assert.equal((await research.locator('h2').innerText()).trim(), 'AI Cyber Risk Assessment Research');
+      assert.ok((await research.innerText()).includes('Can AI help assess cyber risk?'), 'research question is shown');
+      assert.ok((await research.innerText()).includes('There are no results to report yet.'), 'no results claimed');
+      assert.equal(await research.locator('a.button').getAttribute('href'), 'research/');
+      assert.equal((await research.locator('a.button').innerText()).trim(), 'Read about the research');
+      assert.equal(await page.locator('header a[href="research/"]').first().innerText(), 'Research', 'header Research link goes to research/');
+      assert.equal(await page.locator('[data-explainer]').count(), 0, 'the explainer is not on the homepage');
+      assert.ok(!requested.some(file => /explainer/.test(file)), 'explainer.js is not loaded');
+
+      const start = page.locator('[data-chess-start]');
+      assert.ok(await start.isVisible(), 'chess start button is visible');
+      assert.equal((await start.innerText()).trim(), 'Play a short game');
+      assert.equal(await page.locator('[data-chess-game]').isHidden(), true, 'game is hidden until asked for');
+      assert.ok(!requested.some(file => /chess/i.test(file)), 'no chess file is requested before the button is pressed');
       await context.close();
     }
 
@@ -300,7 +300,7 @@ const paper = page => page.evaluate(() => getComputedStyle(document.documentElem
       await page.waitForTimeout(500);
       let bytes = 0;
       for (const file of new Set(scripts)) bytes += zlib.gzipSync(fs.readFileSync(path.join(site.dir, file))).length;
-      assert.ok(scripts.length >= 3, 'page scripts were loaded');
+      assert.ok(scripts.length >= 2 && scripts.some(file => /home.js/.test(file)), 'page scripts were loaded');
       assert.ok(bytes < 80 * 1024, `JavaScript before interaction is ${bytes} bytes gzipped, limit 81920`);
       assert.deepEqual(foreign, [], 'no requests to other origins');
       assert.deepEqual(problems, [], 'no console errors');
@@ -359,7 +359,7 @@ const paper = page => page.evaluate(() => getComputedStyle(document.documentElem
       }
     }
 
-    console.log('PASS homepage: theme, navigation, hero, motion, no-JS, details, chess, budget, hygiene, axe, touch targets');
+    console.log('PASS homepage: theme, navigation, hero, motion, no-JS, research teaser, chess on request, budget, hygiene, axe, touch targets');
   } finally {
     if (browser) await browser.close();
     site.stop();
