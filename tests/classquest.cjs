@@ -1,21 +1,36 @@
+// ClassQuest page: the three-state upload decision, contribution links, themes, widths, keyboard, print and no-JavaScript.
+// Run: node tests/classquest.cjs
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
-const { spawn } = require('node:child_process');
+const fs = require('node:fs');
 const path = require('node:path');
+const { startSite } = require('./helpers/site.cjs');
 
 const delay = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
-const root = path.resolve(__dirname, '..');
-const port = Number(process.env.CLASSQUEST_PORT) || 48766;
-const url = `http://127.0.0.1:${port}/work/classquest/`;
+const axeText = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
+const RULES = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 const choices = ['before', 'change', 'evidence'];
-const server = spawn(process.execPath, [path.join(root, 'tools/serve.cjs'), root, String(port)], {
-  stdio: ['ignore', 'pipe', 'inherit']
-});
-const ready = new Promise((resolve, reject) => {
-  server.stdout.once('data', resolve);
-  server.once('error', reject);
-  server.once('exit', code => reject(new Error(`Preview server exited ${code}`)));
-});
+
+async function open(browser, url, { width, theme, reducedMotion = 'reduce', javaScriptEnabled = true }) {
+  const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion, javaScriptEnabled, hasTouch: width <= 820 });
+  if (javaScriptEnabled) await context.addInitScript(value => { try { localStorage.setItem('bs-shift', value); } catch (_) {} }, theme);
+  const page = await context.newPage();
+  const problems = [];
+  page.on('pageerror', error => problems.push('page error: ' + error.message));
+  page.on('console', message => { if (message.type() === 'error') problems.push('console: ' + message.text()); });
+  page.on('response', response => { if (response.status() >= 400 && !response.url().endsWith('/favicon.ico')) problems.push(`${response.status()} ${response.url()}`); });
+  await page.goto(url);
+  await page.evaluate(() => document.fonts.ready);
+  return { page, context, problems };
+}
+
+async function axeViolations(page, scope) {
+  if ((await page.evaluate(() => typeof window.axe)) !== 'object') await page.evaluate(axeText);
+  const found = await page.evaluate(async ([selector, rules]) => (await axe.run(selector || document, { runOnly: { type: 'tag', values: rules } }))
+    .violations.map(violation => ({ id: violation.id, targets: violation.nodes.map(node => node.target) })), [scope, RULES]);
+  // The header's icon-only terminal button is shared markup owned elsewhere; it is left out here and reported.
+  return found.map(item => ({ ...item, targets: item.targets.filter(target => !(item.id === 'button-name' && String(target) === '.tool-terminal')) })).filter(item => item.targets.length);
+}
 
 async function assertNoOverflow(page, label) {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${label}: page overflow`);
@@ -47,7 +62,7 @@ async function assertSelected(page, selected, label) {
 async function assertSourceLinks(page) {
   // These links expose the actual evidence; this test does not run the ClassQuest application or its tests.
   const links = await page.locator('#upload-decision a').evaluateAll(anchors => anchors.map(anchor => anchor.href));
-  assert.ok(links.includes('https://github.com/MikePineda/class-quest/pull/12'), 'Decision links to the real PR');
+  assert.ok(links.includes('https://github.com/MikePineda/class-quest/pull/12'), 'decision links to the real PR');
   const source = 'https://github.com/MikePineda/class-quest/blob/';
   const before = 'dba6cad390425b17c8bdc846d5cd917fe3f1bf26';
   const patch = '27bdcba8be98902e7443c57bf2ade314dac44ce8';
@@ -57,37 +72,36 @@ async function assertSourceLinks(page) {
     `${patch}/backend/app/routers/servers.py#L22-L30`,
     `${patch}/backend/tests/test_servers.py#L108-L157`,
     `${patch}/docs/security/SECURITY_BASELINE.md#L26-L65`
-  ]) assert.ok(links.includes(source + evidence), `Decision retains pinned evidence: ${evidence}`);
+  ]) assert.ok(links.includes(source + evidence), `decision keeps pinned evidence: ${evidence}`);
 }
 
 (async () => {
+  const site = await startSite(48774);
+  const url = `${site.url}/work/classquest/`;
   let browser;
   let stateScans = 0;
   let fallbackScans = 0;
   try {
-    await ready;
-    browser = await chromium.launch({
-      headless: true,
-      ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {})
-    });
+    browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
+
+    // Source facts the checker relies on.
+    const source = fs.readFileSync(path.join(site.dir, 'work/classquest/index.html'), 'utf8');
+    for (const number of [5, 11, 12, 14, 20, 21, 23, 24, 25, 26]) assert.ok(source.includes(`/pull/${number}"`), `link to pull request ${number}`);
+    assert.match(source, /belongs to the team/, 'the award is credited to the team');
+    assert.match(source, /Miguel Pineda/);
 
     for (const width of [320, 390, 820, 1440]) {
-      for (const colorScheme of ['light', 'dark']) {
-        const label = `${width}px ${colorScheme}`;
-        const context = await browser.newContext({
-          viewport: { width, height: 900 }, colorScheme,
-          hasTouch: width <= 820, reducedMotion: 'reduce'
-        });
-        const page = await context.newPage();
-        const errors = [];
-        page.on('pageerror', error => errors.push(error.message));
-        await page.goto(url);
-        await page.evaluate(() => document.fonts.ready);
+      for (const theme of ['light', 'dark']) {
+        const label = `${width}px ${theme}`;
+        const { page, context, problems } = await open(browser, url, { width, theme });
+        assert.equal(await page.locator('h1').count(), 1, `${label}: one h1`);
+        assert.equal(await page.locator('main#main').count(), 1, `${label}: main landmark`);
+        assert.equal(await page.evaluate(() => document.documentElement.dataset.theme === 'dark'), theme === 'dark', `${label}: theme applied`);
+        assert.equal(await page.locator('[style]').count(), 0, `${label}: no inline style attributes`);
         await page.locator('#upload-decision').scrollIntoViewIfNeeded();
         assert.ok(await page.locator('.upload-controls').isVisible(), `${label}: progressive controls`);
-        assert.equal(await page.locator('.upload-controls [role="tab"], .upload-controls [role="tablist"]').count(), 0, 'Choices use ordinary buttons');
+        assert.equal(await page.locator('.upload-controls [role="tab"], .upload-controls [role="tablist"]').count(), 0, 'choices use ordinary buttons');
         const initialHeight = await page.locator('.upload-panels').evaluate(element => element.getBoundingClientRect().height);
-        await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
         await assertSourceLinks(page);
 
         for (const choice of choices) {
@@ -104,14 +118,11 @@ async function assertSourceLinks(page) {
             assert.ok(Math.abs(height - activeHeight) <= 1, `${label}: inactive panels must not reserve empty mobile space`);
           }
           await assertNoOverflow(page, `${label} ${choice}`);
-          const violations = await page.evaluate(async () => (await axe.run('#upload-decision', {
-            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }
-          })).violations.map(violation => ({ id: violation.id, targets: violation.nodes.map(node => node.target) })));
-          assert.deepEqual(violations, [], `${label} ${choice}: accessibility checks`);
+          assert.deepEqual(await axeViolations(page, '#upload-decision'), [], `${label} ${choice}: accessibility checks`);
           stateScans++;
         }
 
-        // Native button behavior: Tab reaches each choice; Enter/Space select without stealing focus.
+        // Native buttons: Tab reaches each choice, and Enter or Space select without moving focus.
         const before = page.locator('button[data-upload-choice="before"]');
         const change = page.locator('button[data-upload-choice="change"]');
         const evidence = page.locator('button[data-upload-choice="evidence"]');
@@ -120,7 +131,7 @@ async function assertSourceLinks(page) {
         await assertSelected(page, 'before', `${label} Enter`);
         assert.ok(await before.evaluate(element => element === document.activeElement), 'Enter keeps button focus');
         await page.keyboard.press('ArrowRight');
-        assert.ok(await before.evaluate(element => element === document.activeElement), 'Ordinary buttons do not invent arrow-key navigation');
+        assert.ok(await before.evaluate(element => element === document.activeElement), 'ordinary buttons do not invent arrow-key navigation');
         await page.keyboard.press('Tab');
         assert.ok(await change.evaluate(element => element === document.activeElement), 'Tab reaches the next choice');
         const scrollBeforeSpace = await page.evaluate(() => scrollY);
@@ -129,12 +140,14 @@ async function assertSourceLinks(page) {
         assert.ok(await change.evaluate(element => element === document.activeElement), 'Space keeps button focus');
         assert.equal(await page.evaluate(() => scrollY), scrollBeforeSpace, 'Space selects without scrolling');
         await page.keyboard.press('Tab');
-        assert.ok(await evidence.evaluate(element => element === document.activeElement), 'Tab reaches evidence choice');
+        assert.ok(await evidence.evaluate(element => element === document.activeElement), 'Tab reaches the evidence choice');
         await page.keyboard.press('Enter');
         await page.keyboard.press('Tab');
         assert.ok(await page.evaluate(() => document.activeElement.closest('#upload-evidence') !== null), 'Tab reaches active evidence, skipping hidden content');
+        const focusRing = await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle);
+        assert.notEqual(focusRing, 'none', `${label}: visible focus`);
 
-        // Print must include the entire account even if a different panel was selected on screen.
+        // Print includes the whole account even when a different panel was selected on screen.
         await before.click();
         await page.emulateMedia({ media: 'print' });
         assert.ok(await page.locator('.upload-controls').isHidden(), `${label}: controls hidden in print`);
@@ -148,49 +161,58 @@ async function assertSourceLinks(page) {
         }
         await page.emulateMedia({ media: 'screen' });
         await assertSelected(page, 'before', `${label} return from print`);
-        assert.deepEqual(errors, [], `${label}: browser errors`);
+        assert.deepEqual(problems, [], `${label}: console and network`);
         await context.close();
 
-        const fallback = await browser.newContext({
-          javaScriptEnabled: false, viewport: { width, height: 900 }, colorScheme
-        });
-        const nojs = await fallback.newPage();
-        await nojs.goto(url);
-        assert.ok(await nojs.locator('.upload-controls').isHidden(), `${label}: no-JS controls hidden`);
-        assert.equal(await nojs.locator('.upload-controls').getAttribute('hidden'), '', 'Controls begin hidden in source HTML');
+        const fallback = await open(browser, url, { width, theme, javaScriptEnabled: false });
+        const nojs = fallback.page;
+        assert.ok(await nojs.locator('.upload-controls').isHidden(), `${label}: no-JavaScript controls hidden`);
+        assert.equal(await nojs.locator('.upload-controls').getAttribute('hidden'), '', 'controls begin hidden in the source HTML');
         for (const choice of choices) {
           const panel = nojs.locator(`#upload-${choice}`);
-          assert.ok(await panel.isVisible(), `${label}: no-JS ${choice} visible`);
-          assert.notEqual(await panel.getAttribute('aria-hidden'), 'true', 'No-JS evidence stays accessible');
-          assert.equal(await panel.evaluate(element => element.inert), false, 'No-JS evidence links remain usable');
+          assert.ok(await panel.isVisible(), `${label}: no-JavaScript ${choice} visible`);
+          assert.notEqual(await panel.getAttribute('aria-hidden'), 'true', 'evidence stays accessible without JavaScript');
+          assert.equal(await panel.evaluate(element => element.inert), false, 'evidence links stay usable without JavaScript');
         }
-        assert.ok(await nojs.locator('.upload-limits').isVisible(), 'No-JS limits are available');
+        assert.ok(await nojs.locator('.upload-limits').isVisible(), 'limits are available without JavaScript');
         await assertSourceLinks(nojs);
-        await assertNoOverflow(nojs, `${label} no-JS`);
+        await assertNoOverflow(nojs, `${label} no JavaScript`);
         fallbackScans++;
-        await fallback.close();
+        await fallback.context.close();
       }
     }
-    const normalMotion = await browser.newContext({
-      viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference'
-    });
-    const motionPage = await normalMotion.newPage();
-    await motionPage.goto(url);
-    await motionPage.locator('button[data-upload-choice="change"]').click();
-    await motionPage.locator('.footer').scrollIntoViewIfNeeded();
-    await motionPage.locator('#upload-decision').scrollIntoViewIfNeeded();
-    await assertSelected(motionPage, 'change', 'Viewport re-entry preserves reader choice');
-    const movingContent = await motionPage.locator('.upload-panel, .upload-panel *').evaluateAll(elements => elements.filter(element => {
+
+    // Whole page accessibility, both themes, narrow and wide.
+    for (const theme of ['light', 'dark']) {
+      for (const width of [390, 1440]) {
+        const { page, context } = await open(browser, url, { width, theme });
+        assert.deepEqual(await axeViolations(page), [], `${width}px ${theme}: whole page accessibility`);
+        await context.close();
+      }
+    }
+
+    // With normal motion the decision content stays still, and the images load.
+    const motion = await open(browser, url, { width: 1440, theme: 'light', reducedMotion: 'no-preference' });
+    await motion.page.locator('button[data-upload-choice="change"]').click();
+    await motion.page.locator('.foot').scrollIntoViewIfNeeded();
+    await motion.page.locator('#upload-decision').scrollIntoViewIfNeeded();
+    await assertSelected(motion.page, 'change', 'viewport re-entry keeps the reader choice');
+    const moving = await motion.page.locator('.upload-panel, .upload-panel *').evaluateAll(elements => elements.filter(element => {
       const style = getComputedStyle(element);
       return style.animationName !== 'none' || style.transitionDuration.split(',').some(duration => Number.parseFloat(duration) > 0);
     }).map(element => element.tagName + '.' + element.className));
-    assert.deepEqual(movingContent, [], 'Decision content stays still with normal motion preferences');
-    await normalMotion.close();
-    console.log(`PASS: ${stateScans} ClassQuest state/accessibility scenarios; ${fallbackScans} no-JavaScript and print layouts; touch, native keyboard, focus, stable panel height and pinned evidence links.`);
+    assert.deepEqual(moving, [], 'decision content stays still with normal motion preferences');
+    for (const image of await motion.page.locator('main img').all()) {
+      await image.scrollIntoViewIfNeeded();
+      assert.ok(await image.evaluate(async element => { await element.decode(); return element.naturalWidth > 0; }), 'gallery image decodes');
+    }
+    assert.deepEqual(motion.problems, [], 'motion page console and network');
+    await motion.context.close();
+
+    console.log(`PASS: ${stateScans} ClassQuest state and accessibility scenarios; ${fallbackScans} no-JavaScript and print layouts; touch, keyboard, focus, stable panel height, pinned evidence links and all ten pull request links.`);
   } finally {
     if (browser) await Promise.race([browser.close().catch(() => {}), delay(5000)]);
-    server.kill();
-    server.stdout.destroy();
+    site.stop();
   }
 })().catch(error => {
   console.error(error);
