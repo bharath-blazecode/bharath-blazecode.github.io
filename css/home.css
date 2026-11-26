@@ -192,7 +192,7 @@ html:not(.js) .chess-move { display: none; }
 .contact h2 { font-size: clamp(2.3rem, 5.2vw, 4.6rem); }
 .contact :focus-visible { outline-color: var(--marker); }
 .contact-grid { display: grid; gap: 22px; margin-top: clamp(26px, 4vw, 52px); }
-.email-link { justify-self: start; max-width: 100%; font-weight: 800; font-size: clamp(1.32rem, 5.2vw, 4.4rem); line-height: 1.1; letter-spacing: -.035em; overflow-wrap: anywhere; text-decoration: none; background: linear-gradient(var(--marker), var(--marker)) left 100% / 100% .09em no-repeat; padding-bottom: .1em; }
+.email-link { display: inline-flex; align-items: center; min-height: 44px; justify-self: start; max-width: 100%; font-weight: 800; font-size: clamp(1.32rem, 5.2vw, 4.4rem); line-height: 1.1; letter-spacing: -.035em; overflow-wrap: anywhere; text-decoration: none; background: linear-gradient(var(--marker), var(--marker)) left 100% / 100% .09em no-repeat; padding-bottom: .1em; }
 .email-link:hover { color: var(--marker); }
 .contact-links { display: flex; flex-wrap: wrap; gap: 4px 30px; }
 .contact + .foot { padding-top: clamp(28px, 4vw, 48px); border-top: 1px solid var(--stage-line); }

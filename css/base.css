@@ -106,7 +106,7 @@ html:not(.js) [data-terminal-open], html:not(.js) [data-theme-toggle] { display:
 .foot { background: var(--stage); color: var(--stage-ink); padding-block: clamp(48px, 6vw, 84px) 40px; }
 .foot :focus-visible { outline-color: var(--marker); }
 .foot-inner { display: grid; grid-template-columns: 1fr auto auto; gap: 24px var(--gap); align-items: end; }
-.foot-name { grid-column: 1 / -1; font-weight: 900; font-size: clamp(2.6rem, 9vw, 8.4rem); line-height: .9; letter-spacing: -.045em; text-decoration: none; }
+.foot-name { display: inline-block; justify-self: start; min-height: 44px; grid-column: 1 / -1; font-weight: 900; font-size: clamp(2.6rem, 9vw, 8.4rem); line-height: .9; letter-spacing: -.045em; text-decoration: none; }
 .foot-name span { color: var(--marker); }
 .foot p { color: var(--stage-muted); font-size: .94rem; }
 .foot-top { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
@@ -124,7 +124,7 @@ html:not(.js) [data-terminal-open], html:not(.js) [data-theme-toggle] { display:
   @view-transition { navigation: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
 }
 
 @media (max-width: 900px) {
