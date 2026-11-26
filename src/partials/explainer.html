@@ -1,0 +1,326 @@
+<section class="explainer" data-explainer aria-labelledby="ex-title">
+  <header class="ex-head">
+    <p class="ex-note">An illustration of the research question. The evidence samples are made up for this page. Nothing here is a result or the output of a model.</p>
+    <h3 id="ex-title">Reading security evidence against <em>the ASD Essentials</em></h3>
+    <p class="ex-intro">Three invented pieces of evidence, each placed against the ASD Essentials for enterprise IT. The framework has three layers.</p>
+    <ol class="ex-layers" aria-label="The three layers of the ASD Essentials">
+      <li><strong>Principles</strong> describe the cyber security outcomes an organisation should achieve.</li>
+      <li><strong>Actions</strong> describe what needs to be done to achieve those outcomes.</li>
+      <li><strong>Domains</strong> describe the business functions and assets to which the actions apply.</li>
+    </ol>
+    <p class="ex-quote">For each action, "Assessors consider coverage, consistency, currency and evidence quality when determining an action rating." The four rows under each sample follow those four considerations.</p>
+  </header>
+
+  <div class="ex-pick" data-tabs-slot></div>
+
+  <div class="ex-panels">
+
+    <article class="ex-panel" id="ex-panel-1" data-panel data-tab="Conditional Access policy export">
+      <h4 class="ex-panel-title"><span class="label">Sample 1 of 3</span>Conditional Access policy export</h4>
+
+      <figure class="ex-doc">
+        <figcaption class="ex-doc-bar"><span class="label">Evidence</span><span class="ex-stamp">Invented sample</span></figcaption>
+        <div class="ex-doc-body">
+          <p class="ex-doc-title">Conditional Access policy export</p>
+          <dl class="ex-lines">
+            <div><dt>Policy</dt><dd>Require MFA, all users</dd></div>
+            <div><dt>State</dt><dd>On</dd></div>
+            <div><dt>Exported</dt><dd>2026-10-20</dd></div>
+            <div><dt>Users</dt><dd>All users</dd></div>
+            <div><dt>Excluded</dt><dd>Group "Break-glass and service accounts", 2 accounts</dd></div>
+            <div><dt>Apps</dt><dd>All cloud apps</dd></div>
+            <div><dt>Grant</dt><dd>Require multifactor authentication</dd></div>
+            <div><dt>Allowed methods</dt><dd>Authenticator app, push</dd><dd>FIDO2 security key</dd><dd>SMS</dd></div>
+          </dl>
+          <p class="ex-doc-foot">Made up for this page. Not from a real organisation.</p>
+        </div>
+      </figure>
+
+      <div class="ex-rail" aria-hidden="true"></div>
+
+      <div class="ex-mapcol">
+        <section class="ex-card ex-map" aria-labelledby="ex-p1-map">
+          <h5 class="label ex-h" id="ex-p1-map">Where it could map in the ASD Essentials for enterprise IT</h5>
+          <dl class="ex-map-list">
+            <div><dt class="label">Principle</dt><dd><span class="ex-pid">PRO-13</span><span class="ex-pname">Identity, credential and access management</span></dd></div>
+            <div><dt class="label">Action</dt><dd class="ex-action">Use phishing-resistant MFA for users authenticating to systems, including from untrusted, external or high-risk locations.</dd></div>
+            <div><dt class="label">Domain</dt><dd><span class="ex-domain">Identity services</span><span class="ex-domain-note">ASD describes this domain as: "Enterprise-wide identity, credential and access management services such as directories, authentication and authorisation services or credential stores."</span></dd></div>
+          </dl>
+          <p class="ex-caveat">One possible mapping, chosen for this illustration.</p>
+        </section>
+
+        <section class="ex-card ex-cons" aria-labelledby="ex-p1-cons">
+          <h5 class="label ex-h" id="ex-p1-cons">The four considerations</h5>
+          <ul class="ex-cons-list">
+            <li>
+              <h6 class="ex-cons-name">Coverage</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> The policy targets all users and all cloud apps, with one excluded group of 2 accounts.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether another sign-in path, such as legacy authentication, sits outside this policy.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Consistency</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> One policy with one grant control, stated plainly.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether guests, administrators and other tenants are treated the same way.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Currency</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> The policy was switched on when the export was taken on 2026-10-20.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether anything has changed since that date.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Evidence quality</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> An export of settings is a direct record of configuration.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> What people actually used when they signed in.</p>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="ex-card ex-read" aria-labelledby="ex-p1-read">
+          <h5 class="label ex-h" id="ex-p1-read">A plain reading</h5>
+          <div class="ex-read-grid">
+            <div class="ex-read-yes">
+              <p class="ex-read-head"><span class="mk mk-yes" aria-hidden="true"></span>Can be read from the document</p>
+              <p class="label">Where an assessment could be reasonably confident</p>
+              <ul>
+                <li>MFA is required for all users except one named group.</li>
+                <li>SMS is an allowed method alongside stronger ones, so the policy as written does not require phishing-resistant MFA only.</li>
+              </ul>
+            </div>
+            <div class="ex-read-no">
+              <p class="ex-read-head"><span class="mk mk-no" aria-hidden="true"></span>Cannot be known from this document</p>
+              <p class="label">Where an assessment would be uncertain</p>
+              <ul>
+                <li>Which method each person actually uses.</li>
+                <li>Whether the exclusion is justified and who approved it.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="ex-card ex-next" aria-labelledby="ex-p1-next">
+        <h5 class="label ex-h" id="ex-p1-next">What a person would check next</h5>
+        <ol>
+          <li>Read the sign-in logs for the last 30 days to see which methods people used.</li>
+          <li>Check who is in the excluded group and who approved the exclusion.</li>
+          <li>Look for other policies or legacy sign-in routes that go around this one.</li>
+        </ol>
+        <p class="ex-why"><b>Why a person reviews it.</b> ASD says that where existing evidence demonstrates "deployment but not sustained effectiveness", organisations may need additional operational evidence.</p>
+      </section>
+    </article>
+
+    <article class="ex-panel" id="ex-panel-2" data-panel data-tab="Monitoring agent inventory">
+      <h4 class="ex-panel-title"><span class="label">Sample 2 of 3</span>Monitoring agent inventory</h4>
+
+      <figure class="ex-doc">
+        <figcaption class="ex-doc-bar"><span class="label">Evidence</span><span class="ex-stamp">Invented sample</span></figcaption>
+        <div class="ex-doc-body">
+          <p class="ex-doc-title">Monitoring agent inventory</p>
+          <dl class="ex-lines">
+            <div><dt>Report date</dt><dd>2026-11-02</dd></div>
+            <div><dt>Endpoints listed</dt><dd>12</dd></div>
+            <div><dt>Reporting</dt><dd>9, checked in on the report date</dd></div>
+            <div><dt>Not reporting</dt><dd>3</dd></div>
+            <div><dt>LAP-0417</dt><dd>Last check-in 2026-08-14, stale</dd></div>
+            <div><dt>LAP-0422</dt><dd>Last check-in 2026-09-02, stale</dd></div>
+            <div><dt>SRV-0031</dt><dd>No check-in recorded, agent not installed</dd></div>
+            <div><dt>Agent version</dt><dd>4.2.1 on the 9 reporting</dd></div>
+          </dl>
+          <p class="ex-doc-foot">Made up for this page. Not from a real organisation.</p>
+        </div>
+      </figure>
+
+      <div class="ex-rail" aria-hidden="true"></div>
+
+      <div class="ex-mapcol">
+        <section class="ex-card ex-map" aria-labelledby="ex-p2-map">
+          <h5 class="label ex-h" id="ex-p2-map">Where it could map in the ASD Essentials for enterprise IT</h5>
+          <dl class="ex-map-list">
+            <div><dt class="label">Principle</dt><dd><span class="ex-pid">DET-05</span><span class="ex-pname">Detection capability efficacy</span></dd></div>
+            <div><dt class="label">Action</dt><dd class="ex-action">Review detection coverage periodically to identify gaps arising from new assets, services or architectural changes.</dd></div>
+            <div><dt class="label">Domain</dt><dd><span class="ex-domain">Visibility and response</span><span class="ex-domain-note">ASD describes this domain as: "Procedures and capabilities for detecting, analysing and responding to cyber security events and incidents."</span></dd></div>
+          </dl>
+          <p class="ex-caveat">One possible mapping, chosen for this illustration.</p>
+        </section>
+
+        <section class="ex-card ex-cons" aria-labelledby="ex-p2-cons">
+          <h5 class="label ex-h" id="ex-p2-cons">The four considerations</h5>
+          <ul class="ex-cons-list">
+            <li>
+              <h6 class="ex-cons-name">Coverage</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> 9 of the 12 listed endpoints reported on the report date.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether the 12 listed are every endpoint the organisation has. A device missing from the list would not appear.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Consistency</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> The 9 reporting endpoints run the same agent version.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether they send the same kinds of logs or use the same settings.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Currency</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> Two endpoints last checked in on 2026-08-14 and 2026-09-02.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether the 9 reporting endpoints have reported every day, or only on the report date.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Evidence quality</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> Counts and dates, recorded by the tool that manages the agents.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether a check-in means events are collected, detected on and reviewed by anyone.</p>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="ex-card ex-read" aria-labelledby="ex-p2-read">
+          <h5 class="label ex-h" id="ex-p2-read">A plain reading</h5>
+          <div class="ex-read-grid">
+            <div class="ex-read-yes">
+              <p class="ex-read-head"><span class="mk mk-yes" aria-hidden="true"></span>Can be read from the document</p>
+              <p class="label">Where an assessment could be reasonably confident</p>
+              <ul>
+                <li>9 of 12 listed endpoints reported on the report date.</li>
+                <li>Two endpoints have not checked in for some weeks, and one has no agent.</li>
+              </ul>
+            </div>
+            <div class="ex-read-no">
+              <p class="ex-read-head"><span class="mk mk-no" aria-hidden="true"></span>Cannot be known from this document</p>
+              <p class="label">Where an assessment would be uncertain</p>
+              <ul>
+                <li>Whether the list is complete.</li>
+                <li>Whether the reporting agents give useful detection.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="ex-card ex-next" aria-labelledby="ex-p2-next">
+        <h5 class="label ex-h" id="ex-p2-next">What a person would check next</h5>
+        <ol>
+          <li>Compare the inventory with the asset register and the directory to find devices that are not listed.</li>
+          <li>Find out why the 3 endpoints are not reporting and whether they are still in use.</li>
+          <li>Send a harmless test event from one endpoint and confirm it reaches the console and is seen.</li>
+        </ol>
+        <p class="ex-why"><b>Why a person reviews it.</b> ASD says that where existing evidence demonstrates "deployment but not sustained effectiveness", organisations may need additional operational evidence.</p>
+      </section>
+    </article>
+
+    <article class="ex-panel" id="ex-panel-3" data-panel data-tab="Incident response plan cover page">
+      <h4 class="ex-panel-title"><span class="label">Sample 3 of 3</span>Incident response plan cover page</h4>
+
+      <figure class="ex-doc">
+        <figcaption class="ex-doc-bar"><span class="label">Evidence</span><span class="ex-stamp">Invented sample</span></figcaption>
+        <div class="ex-doc-body">
+          <p class="ex-doc-title">Incident Response Plan</p>
+          <dl class="ex-lines">
+            <div><dt>Organisation</dt><dd>Example Pty Ltd, a fictional company</dd></div>
+            <div><dt>Version</dt><dd>2.1</dd></div>
+            <div><dt>Status</dt><dd>Approved</dd></div>
+            <div><dt>Approved</dt><dd>2024-06-12</dd></div>
+            <div><dt>Approved by</dt><dd>Head of IT</dd></div>
+            <div><dt>Next review</dt><dd>Not recorded</dd></div>
+            <div><dt>Test or exercise</dt><dd>No record attached</dd></div>
+          </dl>
+          <p class="ex-doc-foot">Made up for this page. Not from a real organisation.</p>
+        </div>
+      </figure>
+
+      <div class="ex-rail" aria-hidden="true"></div>
+
+      <div class="ex-mapcol">
+        <section class="ex-card ex-map" aria-labelledby="ex-p3-map">
+          <h5 class="label ex-h" id="ex-p3-map">Where it could map in the ASD Essentials for enterprise IT</h5>
+          <dl class="ex-map-list">
+            <div><dt class="label">Principle</dt><dd><span class="ex-pid">RES-03</span><span class="ex-pname">Cyber security incident response</span></dd></div>
+            <div><dt class="label">Action</dt><dd class="ex-action">Use documented, tested and approved cyber security incident response procedures when responding to cyber security incidents.</dd></div>
+            <div><dt class="label">Domain</dt><dd><span class="ex-domain">Visibility and response</span><span class="ex-domain-note">ASD describes this domain as: "Procedures and capabilities for detecting, analysing and responding to cyber security events and incidents."</span></dd></div>
+          </dl>
+          <p class="ex-caveat">One possible mapping, chosen for this illustration.</p>
+        </section>
+
+        <section class="ex-card ex-cons" aria-labelledby="ex-p3-cons">
+          <h5 class="label ex-h" id="ex-p3-cons">The four considerations</h5>
+          <ul class="ex-cons-list">
+            <li>
+              <h6 class="ex-cons-name">Coverage</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> A plan exists, with a version number and a named approver.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Which systems, teams and kinds of incident the plan covers. This is only the cover page.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Consistency</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> Nothing on the page contradicts itself.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether the steps in the plan match what the team really does.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Currency</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> The approval date is 2024-06-12, more than two years old, and no next review is recorded.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether the plan has been used or updated outside this document.</p>
+              </div>
+            </li>
+            <li>
+              <h6 class="ex-cons-name">Evidence quality</h6>
+              <div class="ex-cons-body">
+                <p><span class="mk mk-yes" aria-hidden="true"></span><b>Shows</b> A formal approval, recorded on a controlled document.</p>
+                <p><span class="mk mk-no" aria-hidden="true"></span><b>Cannot show</b> Whether the plan was ever tested. "No record attached" means this page has none, not that no exercise took place.</p>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="ex-card ex-read" aria-labelledby="ex-p3-read">
+          <h5 class="label ex-h" id="ex-p3-read">A plain reading</h5>
+          <div class="ex-read-grid">
+            <div class="ex-read-yes">
+              <p class="ex-read-head"><span class="mk mk-yes" aria-hidden="true"></span>Can be read from the document</p>
+              <p class="label">Where an assessment could be reasonably confident</p>
+              <ul>
+                <li>The plan is documented and approved.</li>
+                <li>The approval is more than two years old and no test is recorded on this page.</li>
+              </ul>
+            </div>
+            <div class="ex-read-no">
+              <p class="ex-read-head"><span class="mk mk-no" aria-hidden="true"></span>Cannot be known from this document</p>
+              <p class="label">Where an assessment would be uncertain</p>
+              <ul>
+                <li>Whether the plan has been tested somewhere else.</li>
+                <li>Whether people know the plan and could follow it.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="ex-card ex-next" aria-labelledby="ex-p3-next">
+        <h5 class="label ex-h" id="ex-p3-next">What a person would check next</h5>
+        <ol>
+          <li>Ask for exercise or test reports, or notes from any real incident the plan was used in.</li>
+          <li>Look at the revision history for changes made after 2024-06-12.</li>
+          <li>Check that the roles and contact details in the plan are still correct.</li>
+        </ol>
+        <p class="ex-why"><b>Why a person reviews it.</b> ASD says that where existing evidence demonstrates "deployment but not sustained effectiveness", organisations may need additional operational evidence.</p>
+      </section>
+    </article>
+
+  </div>
+
+  <p class="ex-source">Quoted from ASD: What is the Essentials? (15 Oct 2026), Essentials for enterprise IT, and Transitioning from the Essential Eight. The evidence samples, the possible mappings and the readings are written for this page.</p>
+</section>

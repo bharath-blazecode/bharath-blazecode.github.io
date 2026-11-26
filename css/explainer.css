@@ -1,0 +1,133 @@
+/* Research explainer: paper documents laid on the yellow band. Colours come from the tokens only. */
+.explainer { margin-top: clamp(48px, 6vw, 96px); color: var(--ink); font-size: 1rem; }
+.explainer :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+/* Header */
+.ex-head { display: grid; gap: 18px; max-width: 62rem; }
+.ex-note { display: inline-block; justify-self: start; padding: 12px 16px 12px 20px; border: 1px solid var(--ink); border-left-width: 8px; border-radius: var(--radius); background: var(--paper); font-family: var(--mono); font-size: .86rem; line-height: 1.5; box-shadow: 4px 4px 0 var(--ink); }
+.ex-head h3 { font-size: clamp(1.9rem, 4.4vw, 3.4rem); max-width: 18em; margin-top: 10px; }
+.ex-intro { max-width: 40em; }
+.ex-layers { display: grid; gap: 14px; counter-reset: layer; }
+.ex-layers li { position: relative; counter-increment: layer; padding: 16px 16px 16px 58px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); }
+.ex-layers li::before { content: counter(layer); position: absolute; left: 14px; top: 14px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: .85rem; }
+.ex-layers strong { display: block; font-weight: 800; font-size: 1.15rem; letter-spacing: -.02em; }
+.ex-quote { max-width: 46em; padding-left: 16px; border-left: 3px solid var(--ink); font-size: .96rem; }
+
+/* Selector, built by the script */
+.ex-pick { display: none; margin-top: clamp(28px, 4vw, 44px); }
+.explainer.is-on .ex-pick { display: block; }
+.ex-pick-label { margin-bottom: 12px; }
+.ex-tabs { display: grid; gap: 12px; }
+.ex-tab { position: relative; display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 8px 18px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); color: var(--ink); font-weight: 700; text-align: left; line-height: 1.25; box-shadow: 4px 4px 0 var(--ink); transition: transform .15s var(--ease), box-shadow .15s var(--ease); }
+.ex-tab-no { display: grid; place-items: center; flex: none; min-width: 34px; height: 26px; border: 1px solid var(--ink); border-radius: 13px; font-family: var(--mono); font-size: .78rem; font-weight: 400; }
+.ex-tab:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+.ex-tab[aria-selected=true] { background: var(--ink); color: var(--paper); transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
+.ex-tab[aria-selected=true] .ex-tab-no { border-color: var(--paper); background: var(--paper); color: var(--ink); }
+
+/* Panels. With no script every panel is shown in turn. */
+.ex-panels { display: grid; gap: clamp(48px, 7vw, 88px); margin-top: clamp(28px, 4vw, 44px); }
+.ex-panel { display: grid; gap: 22px; grid-template-areas: "title" "doc" "rail" "map" "next"; align-items: start; }
+.ex-panel:focus-visible { outline-offset: 8px; }
+.ex-panel-title { grid-area: title; display: grid; gap: 6px; font-size: clamp(1.4rem, 3vw, 2rem); }
+.explainer.is-on .ex-panel-title { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ex-doc { grid-area: doc; position: relative; min-width: 0; margin: 0 6px 6px 0; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); box-shadow: 6px 6px 0 var(--ink); }
+.ex-doc-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 6px 16px; border-bottom: 1px solid var(--ink); background: var(--panel); }
+.ex-stamp { padding: 3px 10px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--marker); font-family: var(--mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; transform: rotate(-2deg); }
+.ex-doc-body { padding: clamp(16px, 2.4vw, 26px); font-family: var(--mono); font-size: .88rem; line-height: 1.55; }
+.ex-doc-title { margin-bottom: 14px; font-size: 1rem; font-weight: 700; }
+.ex-lines > div { display: grid; grid-template-columns: minmax(6rem, 8.5rem) minmax(0, 1fr); gap: 4px 14px; padding: 7px 0; border-top: 1px dashed var(--line); }
+.ex-lines dt { color: var(--muted); }
+.ex-lines dd { grid-column: 2; overflow-wrap: anywhere; }
+.ex-doc-foot { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--ink); color: var(--muted); font-size: .78rem; }
+
+/* The rule that joins the document to its mapping */
+.ex-rail { grid-area: rail; position: relative; height: 36px; }
+.ex-rail::before { content: ""; position: absolute; left: 28px; top: 0; bottom: 6px; width: 2px; background: var(--ink); }
+.ex-rail::after { content: ""; position: absolute; left: 22px; bottom: 0; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--ink); background: var(--marker); }
+
+.ex-mapcol { grid-area: map; display: grid; gap: 22px; min-width: 0; }
+.ex-card { min-width: 0; padding: clamp(16px, 2.4vw, 28px); border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); }
+.ex-h { margin-bottom: 14px; font-weight: 700; }
+
+/* Mapping */
+.ex-map { box-shadow: 6px 6px 0 var(--ink); margin: 0 6px 6px 0; }
+.ex-map-list > div + div { margin-top: 16px; }
+.ex-map-list dt { margin-bottom: 6px; }
+.ex-pid { display: inline-block; margin-right: 12px; padding: 2px 10px; border-radius: var(--radius); background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 1.25rem; letter-spacing: .02em; vertical-align: middle; }
+.ex-pname { display: inline; font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 800; letter-spacing: -.02em; line-height: 1.2; }
+.ex-action { padding-left: 14px; border-left: 4px solid var(--ink); font-size: 1.06rem; line-height: 1.5; }
+.ex-domain { display: inline-block; padding: 2px 12px; border: 1px solid var(--ink); border-radius: 999px; background: var(--marker); font-weight: 700; }
+.ex-domain-note { display: block; margin-top: 8px; color: var(--muted); font-size: .9rem; }
+.ex-caveat { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line); color: var(--muted); font-family: var(--mono); font-size: .78rem; }
+
+/* Considerations */
+.ex-cons-list > li { display: grid; gap: 8px 20px; padding: 16px 0; border-top: 1px solid var(--line); }
+.ex-cons-list > li:first-child { padding-top: 0; border-top: 0; }
+.ex-cons-list > li:last-child { padding-bottom: 0; }
+.ex-cons-name { font-size: 1.1rem; letter-spacing: -.02em; }
+.ex-cons-body { display: grid; gap: 10px; min-width: 0; }
+.ex-cons-body p { position: relative; padding-left: 26px; font-size: .96rem; }
+.ex-cons-body b { display: block; margin-bottom: 2px; font-family: var(--mono); font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.ex-cons-body p > .mk { position: absolute; left: 0; top: 2px; }
+
+/* Markers carry meaning by shape: a filled circle and a hollow diamond */
+.mk { display: inline-block; flex: none; width: 14px; height: 14px; }
+.mk-yes { border-radius: 50%; background: var(--ink); }
+.mk-no { width: 11px; height: 11px; margin: 1.5px; border: 2px solid var(--ink); background: transparent; transform: rotate(45deg); }
+
+/* Reading */
+.ex-read-grid { display: grid; gap: 16px; }
+.ex-read-grid > div { padding: 16px; border: 1px solid var(--ink); border-radius: var(--radius); }
+.ex-read-no { border-style: dashed !important; background: var(--panel); }
+.ex-read-head { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.01em; }
+.ex-read-grid .label { margin: 4px 0 10px 24px; }
+.ex-read-grid ul { display: grid; gap: 8px; padding-left: 24px; font-size: .96rem; }
+.ex-read-grid li { list-style: square; }
+
+/* Next checks */
+.ex-next { grid-area: next; background: var(--panel); }
+.ex-next ol { display: grid; gap: 12px; counter-reset: step; }
+.ex-next ol li { position: relative; counter-increment: step; padding-left: 40px; }
+.ex-next ol li::before { content: counter(step); position: absolute; left: 0; top: 1px; display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); font-family: var(--mono); font-size: .8rem; }
+.ex-why { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: .96rem; }
+.ex-why b { font-weight: 800; }
+
+.ex-source { max-width: 52rem; margin-top: clamp(32px, 4vw, 52px); padding-top: 14px; border-top: 1px solid var(--ink); color: var(--muted); font-family: var(--mono); font-size: .78rem; line-height: 1.6; }
+
+/* Switching panels */
+@keyframes ex-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .ex-panel.is-entering { animation: ex-in .25s var(--ease) both; }
+}
+
+@media (min-width: 720px) {
+  .ex-layers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+  .ex-layers li + li::after { content: ""; position: absolute; left: -22px; top: 28px; width: 22px; height: 2px; background: var(--ink); }
+  .ex-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .ex-tab[aria-selected=true]::after { content: ""; position: absolute; left: 28px; top: 100%; margin-top: 4px; border: 9px solid transparent; border-top: 11px solid var(--ink); }
+  .ex-cons-list > li { grid-template-columns: 8.5rem minmax(0, 1fr); }
+  .ex-read-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Wide: document on the left, mapping and considerations on the right, joined by a rule */
+@media (min-width: 1100px) {
+  .ex-panel { grid-template-columns: minmax(0, 5fr) 64px minmax(0, 7fr); grid-template-rows: auto auto 1fr; grid-template-areas: "title title title" "doc rail map" "next . map"; column-gap: 0; row-gap: 28px; }
+  .ex-rail { height: auto; }
+  .ex-rail::before { left: 0; right: 6px; top: 22px; bottom: auto; width: auto; height: 2px; }
+  .ex-rail::after { left: auto; right: -1px; top: 15px; bottom: auto; }
+  .ex-cons-list > li { grid-template-columns: 7rem minmax(0, 1fr); }
+  .ex-read-grid { grid-template-columns: 1fr; }
+  .ex-doc { align-self: start; }
+}
+@media (min-width: 1300px) {
+  .ex-read-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media print {
+  .explainer .ex-pick { display: none !important; }
+  .explainer .ex-panel[hidden] { display: grid !important; }
+  .explainer.is-on .ex-panel-title { position: static; width: auto; height: auto; margin: 0; clip-path: none; white-space: normal; }
+  .ex-panel { break-inside: avoid; }
+  .ex-panels { gap: 32px; }
+  .ex-doc, .ex-map, .ex-tab { box-shadow: none; }
+}
