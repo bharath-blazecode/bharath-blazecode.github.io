@@ -147,7 +147,7 @@ async function create(root, opts) {
   const S = {
     pos: X.parse(opts.position || X.START), hist: [], visit: [], sel: -1, targets: new Map(), last: [-1, -1], cursor: 7,
     state: 'ready', gen: 0, ms: opts.ms || 450, W: { ...X.DEFAULTS }, id: 0, worker: null, pending: null,
-    session: { won: 0, lost: 0, drawn: 0 }, saved: loadStats(), start: opts.position || X.START
+    tally: { won: 0, lost: 0, drawn: 0 }, saved: loadStats(), start: opts.position || X.START
   };
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -226,7 +226,7 @@ async function create(root, opts) {
   }
 
   function scoreLine() {
-    const a = S.session, b = S.saved;
+    const a = S.tally, b = S.saved;
     score.textContent = `Score this visit: won ${a.won}, lost ${a.lost}, drawn ${a.drawn}. Saved in this browser: played ${b.played}, won ${b.won}, lost ${b.lost}, drawn ${b.drawn}.`;
   }
 
@@ -250,7 +250,7 @@ async function create(root, opts) {
     const text = st.kind === 'checkmate' ? `Checkmate. ${you ? 'You win.' : 'The engine wins.'}` : RESULTS[st.kind];
     status.textContent = text;
     const k = st.winner === 0 ? 'drawn' : you ? 'won' : 'lost';
-    S.session[k]++; S.saved[k]++; S.saved.played++;
+    S.tally[k]++; S.saved[k]++; S.saved.played++;
     saveStats(S.saved);
     scoreLine();
     return text;
