@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { startSite } = require('./helpers/site.cjs');
 
 const SCENE = 'desk-scene.js';
-const objects = [['homelab', 'work/homelab/'], ['classquest', 'work/classquest/'], ['luna', 'work/luna/'], ['research', '#research']];
+const objects = [['homelab', 'work/homelab/'], ['classquest', 'work/classquest/'], ['luna', 'work/luna/'], ['research', 'research/']];
 
 // Counts WebGL draw calls and lets a test pretend the tab is hidden.
 function instruments() {
