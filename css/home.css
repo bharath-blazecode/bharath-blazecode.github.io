@@ -246,10 +246,10 @@ details[open] > summary .plus::after { transform: rotate(0deg); }
 .background-ledger li span { color: var(--muted); }
 
 /* Chess: a short intro and a start button. The game itself loads on request. */
-.chess { margin-top: clamp(34px, 4vw, 56px); padding-top: 16px; border-top: 2px solid var(--ink); }
+.chess { grid-column: 1 / -1; padding-top: 16px; border-top: 2px solid var(--ink); }
 .chess-intro { margin: 8px 0 16px; max-width: 30em; }
 html:not(.js) [data-chess-start] { display: none; }
-.chess-game { margin-top: 8px; }
+.chess-game { max-width: 1060px; margin-top: 8px; }
 
 /* Contact shares the dark stage with the footer. */
 .contact { --ink: #eef0e6; --muted: #c1c9b8; --line: #4a584a; --link: #dde84a; padding-bottom: clamp(36px, 5vw, 64px); background: var(--stage); color: var(--stage-ink); }
