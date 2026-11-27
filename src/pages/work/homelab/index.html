@@ -1,0 +1,268 @@
+<!--page
+title: ITDR Home Lab | Barry Sampath
+description: Getting a Windows endpoint to report into a security monitoring system, and tracing the infrastructure faults along the way.
+css: base case homelab
+scripts: site homelab
+preload: archivo-variable.woff2 source-serif-italic.woff2
+ogImage: projects/wazuh-dashboard.jpg
+ogImageAlt: Wazuh dashboard overview showing alert severity counters and endpoint-security modules
+-->
+<main id="main">
+
+<header class="case-head shell">
+  <p class="label crumb"><a href="../../#work">Selected work</a> <span aria-hidden="true">/</span> ITDR Home Lab</p>
+  <h1><span class="h1-mark">ITDR Home Lab</span></h1>
+  <div class="case-top">
+    <div>
+      <p class="case-dek">Getting a Windows endpoint to report into a security monitoring system, and tracing the infrastructure faults along the way.</p>
+      <p class="case-summary">A personal identity threat detection and response (ITDR) home lab, started in June 2026. Phase 1 <span class="mark">established endpoint telemetry collection</span> with Wazuh 4.9.2 and Sysmon 15.20 on a single laptop.</p>
+    </div>
+    <dl class="facts" aria-label="Project facts">
+      <div><dt class="label">Kind</dt><dd>Personal lab</dd></div>
+      <div><dt class="label">My part</dt><dd>I built and documented the virtual environment, enrolled the Windows endpoint and resolved storage and network faults.</dd></div>
+      <div><dt class="label">Status</dt><dd>Phase 1 complete, development paused<small>Detection-rule development is a future phase.</small></dd></div>
+      <div><dt class="label">Stack</dt><dd>Wazuh 4.9.2, Sysmon 15.20, Ubuntu Server 22.04, Windows 11 Enterprise, VMware Workstation</dd></div>
+    </dl>
+  </div>
+</header>
+
+<section class="case-section" id="context" aria-labelledby="context-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">01</span><span class="label">Context</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="context-title">Why I built the lab</h2>
+      <p>I built a local security information and event management (SIEM) system to collect activity from a Windows endpoint. I wanted to work through the storage, networking and enrolment problems that a guided lab can hide.</p>
+      <p>The focus is identity and endpoint activity. Sysmon records process, network and file events so they can be collected and inspected in Wazuh.</p>
+    </div>
+  </div>
+</section>
+
+<section class="case-section" id="built" aria-labelledby="built-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">02</span><span class="label">What I built</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="built-title">Architecture and <em>working milestone</em></h2>
+      <p>An Ubuntu Server 22.04 virtual machine running a Wazuh 4.9.2 all-in-one deployment: indexer, server and dashboard on one host. A Windows 11 Enterprise virtual machine as the monitored endpoint, with Sysmon 15.20 installed and configured against the SwiftOnSecurity ruleset. Both on a Lenovo ThinkPad under VMware Workstation, bridged onto the local network.</p>
+      <p>Phase 1 was complete once the agent enrolled, telemetry reached the indexer and Windows events appeared in the dashboard. Reaching that point exposed four separate infrastructure faults.</p>
+
+      <figure class="flow-fig reveal">
+        <div class="flow stage" data-telemetry-flow role="group" aria-label="Lab architecture: Windows endpoint telemetry moving through the Wazuh server, indexer and dashboard" aria-describedby="telemetry-caption">
+          <div class="node node-hot"><b>Windows 11</b><span>Sysmon 15.20 + agent</span></div>
+          <div class="hop"><span class="hop-label">Agent</span><i class="rail" aria-hidden="true"></i><i class="packet" data-flow-packet data-flow-step="1" aria-hidden="true"></i></div>
+          <div class="host" role="group" aria-label="Ubuntu Server 22.04, Wazuh 4.9.2 all-in-one">
+            <p class="host-name label">Ubuntu Server 22.04, Wazuh 4.9.2 all-in-one</p>
+            <div class="host-row">
+              <div class="node"><b>Server</b><span>Decoders + rules</span></div>
+              <div class="hop"><span class="hop-label">Index</span><i class="rail" aria-hidden="true"></i><i class="packet" data-flow-packet data-flow-step="2" aria-hidden="true"></i></div>
+              <div class="node"><b>Indexer</b><span>Event storage</span></div>
+              <div class="hop"><span class="hop-label">Query</span><i class="rail" aria-hidden="true"></i><i class="packet" data-flow-packet data-flow-step="3" aria-hidden="true"></i></div>
+              <div class="node"><b>Dashboard</b><span>Search + triage</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="flow-net label"><span>Bridged, 192.168.1.0/24</span><span>Dashboard over HTTPS, local only</span></p>
+        <figcaption id="telemetry-caption"><span class="label">Fig. 1</span><span>Where telemetry goes. The diagram follows Windows endpoint telemetry through analysis, storage and search. It illustrates the collection path, not a recorded incident. The packet flow repeats every eight seconds, and stops when the diagram is off screen or you prefer reduced motion.</span></figcaption>
+      </figure>
+
+      <h3>Component roles</h3>
+      <dl class="spec stage">
+        <div><dt>Indexer</dt><dd>OpenSearch-based storage for parsed events</dd></div>
+        <div><dt>Server</dt><dd>Analysis engine: decoders, rules, alerting</dd></div>
+        <div><dt>Dashboard</dt><dd>Interface based on OpenSearch Dashboards</dd></div>
+        <div><dt>Agent</dt><dd>Runs on the endpoint, ships Windows Event Channel data</dd></div>
+        <div><dt>Sysmon</dt><dd>Generates the process, network and file telemetry used to investigate endpoint activity</dd></div>
+      </dl>
+
+      <figure class="shot after-figure reveal">
+        <a href="../../assets/projects/sysmon-install.jpg"><img src="../../assets/projects/sysmon-install-960.webp" srcset="../../assets/projects/sysmon-install-480.webp 480w, ../../assets/projects/sysmon-install-960.webp 960w, ../../assets/projects/sysmon-install-1440.webp 1440w" sizes="(max-width: 900px) 92vw, 900px" alt="PowerShell window in the Windows 11 lab machine showing Sysmon 15.20 installing with a configuration file and the Sysmon64 service running" width="1974" height="1010" loading="lazy" decoding="async"></a>
+        <figcaption><span class="label">Evidence</span> Sysmon installed and running on the Windows endpoint, 15 June 2026. My own screenshot, cropped to the PowerShell window.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="case-section" id="lessons" aria-labelledby="lessons-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">03</span><span class="label">What broke</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="lessons-title">Four faults, <em>in the order they happened</em></h2>
+      <p>The build log records the symptom, the layer that caused it and the fix.</p>
+
+      <ol class="faults">
+        <li class="fault reveal">
+          <h3>VM storage corrupting</h3>
+          <div class="fault-cause"><p class="label">Diagnosis</p><p>OneDrive was syncing the directory holding the virtual disks and taking locks on <code>.vmdk</code> files mid-write.</p></div>
+          <div class="fault-fix"><p class="label">Fix</p><p>Moved every VM file outside the OneDrive tree. Cloud sync and files that write continuously do not belong in the same folder.</p></div>
+        </li>
+        <li class="fault reveal">
+          <h3>Server unreachable</h3>
+          <div class="fault-cause"><p class="label">Diagnosis</p><p>A stale netplan configuration held a static address of <code>192.168.170.10</code>, from a subnet that stopped existing when I changed network adapters. The interface came up; nothing could route to it.</p></div>
+          <div class="fault-fix"><p class="label">Fix</p><p>Rewrote netplan against the bridged adapter. Found by comparing the configured address against the adapter&rsquo;s actual subnet instead of debugging the services on top.</p></div>
+        </li>
+        <li class="fault reveal">
+          <h3>Indexer stalling</h3>
+          <div class="fault-cause"><p class="label">Diagnosis</p><p>During this build, the 50&nbsp;GB virtual disk reached 99% usage. The symptom looked like slow indexing, so I investigated the service before checking disk usage with <code>df</code>.</p></div>
+          <div class="fault-fix"><p class="label">Fix</p><p>Expanded to 100&nbsp;GB via LVM with no rebuild. Now I size for retention rather than for install.</p></div>
+        </li>
+        <li class="fault reveal">
+          <h3>SSH dead on NAT</h3>
+          <div class="fault-cause"><p class="label">Diagnosis</p><p>On NAT networking the host was unreachable over SSH while the agent still enrolled successfully, so the failure looked partial and I spent time on the wrong layer.</p></div>
+          <div class="fault-fix"><p class="label">Fix</p><p>Reverted to bridged to get the lab productive. NAT restoration on the correct subnet is documented and queued rather than abandoned.</p></div>
+        </li>
+      </ol>
+
+      <p class="after-faults">Each fault appeared one layer above its cause. Storage locks looked like VMware corruption, stale networking looked like a Wazuh outage, and a full disk looked like an indexer performance problem. I now check the underlying storage and network state before changing the service on top.</p>
+    </div>
+  </div>
+</section>
+
+<section class="case-section" id="reflection" aria-labelledby="reflection-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">04</span><span class="label">What I&rsquo;d change</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="reflection-title">What I would change</h2>
+      <ol class="steps">
+        <li><b>Build detection rules alongside the infrastructure.</b> I completed endpoint collection before developing my own detection rules. I would plan the test events and intended detections together so that receiving data is distinguished from detecting a specific behaviour.</li>
+        <li><b>Size the disk for retention from the start.</b> The 50&nbsp;GB disk filled during this build. I would estimate storage from the expected event volume and retention period; this experience does not establish a universal Wazuh disk requirement.</li>
+        <li><b>Generate adversarial telemetry deliberately.</b> Controlled simulations could test whether the expected events reach the dashboard. Atomic Red Team is a possible tool for a future phase. Security scanning or testing would be limited to systems I own or have explicit permission to test.</li>
+        <li><b>Rotate credentials before writing anything public.</b> The initial lab password lived in plaintext in my notes for longer than it should have. It is rotated now, which is the correct outcome and an uncomfortable thing to have learned by nearly publishing it.</li>
+      </ol>
+
+      <h3>Where it goes next</h3>
+      <p>Phase 2 is detection-rule development and incident-response exercises against the endpoint. The lab is paused while university assessment and paid work take priority. The environment is still available when I return to it.</p>
+    </div>
+  </div>
+</section>
+
+<section class="case-section" id="evidence" aria-labelledby="evidence-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">05</span><span class="label">Evidence</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="evidence-title">What backs this up</h2>
+      <p class="lede">This Phase 1 dashboard overview provides context for the build. The completed collection milestone is documented in the build notes, available on request. The screenshot is not a recorded incident or a detection-performance result.</p>
+
+      <section class="lab-notebook" data-lab-notebook aria-labelledby="notebook-title">
+        <div class="notebook-heading">
+          <p class="label">From the lab notebook / 02 notes</p>
+          <h3 id="notebook-title">A closer look at the <em>build.</em></h3>
+          <p>One milestone and one fault, from the notes I kept along the way.</p>
+        </div>
+        <div class="notebook-pages">
+          <article class="notebook-spread" data-notebook-page data-notebook-title="Collection milestone" id="notebook-collection">
+            <figure class="notebook-figure">
+              <div class="notebook-photo"><img src="../../assets/projects/wazuh-dashboard-960.webp" srcset="../../assets/projects/wazuh-dashboard-480.webp 480w, ../../assets/projects/wazuh-dashboard-960.webp 960w" sizes="(max-width: 900px) 86vw, 460px" alt="Wazuh dashboard overview showing alert severity counters and endpoint-security modules" width="1280" height="673" loading="lazy" decoding="async"></div>
+              <figcaption><span class="label">Fig. 2</span> Wazuh overview from the Phase 1 build.</figcaption>
+              <a class="textlink" href="../../assets/projects/wazuh-dashboard.jpg">Open the original image</a>
+            </figure>
+            <div class="notebook-note">
+              <p class="label">01 / Collection milestone</p>
+              <h4>Getting the signal through.</h4>
+              <p>I wanted Windows endpoint events to reach Wazuh. Phase 1 was complete when the agent enrolled and events appeared in the dashboard.</p>
+              <p class="small">This overview gives context to the build; it is not a recorded incident or a detection-performance result.</p>
+              <p class="notebook-stamp">Phase 1 complete <span aria-hidden="true">/</span> Lab paused</p>
+            </div>
+          </article>
+          <article class="notebook-spread" data-notebook-page data-notebook-title="Indexer storage fault" id="notebook-storage">
+            <div class="notebook-illustration" aria-hidden="true">
+              <span class="label">Build log / illustration</span>
+              <svg viewBox="0 0 300 210" focusable="false">
+                <rect x="61" y="24" width="178" height="146" rx="12" class="notebook-disk"></rect>
+                <path d="M82 49 H218 M82 60 H218 M82 147 H218" class="notebook-ink"></path>
+                <circle cx="96" cy="147" r="3" class="notebook-dot"></circle>
+                <text x="150" y="113" text-anchor="middle">99%</text>
+                <path d="M35 180 C92 190 195 189 261 178" class="notebook-ink"></path>
+              </svg>
+              <span class="label">Illustration based on the build log</span>
+            </div>
+            <div class="notebook-note">
+              <p class="label">02 / A fault from the build log</p>
+              <h4>When the indexer stalled.</h4>
+              <p>The 50&nbsp;GB virtual disk had reached 99% usage. The symptom looked like slow indexing, so I investigated the service before checking disk space.</p>
+              <p>I expanded the disk to 100&nbsp;GB using LVM without rebuilding the lab.</p>
+              <a class="textlink" href="#lessons">Read the build log</a>
+            </div>
+          </article>
+        </div>
+        <nav class="notebook-controls" data-notebook-controls hidden aria-label="Lab notebook pages">
+          <button type="button" data-notebook-previous><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m0 0 5-5m-5 5 5 5"/></svg>Previous note</button>
+          <p role="status" aria-live="polite" data-notebook-status></p>
+          <button type="button" data-notebook-next>Next note<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></button>
+        </nav>
+      </section>
+
+      <ul class="evidence">
+        <li><a href="#example"><span class="et">Illustrative detection walkthrough</span><span class="eu">Example rule 100210</span></a></li>
+        <li><a href="mailto:barry.sampath@outlook.com?subject=ITDR%20lab%20build%20notes"><span class="et">Phase 1 build notes, on request</span><span class="eu">Email</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="band-stage" id="example" aria-labelledby="example-title">
+  <div class="shell">
+    <p class="label">Learning example / Illustrative, not a recorded incident</p>
+    <h2 class="example-title reveal" id="example-title"><span class="hl">Word opens PowerShell.</span> <span class="hl">Here is what I would <em>check.</em></span></h2>
+    <div class="example-grid">
+      <div class="example-main">
+        <p class="example-intro">This condensed example shows how process telemetry can become a question worth investigating. It is separate from the completed Phase 1 lab. Rule development and response exercises remain planned work.</p>
+
+        <figure class="investigation-flow" data-investigation-flow>
+          <div class="investigation-process">
+            <div class="investigation-node"><span class="label">Parent process</span><code>WINWORD.EXE</code></div>
+            <svg class="investigation-arrow" viewBox="0 0 36 18" aria-hidden="true" focusable="false"><path d="M2 9 H32 M26 3 L32 9 L26 15"></path></svg>
+            <div class="investigation-node"><span class="label">Child process</span><code>powershell.exe</code></div>
+            <svg class="investigation-arrow" viewBox="0 0 36 18" aria-hidden="true" focusable="false"><path d="M2 9 H32 M26 3 L32 9 L26 15"></path></svg>
+            <div class="investigation-node investigation-question"><span class="label">Next</span><strong>What I would check</strong></div>
+          </div>
+          <ol class="investigation-stages" aria-label="Investigation stages"><li><a href="#example-observe" data-guide="observe">01 / Observe</a></li><li><a href="#example-consider" data-guide="consider">02 / Consider a rule</a></li><li><a href="#example-interpret" data-guide="interpret">03 / Interpret</a></li><li><a href="#example-ask" data-guide="ask">04 / Ask next</a></li></ol>
+          <figcaption>Illustrative process relationship, not a recorded incident. This relationship alone does not prove malicious activity. Choose a step to explore it.</figcaption>
+        </figure>
+
+        <div class="example-steps">
+          <details id="example-observe" open><summary>01 / Observe the process<span class="plus" aria-hidden="true"></span></summary><div class="step-body"><p>In this sample event, <code>WINWORD.EXE</code> starts <code>powershell.exe</code> with encoded arguments. That parent and child relationship is worth inspecting; it does not prove malicious activity by itself.</p><pre><code>Sample Windows process event
+Parent:  WINWORD.EXE
+Process: powershell.exe
+Flags:   -nop -w hidden -enc
+Event:   Sysmon Event ID 1</code></pre></div></details>
+          <details id="example-consider"><summary>02 / Consider a rule<span class="plus" aria-hidden="true"></span></summary><div class="step-body"><p>Example rule identifier <code>100210</code> maps to MITRE ATT&amp;CK <code>T1059.001</code> (PowerShell). A sample <code>local_rules.xml</code> entry is a teaching aid, not proof of a deployed detection programme.</p><p>A useful rule would need testing against both expected activity and deliberately generated test events.</p></div></details>
+          <details id="example-interpret"><summary>03 / Interpret the alert<span class="plus" aria-hidden="true"></span></summary><div class="step-body"><p>An illustrative Level 12 alert indicates high importance. Its visibility and meaning depend on configuration and the surrounding event context. No measured detection or response time is claimed here.</p></div></details>
+          <details id="example-ask"><summary>04 / Ask the next question<span class="plus" aria-hidden="true"></span></summary><div class="step-body"><p>A possible triage sequence: decode and inspect the payload safely; identify the document and its source; correlate process, network and file events; then decide whether containment or a documented exception is appropriate.</p><p>These are possible investigation steps, not a recorded incident timeline.</p></div></details>
+        </div>
+      </div>
+
+      <div class="example-aside" role="group" aria-label="Illustrative event trace">
+        <section class="event-trace doc" data-event-trace aria-labelledby="event-trace-title">
+          <header class="event-trace-head"><span class="responder" aria-hidden="true"></span><span class="label">Sample trace</span><h3 id="event-trace-title">Illustrative sequence</h3><p>Teaching example, not live telemetry.</p></header>
+          <ol class="event-trace-list">
+            <li class="trace-row" data-trace-step="1"><span class="label">Parent</span><code>WINWORD.EXE</code></li>
+            <li class="trace-row" data-trace-step="2"><span class="label">Child</span><code>powershell.exe</code></li>
+            <li class="trace-row" data-trace-step="3"><span class="label">Flags</span><code>-nop -w hidden -enc</code></li>
+            <li class="trace-row" data-trace-step="4"><span class="label">Telemetry</span><code>Sysmon Event ID 1</code></li>
+            <li class="trace-row" data-trace-step="5"><span class="label">Example rule</span><code>100210 / T1059.001</code></li>
+          </ol>
+        </section>
+        <div class="example-note">
+          <p class="small">This is not live telemetry and makes no response-time claim.</p>
+          <p><a class="textlink ext" href="https://attack.mitre.org/techniques/T1059/001/">PowerShell in MITRE ATT&amp;CK<span class="sr-only"> (external site)</span></a></p>
+          <button class="textlink" type="button" data-terminal-run="head -n 1 ~/logs/README.txt && grep -i powershell ~/logs/*.log" hidden>Follow the sample events in the terminal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="shell">
+  <nav class="case-next" aria-label="Continue exploring">
+    <a href="../../#work"><span class="label">Back to</span><strong><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m0 0 5-5m-5 5 5 5"/></svg>All work</strong></a>
+    <a href="../classquest/"><span class="label">Next case study</span><strong>ClassQuest<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></strong></a>
+  </nav>
+</div>
+
+<section class="case-close" aria-labelledby="close-title">
+  <div class="shell">
+    <h2 id="close-title">Let&rsquo;s compare notes.</h2>
+    <a class="email" href="mailto:barry.sampath@outlook.com">barry.sampath@outlook.com</a>
+  </div>
+</section>
+
+</main>

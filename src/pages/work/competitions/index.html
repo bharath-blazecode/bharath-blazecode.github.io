@@ -1,0 +1,136 @@
+<!--page
+title: Scoreboard | Barry Sampath
+description: Five capture-the-flag events and a hackathon from 2026: results, what I worked on and the evidence. Placements are team results.
+css: base case competitions
+scripts: site
+preload: archivo-variable.woff2 source-serif-italic.woff2
+-->
+<main id="main">
+
+<header class="case-head shell">
+  <p class="label crumb"><a href="../../#competitions">In competition</a> <span aria-hidden="true">/</span> Scoreboard</p>
+  <h1><span class="h1-mark">Scoreboard</span></h1>
+  <div class="case-top">
+    <div>
+      <p class="case-dek">Five capture-the-flag events and a hackathon from 2026: what each one asked, how I approached it and what I took from it.</p>
+      <p class="case-summary">Four CTFs between September and October 2026, after a third-place finish at CIMCTF in March. The hackathon was Code Network&rsquo;s Winter Hackathon, where ClassQuest received the People&rsquo;s Choice Award.</p>
+    </div>
+    <dl class="facts" aria-label="About these results">
+      <div><dt class="label">Kind</dt><dd>Capture the flag events and a hackathon, 2026</dd></div>
+      <div><dt class="label">Results</dt><dd><span class="mark">Every placement here is a team result.</span> The notes describe my own part, in the first person. ByteMe CTF was a participation certificate, with no placement.</dd></div>
+      <div><dt class="label">With</dt><dd>Team SushiShield for the CTFs, with Alan Nguyen at It&rsquo;s Downtime! and Akira Hasuo at ByteMe CTF. ClassQuest was a team of five.</dd></div>
+      <div><dt class="label">How I worked</dt><dd>I did the practical work hands-on and used AI tools as a guide on some events, It&rsquo;s Downtime! included. I describe what I did and learned, not a claim to have solved everything unaided.</dd></div>
+    </dl>
+  </div>
+  <nav class="case-index" aria-label="On this page"><a href="#downtime">Downtime</a><a href="#byteme">ByteMe</a><a href="#csaw">CSAW</a><a href="#holmes">Holmes</a><a href="#hackathon">Hackathon</a><a href="#cimctf">CIMCTF</a></nav>
+</header>
+
+<section class="spine event" id="downtime" aria-labelledby="downtime-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">01</span><span class="label">22 to 26 Oct 2026</span><p class="label side-note">Defensive CTF<br>TryHackMe</p></div>
+    <div class="case-main prose">
+      <h2 id="downtime-title">It&rsquo;s Downtime!</h2>
+      <p class="event-result"><b>476th</b><span>of 1,629 ranked teams, 1,150 XP, Team SushiShield, with Alan Nguyen</span></p>
+      <p>A simulator-led, blue-team event built around one connected incident. I teamed up with Alan Nguyen and found a new favourite: SOC (security operations centre) investigation.</p>
+      <h3>The SOC simulator</h3>
+      <p>In Repossessed I worked through nine alerts and explained my verdicts. I passed the simulator.</p>
+      <h3>The tabletop</h3>
+      <p>My incident-response tabletop report scored 86% across 15 decisions. One lesson stayed with me: check what will still be running after a containment action.</p>
+      <h3>The result</h3>
+      <p>Team SushiShield finished 476th of 1,629 ranked teams with 1,150 XP.</p>
+      <div class="event-art">
+        <figure class="shot reveal"><a href="../../assets/competitions/tryhackme-downtime-leaderboard.jpg"><img src="../../assets/competitions/tryhackme-downtime-leaderboard-960.webp" srcset="../../assets/competitions/tryhackme-downtime-leaderboard-480.webp 480w, ../../assets/competitions/tryhackme-downtime-leaderboard-960.webp 960w" sizes="(max-width: 900px) 92vw, 390px" alt="TryHackMe It’s Downtime! final leaderboard row for SushiShield: rank 476, SOC simulator passed, tabletop completed, 2 of 5 challenges, 1150 XP" width="1200" height="526" loading="lazy" decoding="async"></a><figcaption><span class="label">Fig. 1</span><span>The final leaderboard row for Team SushiShield.</span></figcaption></figure>
+        <figure class="shot reveal"><a href="../../assets/competitions/tryhackme-repossessed-dashboard.jpg"><img src="../../assets/competitions/tryhackme-repossessed-dashboard-960.webp" srcset="../../assets/competitions/tryhackme-repossessed-dashboard-480.webp 480w, ../../assets/competitions/tryhackme-repossessed-dashboard-960.webp 960w, ../../assets/competitions/tryhackme-repossessed-dashboard-1440.webp 1440w" sizes="(max-width: 900px) 92vw, 390px" alt="TryHackMe Repossessed SOC simulator dashboard showing nine total alerts, six closed, five closed as true positives and one as a false positive" width="1400" height="663" loading="lazy" decoding="async"></a><figcaption><span class="label">Fig. 2</span><span>The Repossessed simulator part-way through: nine alerts in the scenario, six closed at this point.</span></figcaption></figure>
+      </div>
+      <ul class="evidence event-links"><li><a class="ext" href="https://tryhackme.com/downtime"><span class="et">It&rsquo;s Downtime! event page</span><span class="eu">TryHackMe</span><span class="sr-only"> (external site)</span></a></li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="spine event" id="byteme" aria-labelledby="byteme-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">02</span><span class="label">9 to 10 Oct 2026</span><p class="label side-note">Online CTF<br>OWASP Student Chapter PCCoE</p></div>
+    <div class="case-main prose">
+      <h2 id="byteme-title">ByteMe CTF</h2>
+      <p class="event-result is-note"><span>Certificate of participation</span></p>
+      <p>Part of TechFest 2026 at PCCoE in Pune. I teamed up with Akira Hasuo and focused on cryptography.</p>
+      <h3>Soul Forge</h3>
+      <p>Two messages had been encrypted with the same keystream. Guessing the generator went nowhere. What worked was assuming a message began with <code>OWASP{</code>, which exposed readable text in the second message. It was a clear reminder that encryption is only as strong as the way it&rsquo;s used.</p>
+      <div class="event-art">
+        <figure class="shot reveal"><a href="../../assets/competitions/byteme-ctf-2026-certificate.jpg"><img src="../../assets/competitions/byteme-ctf-2026-certificate-960.webp" srcset="../../assets/competitions/byteme-ctf-2026-certificate-480.webp 480w, ../../assets/competitions/byteme-ctf-2026-certificate-960.webp 960w" sizes="(max-width: 900px) 92vw, 520px" alt="Certificate of participation for Barry Sampath in ByteMe CTF under TechFest 2026 at Pimpri Chinchwad College of Engineering, Pune, held online from 9 to 10 October 2026" width="1100" height="778" loading="lazy" decoding="async"></a><figcaption><span class="label">Fig. 3</span><span>Certificate of participation, ByteMe CTF, TechFest 2026.</span></figcaption></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="spine event" id="csaw" aria-labelledby="csaw-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">03</span><span class="label">18 to 20 Sep 2026</span><p class="label side-note">Qualifying round<br>CSAW</p></div>
+    <div class="case-main prose">
+      <h2 id="csaw-title">CSAW CTF Qualifications</h2>
+      <p class="event-result"><b>189th</b><span>of 530 teams, Team SushiShield</span></p>
+      <p>A 48-hour qualifying round. Team SushiShield placed 189th of 530 teams. Cryptography and OSINT are the areas I want to keep developing.</p>
+      <ul class="evidence event-links"><li><a class="ext" href="https://csaw.io/competition/capture-the-flag"><span class="et">CSAW CTF</span><span class="eu">csaw.io</span><span class="sr-only"> (external site)</span></a></li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="spine event" id="holmes" aria-labelledby="holmes-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">04</span><span class="label">17 to 21 Sep 2026</span><p class="label side-note">Defensive CTF<br>Hack The Box</p></div>
+    <div class="case-main prose">
+      <h2 id="holmes-title">Holmes CTF 2026</h2>
+      <p class="event-result"><b>1,097th</b><span>of 5,637 teams, 8 of 111 challenges, 825 points, Team SushiShield</span></p>
+      <p>The Reichenbach Directive, a defensive CTF run by Hack The Box. A friend pointed me towards it at the last minute and I decided to jump in.</p>
+      <h3>Paper Ghost</h3>
+      <p>I worked through Windows artefacts to reconstruct a simulated compromise, tracing the USB device and payload execution, then checking the outbound traffic.</p>
+      <h3>The result</h3>
+      <p>My eight solves, out of 111 challenges and worth 825 points, put Team SushiShield in the top 20% of 5,637 teams. A top-20% finish in an event I hadn&rsquo;t planned to enter felt like progress worth celebrating.</p>
+      <div class="event-art">
+        <figure class="shot reveal"><a href="../../assets/competitions/holmes-ctf-2026-certificate.jpg"><img src="../../assets/competitions/holmes-ctf-2026-certificate-960.webp" srcset="../../assets/competitions/holmes-ctf-2026-certificate-480.webp 480w, ../../assets/competitions/holmes-ctf-2026-certificate-960.webp 960w" sizes="(max-width: 900px) 92vw, 520px" alt="Hack The Box certificate of participation for Holmes CTF 2026: team SushiShield ranked 1,097th of 5,637 teams, 8 of 111 challenges solved, 825 points" width="1147" height="810" loading="lazy" decoding="async"></a><figcaption><span class="label">Fig. 4</span><span>Hack The Box certificate of participation: 1,097th of 5,637 teams, 8 of 111 challenges, 825 points.</span></figcaption></figure>
+      </div>
+      <ul class="evidence event-links"><li><a class="ext" href="https://ctf.hackthebox.com/event/details/holmes-ctf-2026-the-reichenbach-directive-3504"><span class="et">Holmes CTF 2026: The Reichenbach Directive</span><span class="eu">Hack The Box</span><span class="sr-only"> (external site)</span></a></li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="spine event" id="hackathon" aria-labelledby="hackathon-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">05</span><span class="label">21 to 23 Aug 2026</span><p class="label side-note">Hackathon<br>Code Network</p></div>
+    <div class="case-main prose">
+      <h2 id="hackathon-title">Winter Hackathon 2026</h2>
+      <p class="event-result"><b>Award</b><span>People’s Choice, 15 teams, ClassQuest</span></p>
+      <p>ClassQuest turns lecture material into playable quests. Our team of five received the People&rsquo;s Choice Award after audience voting across 15 teams.</p>
+      <p>I built the playable demo and frontend foundation, then improved upload handling.</p>
+      <p><a class="textlink" href="../classquest/">Read the ClassQuest case study<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></a></p>
+    </div>
+  </div>
+</section>
+
+<section class="spine event" id="cimctf" aria-labelledby="cimctf-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">06</span><span class="label">Mar 2026</span><p class="label side-note">CTF<br>Team SushiShield</p></div>
+    <div class="case-main prose">
+      <h2 id="cimctf-title">CIMCTF 2026</h2>
+      <p class="event-result"><b>3rd</b><span>place overall, Team SushiShield</span></p>
+      <p>Team SushiShield placed 3rd overall. I focused on cryptography and OSINT challenges.</p>
+    </div>
+  </div>
+</section>
+
+<div class="shell">
+  <nav class="case-next" aria-label="Continue exploring">
+    <a href="../../#competitions"><span class="label">Back to</span><strong><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m0 0 5-5m-5 5 5 5"/></svg>Home</strong></a>
+    <a href="../homelab/"><span class="label">Next case study</span><strong>ITDR Home Lab<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></strong></a>
+  </nav>
+</div>
+
+<section class="case-close" aria-labelledby="close-title">
+  <div class="shell">
+    <h2 id="close-title">Happy to be your CTF teammate.</h2>
+    <p>I&rsquo;m keen to take on more challenges in the coming months. If you&rsquo;d like a teammate, let me know and we can learn together.</p>
+    <a class="email" href="mailto:barry.sampath@outlook.com">barry.sampath@outlook.com</a>
+  </div>
+</section>
+
+</main>

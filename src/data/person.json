@@ -1,0 +1,72 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://bharath-blazecode.github.io/#person",
+      "name": "Barry Sampath",
+      "jobTitle": "Cybersecurity and IT Automation Analyst",
+      "description": "Cybersecurity and AI student at QUT in Brisbane, open to 2027 internships and early-career roles in blue team, SOC, identity and access, GRC and IT automation.",
+      "worksFor": { "@type": "Organization", "name": "ScienceGears" },
+      "alumniOf": { "@type": "CollegeOrUniversity", "name": "Queensland University of Technology" },
+      "affiliation": { "@type": "CollegeOrUniversity", "name": "Queensland University of Technology" },
+      "address": { "@type": "PostalAddress", "addressLocality": "Brisbane", "addressCountry": "AU" },
+      "url": "https://bharath-blazecode.github.io/",
+      "email": "mailto:barry.sampath@outlook.com",
+      "sameAs": [
+        "https://www.linkedin.com/in/barrysampath",
+        "https://github.com/bharath-blazecode"
+      ],
+      "knowsAbout": [
+        "Identity and access management",
+        "Microsoft Entra ID",
+        "Conditional Access",
+        "IT automation",
+        "Python",
+        "Security monitoring",
+        "Wazuh",
+        "Sysmon"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://bharath-blazecode.github.io/#website",
+      "name": "Barry Sampath",
+      "url": "https://bharath-blazecode.github.io/",
+      "inLanguage": "en-AU",
+      "author": { "@id": "https://bharath-blazecode.github.io/#person" }
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "https://bharath-blazecode.github.io/research/#work",
+      "name": "AI Cyber Risk Assessment Research",
+      "url": "https://bharath-blazecode.github.io/research/",
+      "description": "A QUT Vacation Research Experience Scheme placement asking whether AI can help assess cyber risk against the ASD Essentials. It is in progress, with no results to report yet.",
+      "contributor": { "@id": "https://bharath-blazecode.github.io/#person" }
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "https://bharath-blazecode.github.io/work/homelab/#work",
+      "name": "ITDR Home Lab",
+      "url": "https://bharath-blazecode.github.io/work/homelab/",
+      "description": "A personal security monitoring lab on one laptop. Windows events reach Wazuh after fixing storage, networking and indexing faults. The lab is paused and detection rules are future work.",
+      "creator": { "@id": "https://bharath-blazecode.github.io/#person" }
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "https://bharath-blazecode.github.io/work/classquest/#work",
+      "name": "ClassQuest",
+      "url": "https://bharath-blazecode.github.io/work/classquest/",
+      "description": "Turns lecture material into playable quests. Built by a team of five at a three-day hackathon, which won the People's Choice Award. The award belongs to the team. Barry built the demo and frontend foundation, then improved upload handling and cohort features, shown in ten linked pull requests.",
+      "contributor": { "@id": "https://bharath-blazecode.github.io/#person" }
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "https://bharath-blazecode.github.io/work/luna/#work",
+      "name": "LUNA",
+      "url": "https://bharath-blazecode.github.io/work/luna/",
+      "description": "A Raspberry Pi robot with vision, voice and wireless control, built as a shared university project with Zhirui Lu. Barry's part is offline voice commands that start and stop its existing line-following routine.",
+      "contributor": { "@id": "https://bharath-blazecode.github.io/#person" }
+    }
+  ]
+}

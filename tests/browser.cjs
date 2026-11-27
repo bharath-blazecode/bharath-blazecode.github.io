@@ -1,439 +1,297 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
-const { spawn } = require('node:child_process');
+const fs = require('node:fs');
 const path = require('node:path');
-
-const delay = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+const { startSite } = require('./helpers/site.cjs');
 
 const root = path.resolve(__dirname, '..');
-const port = Number(process.env.PORT) || 48764;
-const url = `http://127.0.0.1:${port}`;
-const server = spawn(process.execPath, [path.join(root, 'tools/serve.cjs'), root, String(port)], {
-  stdio: ['ignore', 'pipe', 'inherit']
-});
-const ready = new Promise((resolve, reject) => {
-  server.stdout.once('data', resolve);
-  server.once('error', reject);
-  server.once('exit', code => reject(new Error(`Preview server exited ${code}`)));
-});
+const axeSource = fs.readFileSync(path.join(root, 'node_modules', 'axe-core', 'axe.min.js'), 'utf8');
 
-(async () => {
-  let browser;
+const PAGES = ['/', '/404.html', '/research/', '/work/homelab/', '/work/classquest/', '/work/luna/', '/work/competitions/'];
+const WIDTHS = [1440, 820, 390, 320];
+const THEMES = ['light', 'dark'];
+
+// Known site defects. Each entry is "<check>" or "<check>|<page>". Remove an entry once the site is fixed.
+// A page part matches the page exactly or with " at <width> <theme>" after it.
+const KNOWN_FAILURES = [];
+
+const failures = [];
+function expect(ok, check, page, message) {
+  if (!ok) failures.push({ check, page, message });
+}
+
+function listen(page, problems) {
+  page.on('pageerror', error => problems.push('page error: ' + error.message));
+  page.on('console', message => {
+    if (message.type() === 'error') problems.push('console error: ' + message.text());
+    else if (/content security policy/i.test(message.text())) problems.push('csp message: ' + message.text());
+  });
+  page.on('requestfailed', request => problems.push('request failed: ' + request.url()));
+  page.on('response', response => {
+    if (response.status() >= 400) problems.push('http ' + response.status() + ': ' + response.url());
+  });
+}
+
+async function scrollThrough(page) {
+  await page.evaluate(async () => {
+    const step = Math.max(200, Math.floor(innerHeight * 0.7));
+    for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+      scrollTo(0, y);
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    }
+    scrollTo(0, document.documentElement.scrollHeight);
+    await Promise.all([...document.images].map(image => image.decode().catch(() => {})));
+    scrollTo(0, 0);
+  });
+}
+
+async function newContext(browser, { width, theme, bypassCSP = false, reducedMotion = 'reduce', javaScriptEnabled = true }) {
+  const context = await browser.newContext({
+    viewport: { width, height: 900 }, reducedMotion, bypassCSP, javaScriptEnabled, colorScheme: 'light'
+  });
+  if (theme) await context.addInitScript(value => { try { localStorage.setItem('bs-shift', value); } catch (_) {} }, theme);
+  return context;
+}
+
+async function checkPage(browser, site, pagePath, width, theme, backgrounds) {
+  const label = `${pagePath} at ${width} ${theme}`;
+  const context = await newContext(browser, { width, theme });
   try {
-    await ready;
-    browser = await chromium.launch({
-      headless: true,
-      ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {})
+    const page = await context.newPage();
+    const problems = [];
+    await page.addInitScript(() => {
+      window.__csp = [];
+      document.addEventListener('securitypolicyviolation', event => window.__csp.push(event.violatedDirective + ' ' + event.blockedURI));
     });
+    listen(page, problems);
+    const response = await page.goto(site.url + pagePath, { waitUntil: 'load' });
+    expect(response.status() === 200, 'page status', label, 'status ' + response.status());
+    await page.evaluate(() => document.fonts.ready);
+    await scrollThrough(page);
+    for (const item of await page.evaluate(() => window.__csp)) problems.push('csp violation: ' + item);
+    expect(problems.length === 0, 'clean load', label, problems.join(' | '));
 
-    let scans = 0;
-    for (const width of [1440, 820, 390, 320]) {
-      for (const colorScheme of ['light', 'dark']) {
-        for (const route of ['/', '/work/homelab/', '/work/classquest/', '/work/luna/', '/work/competitions/', '/404.html']) {
-          const context = await browser.newContext({
-            viewport: { width, height: 900 },
-            colorScheme,
-            reducedMotion: 'reduce'
-          });
-          const page = await context.newPage();
-          const errors = [];
-          page.on('pageerror', error => errors.push(error.message));
-          await page.goto(url + route);
-          await page.evaluate(() => document.fonts.ready);
-          for (const image of await page.locator('img').all()) if (await image.isVisible()) await image.scrollIntoViewIfNeeded();
-          assert.equal(await page.locator('#motion-toggle, .motion-toggle').count(), 0, `${route} exposes a motion toggle`);
-          assert.equal(await page.evaluate(() => localStorage.getItem('bs-motion')), null, `${route} persists motion state`);
-          assert.ok(
-            await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
-            `${route} overflows`
-          );
-          assert.deepEqual(errors, []);
-          if (route === '/') {
-            for (const folder of await page.locator('[data-project]').all()) {
-              await folder.click();
-              const titleCollisions = await page.locator('.project:not([hidden])').evaluateAll(projects => projects.filter(project => {
-                const number = project.querySelector('.project-number').getBoundingClientRect();
-                const range = document.createRange();
-                range.selectNodeContents(project.querySelector('h3 a'));
-                return [...range.getClientRects()].some(rect => rect.width > 0 && rect.height > 0 &&
-                  Math.min(rect.right, number.right) - Math.max(rect.left, number.left) > 2 &&
-                  Math.min(rect.bottom, number.bottom) - Math.max(rect.top, number.top) > 2);
-              }).map(project => project.querySelector('h3').textContent));
-              assert.deepEqual(titleCollisions, [], 'Project titles must not overlap decorative numbers');
-            }
-            await page.locator('[data-project-close]').click();
-            const resumeBox = await page.locator('.hero-actions a[href$=".pdf"]').boundingBox();
-            assert.ok(resumeBox && resumeBox.height >= 44, 'Hero résumé link must have a usable touch target');
-          }
-          await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
-          const violations = await page.evaluate(async () => (
-            await axe.run(document, {
-              runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }
-            })
-          ).violations.map(violation => ({
-            id: violation.id,
-            targets: violation.nodes.map(node => node.target)
-          })));
-          assert.deepEqual(violations, [], `${route} accessibility checks`);
-          scans++;
-          await context.close();
-        }
+    const facts = await page.evaluate(() => ({
+      h1: document.querySelectorAll('h1').length,
+      main: document.querySelectorAll('main#main').length,
+      title: document.title.trim(),
+      description: (document.querySelector('meta[name="description"]') || {}).content || '',
+      lang: document.documentElement.lang,
+      scrollWidth: document.documentElement.scrollWidth,
+      innerWidth,
+      theme: document.documentElement.dataset.theme || 'light',
+      background: getComputedStyle(document.documentElement).backgroundColor + '/' + getComputedStyle(document.body).backgroundColor,
+      brokenImages: [...document.images].filter(image => !(image.naturalWidth > 0)).map(image => image.getAttribute('src'))
+    }));
+    expect(facts.h1 === 1, 'one h1', label, `found ${facts.h1}`);
+    expect(facts.main === 1, 'main#main', label, `found ${facts.main}`);
+    expect(facts.title.length > 0, 'title', label, 'empty title');
+    expect(facts.description.trim().length > 0, 'meta description', label, 'empty description');
+    expect(facts.lang === 'en-AU', 'lang', label, `lang is "${facts.lang}"`);
+    expect(facts.scrollWidth <= facts.innerWidth, 'no horizontal overflow', label, `scrollWidth ${facts.scrollWidth} > innerWidth ${facts.innerWidth}`);
+    expect(facts.brokenImages.length === 0, 'images decoded', label, 'not decoded: ' + facts.brokenImages.join(', '));
+    expect(facts.theme === theme, 'theme applied', label, `theme is ${facts.theme}`);
+    backgrounds.set(`${pagePath}|${width}|${theme}`, facts.background);
+  } finally {
+    await context.close();
+  }
+
+  const axeContext = await newContext(browser, { width, theme, bypassCSP: true });
+  try {
+    const page = await axeContext.newPage();
+    await page.goto(site.url + pagePath, { waitUntil: 'load' });
+    await page.evaluate(() => document.fonts.ready);
+    await scrollThrough(page);
+    await page.evaluate(axeSource);
+    const result = await page.evaluate(() => axe.run(document, { resultTypes: ['violations'] }));
+    const summary = result.violations.map(v => `${v.id} (${v.impact}): ${v.nodes.slice(0, 3).map(n => n.target.join(' ')).join('; ')}`);
+    expect(summary.length === 0, 'axe', label, summary.join(' | '));
+  } finally {
+    await axeContext.close();
+  }
+}
+
+async function checkReveals(browser, site, pagePath) {
+  const context = await newContext(browser, { width: 1440, theme: 'light', reducedMotion: 'no-preference' });
+  try {
+    const page = await context.newPage();
+    await page.goto(site.url + pagePath, { waitUntil: 'load' });
+    await page.evaluate(async () => {
+      const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+      for (let y = 0; y < document.documentElement.scrollHeight; y += 300) { scrollTo(0, y); await wait(40); }
+      scrollTo(0, document.documentElement.scrollHeight);
+      await wait(900);
+    });
+    const faded = await page.evaluate(() => [...document.querySelectorAll('.reveal')]
+      .filter(item => Number(getComputedStyle(item).opacity) !== 1)
+      .map(item => (item.id ? '#' + item.id : item.tagName.toLowerCase() + '.' + [...item.classList].join('.')) + ' opacity ' + getComputedStyle(item).opacity));
+    expect(faded.length === 0, 'reveal reaches opacity 1', pagePath, faded.join('; '));
+  } finally {
+    await context.close();
+  }
+}
+
+async function checkSite(browser, site) {
+  const origin = new URL(site.url).origin;
+
+  // Skip link, keyboard order and theme persistence.
+  {
+    const context = await newContext(browser, { width: 1440, theme: null });
+    const page = await context.newPage();
+    await page.goto(site.url + '/', { waitUntil: 'load' });
+    await page.keyboard.press('Tab');
+    const first = await page.evaluate(() => ({ cls: document.activeElement.className, href: document.activeElement.getAttribute('href') }));
+    expect(/\bskip\b/.test(first.cls) && first.href === '#main', 'skip link first', '/', `first focus is ${JSON.stringify(first)}`);
+    await page.keyboard.press('Enter');
+    const landed = await page.evaluate(() => ({ id: document.activeElement.id, inMain: !!document.activeElement.closest('main'), hash: location.hash }));
+    expect(landed.hash === '#main' && (landed.id === 'main' || landed.inMain), 'skip link moves focus to main', '/', JSON.stringify(landed));
+
+    await page.goto(site.url + '/', { waitUntil: 'load' });
+    const expected = await page.$$eval('nav[aria-label="Main"] a', links => links.map(link => link.getAttribute('href')));
+    const seen = [];
+    for (let i = 0; i < 12 && seen.length < expected.length; i++) {
+      await page.keyboard.press('Tab');
+      const href = await page.evaluate(() => {
+        const el = document.activeElement;
+        return el.closest('nav[aria-label="Main"]') ? el.getAttribute('href') : null;
+      });
+      if (href) seen.push(href);
+    }
+    assert.deepEqual(seen, expected, 'Tab should reach the main navigation links in order');
+
+    await page.click('[data-theme-toggle]');
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'dark', 'the toggle switches to dark');
+    await page.click('a[href*="work/"]:visible');
+    await page.waitForLoadState('load');
+    const carried = await page.evaluate(() => ({ path: location.pathname, theme: document.documentElement.dataset.theme }));
+    expect(/^\/work\//.test(carried.path) && carried.theme === 'dark', 'theme persists to a case study', carried.path, JSON.stringify(carried));
+    await context.close();
+  }
+
+  // Internal links.
+  {
+    const context = await newContext(browser, { width: 1440, theme: null });
+    const page = await context.newPage();
+    const links = new Map();
+    for (const pagePath of PAGES) {
+      await page.goto(site.url + pagePath, { waitUntil: 'load' });
+      for (const href of await page.$$eval('a[href]', anchors => anchors.map(a => a.href))) {
+        const url = new URL(href);
+        if (url.origin !== origin) continue;
+        url.hash = '';
+        if (!links.has(url.href)) links.set(url.href, pagePath);
       }
     }
-
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto(url);
-
-    await page.locator('#theme-toggle').click();
-    assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
-    await page.reload();
-    assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
-
-    await page.locator('#terminal > summary').click();
-    await page.locator('#terminal-input').fill('<img src=x onerror=alert(1)>');
-    await page.locator('#terminal-form').evaluate(form => form.requestSubmit());
-    assert.equal(await page.locator('#terminal-log img').count(), 0);
-
-    await page.locator('#terminal-input').fill('constructor');
-    await page.locator('#terminal-form').evaluate(form => form.requestSubmit());
-    assert.match(await page.locator('#terminal-log').innerText(), /Unknown command/);
-
-    await page.locator('#terminal-input').fill('help');
-    await page.locator('#terminal-form').evaluate(form => form.requestSubmit());
-    assert.match(await page.locator('#terminal-log').innerText(), /whoami/);
-    await context.close();
-
-    const motionContext = await browser.newContext({
-      viewport: { width: 1440, height: 900 },
-      reducedMotion: 'no-preference'
-    });
-    const motionPage = await motionContext.newPage();
-    await motionPage.goto(url);
-    assert.equal(await motionPage.locator('#motion-toggle, .motion-toggle').count(), 0);
-    assert.equal(await motionPage.evaluate(() => localStorage.getItem('bs-motion')), null);
-
-    // Interests are immediately readable and never replaced on viewport re-entry.
-    const interests = motionPage.locator('.interest-topics');
-    const expectedInterests = 'Blue team · Identity & access · GRC · IT automation · SOC';
-    assert.equal(await interests.innerText(), expectedInterests);
-    await motionPage.locator('#contact').scrollIntoViewIfNeeded();
-    await interests.scrollIntoViewIfNeeded();
-    assert.equal(await interests.innerText(), expectedInterests);
-    assert.equal(await interests.getAttribute('aria-hidden'), null);
-
-    await motionPage.goto(url + '/work/homelab/');
-    const flow = motionPage.locator('[data-telemetry-flow]');
-    await motionPage.evaluate(() => {
-      window.__packetStarts = [];
-      window.__packetIterations = [];
-      const diagram = document.querySelector('[data-telemetry-flow]');
-      diagram.addEventListener('animationstart', event => {
-        if (event.target.matches('[data-flow-packet]')) {
-          window.__packetStarts.push({ step: event.target.dataset.flowStep, at: performance.now() });
-        }
-      });
-      diagram.addEventListener('animationiteration', event => {
-        if (event.target.matches('[data-flow-packet]')) {
-          window.__packetIterations.push({ step: event.target.dataset.flowStep, at: performance.now() });
-        }
-      });
-    });
-    await flow.scrollIntoViewIfNeeded();
-    await motionPage.waitForFunction(() => document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing'));
-    const packetTiming = await flow.locator('[data-flow-packet]').evaluateAll(packets => packets.map(packet => {
-      const style = getComputedStyle(packet);
-      return {
-        delay: Number.parseFloat(style.animationDelay) || 0,
-        duration: Number.parseFloat(style.animationDuration) || 0,
-        iterations: style.animationIterationCount
-      };
-    }));
-    assert.equal(packetTiming.length, 3);
-    assert.deepEqual(packetTiming.map(packet => packet.delay), [0, 0.7, 1.4]);
-    assert.ok(packetTiming.every(packet => packet.duration === 8));
-    assert.ok(packetTiming.every(packet => packet.iterations === 'infinite'));
-    await motionPage.waitForFunction(() => window.__packetStarts.length >= 3, null, { timeout: 3000 });
-    const packetStarts = await motionPage.evaluate(() => window.__packetStarts);
-    assert.deepEqual(packetStarts.slice(0, 3).map(start => start.step), ['1', '2', '3']);
-    assert.equal(await flow.getAttribute('role'), 'button');
-    assert.equal(await flow.getAttribute('aria-pressed'), 'false');
-    assert.match(await motionPage.locator('[data-flow-instruction]').innerText(), /press Enter to pause/);
-    await flow.click();
-    assert.equal(await flow.getAttribute('aria-pressed'), 'true');
-    await motionPage.mouse.move(0, 0);
-    await flow.evaluate(element => element.blur());
-    assert.ok((await flow.locator('[data-flow-packet]').evaluateAll(packets =>
-      packets.map(packet => getComputedStyle(packet).animationPlayState)
-    )).every(state => state === 'paused'));
-    assert.match(await motionPage.locator('[data-flow-instruction]').innerText(), /Packet flow paused/);
-    await flow.focus();
-    await motionPage.keyboard.press('Enter');
-    assert.equal(await flow.getAttribute('aria-pressed'), 'false');
-    assert.ok((await flow.locator('[data-flow-packet]').evaluateAll(packets =>
-      packets.map(packet => getComputedStyle(packet).animationPlayState)
-    )).every(state => state === 'running'));
-    const scrollBeforeSpace = await motionPage.evaluate(() => scrollY);
-    await motionPage.keyboard.press('Space');
-    assert.equal(await flow.getAttribute('aria-pressed'), 'true');
-    assert.equal(await motionPage.evaluate(() => scrollY), scrollBeforeSpace, 'Space key scrolled while toggling telemetry');
-    assert.ok((await flow.locator('[data-flow-packet]').evaluateAll(packets =>
-      packets.map(packet => getComputedStyle(packet).animationPlayState)
-    )).every(state => state === 'paused'));
-    await motionPage.keyboard.press('Space');
-    assert.equal(await flow.getAttribute('aria-pressed'), 'false');
-    await flow.evaluate(element => element.blur());
-    assert.ok((await flow.locator('[data-flow-packet]').evaluateAll(packets =>
-      packets.map(packet => getComputedStyle(packet).animationPlayState)
-    )).every(state => state === 'running'));
-    await motionPage.waitForFunction(() => window.__packetIterations.some(event => event.step === '1'), null, { timeout: 10000 });
-    assert.ok(await flow.evaluate(element => element.classList.contains('is-flowing')));
-    const initialPacketStarts = await motionPage.evaluate(() => window.__packetStarts.length);
-
-    const trace = motionPage.locator('[data-event-trace]');
-    await motionPage.evaluate(() => {
-      window.__traceReveals = [];
-      document.querySelectorAll('[data-event-trace] [data-trace-step]').forEach(line => {
-        new MutationObserver(() => {
-          if (line.classList.contains('is-revealed') &&
-              !window.__traceReveals.some(reveal => reveal.step === line.dataset.traceStep)) {
-            window.__traceReveals.push({ step: line.dataset.traceStep, at: performance.now() });
-          }
-        }).observe(line, { attributes: true, attributeFilter: ['class'] });
-      });
-      const tracePanel = document.querySelector('[data-event-trace]');
-      const rect = tracePanel.getBoundingClientRect();
-      const top = rect.top + scrollY - innerHeight + rect.height * 0.2;
-      scrollTo({ top, behavior: 'instant' });
-    });
-    await delay(650);
-    assert.equal(await trace.locator('[data-trace-step].is-revealed').count(), 0, 'Trace began before enough of it was visible');
-    assert.equal(await trace.evaluate(element => element.classList.contains('is-playing')), false);
-    await trace.evaluate(element => element.scrollIntoView({ block: 'center' }));
-    await motionPage.waitForFunction(() => document.querySelector('[data-event-trace]')?.classList.contains('is-playing'));
-    assert.equal(await trace.locator('[data-trace-step].is-revealed').count(), 0, 'Trace skipped its opening pause');
-    await motionPage.waitForFunction(() => {
-      const panel = document.querySelector('[data-event-trace]');
-      return panel?.classList.contains('is-complete') && panel.querySelectorAll('[data-trace-step].is-revealed').length === 5;
-    }, null, { timeout: 6500 });
-    const traceReveals = await motionPage.evaluate(() => window.__traceReveals);
-    assert.deepEqual(traceReveals.map(reveal => reveal.step), ['1', '2', '3', '4', '5']);
-    const revealGaps = traceReveals.slice(1).map((reveal, index) => reveal.at - traceReveals[index].at);
-    assert.ok(revealGaps.every(gap => gap >= 650 && gap <= 1150), `Trace reveal gaps were ${revealGaps.join(', ')}ms`);
-    await delay(500);
-    assert.equal(await trace.locator('[data-trace-step].is-revealed').count(), 5, 'Trace did not remain visible');
-    await flow.evaluate(element => element.scrollIntoView({ block: 'center' }));
-    await motionPage.waitForFunction(count => window.__packetStarts.length > count, initialPacketStarts, { timeout: 3000 });
-    const fastReentryStarts = await motionPage.evaluate(() => window.__packetStarts.length);
-    await motionPage.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
-    await motionPage.waitForFunction(() => !document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing'));
-    await flow.evaluate(element => element.scrollIntoView({ block: 'center' }));
-    await motionPage.waitForFunction(count => (
-      document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing') &&
-      window.__packetStarts.length > count
-    ), fastReentryStarts, { timeout: 3000 });
-    await motionContext.close();
-
-    const backgroundContext = await browser.newContext({
-      viewport: { width: 1440, height: 900 },
-      reducedMotion: 'no-preference'
-    });
-    const backgroundPage = await backgroundContext.newPage();
-    await backgroundPage.addInitScript(() => {
-      window.__testDocumentHidden = true;
-      Object.defineProperty(document, 'hidden', {
-        configurable: true,
-        get: () => window.__testDocumentHidden
-      });
-    });
-    await backgroundPage.goto(url + '/work/homelab/#example');
-    const backgroundFlow = backgroundPage.locator('[data-telemetry-flow]');
-    await backgroundFlow.evaluate(element => element.scrollIntoView({ block: 'center' }));
-    assert.equal(await backgroundFlow.evaluate(element => element.classList.contains('is-flowing')), false);
-    await backgroundPage.evaluate(() => {
-      window.__backgroundPacketStarts = 0;
-      document.querySelector('[data-telemetry-flow]').addEventListener('animationstart', event => {
-        if (event.target.matches('[data-flow-packet]')) window.__backgroundPacketStarts += 1;
-      });
-      window.__testDocumentHidden = false;
-      document.dispatchEvent(new Event('visibilitychange'));
-    });
-    await backgroundPage.waitForFunction(() => (
-      document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing') &&
-      window.__backgroundPacketStarts >= 1
-    ));
-    const backgroundStarts = await backgroundPage.evaluate(() => window.__backgroundPacketStarts);
-    await backgroundPage.evaluate(() => {
-      window.__testDocumentHidden = true;
-      document.dispatchEvent(new Event('visibilitychange'));
-    });
-    await backgroundPage.waitForFunction(() => (
-      !document.querySelector('[data-telemetry-flow]')?.classList.contains('is-flowing')
-    ));
-    assert.ok((await backgroundFlow.locator('[data-flow-packet]').evaluateAll(packets =>
-      packets.map(packet => getComputedStyle(packet).animationName)
-    )).every(name => name === 'none'));
-    await backgroundPage.evaluate(() => {
-      window.__testDocumentHidden = false;
-      document.dispatchEvent(new Event('visibilitychange'));
-    });
-    await backgroundPage.waitForFunction(count => window.__backgroundPacketStarts > count, backgroundStarts);
-    await backgroundPage.evaluate(() => {
-      window.__testDocumentHidden = true;
-      document.dispatchEvent(new Event('visibilitychange'));
-    });
-    const backgroundTrace = backgroundPage.locator('[data-event-trace]');
-    await backgroundTrace.scrollIntoViewIfNeeded();
-    await backgroundPage.waitForFunction(() => (
-      getComputedStyle(document.querySelector('[data-trace-step]')).opacity === '0'
-    ));
-    await backgroundPage.evaluate(() => {
-      window.__testDocumentHidden = false;
-      document.dispatchEvent(new Event('visibilitychange'));
-    });
-    await backgroundPage.waitForFunction(() => (
-      document.querySelector('[data-event-trace]')?.classList.contains('is-playing')
-    ));
-    await backgroundPage.waitForFunction(() => (
-      document.querySelectorAll('[data-event-trace] [data-trace-step].is-revealed').length === 5
-    ), null, { timeout: 6500 });
-    await backgroundContext.close();
-
-    const reducedContext = await browser.newContext({
-      viewport: { width: 1440, height: 900 },
-      reducedMotion: 'reduce'
-    });
-    const reducedPage = await reducedContext.newPage();
-    await reducedPage.goto(url);
-    assert.equal(
-      (await reducedPage.locator('.interest-topics').innerText()).trim(),
-      'Blue team · Identity & access · GRC · IT automation · SOC'
-    );
-    assert.equal(
-      await reducedPage.locator('.responder.is-static.is-complete').count(),
-      await reducedPage.locator('.responder').count()
-    );
-    await reducedPage.goto(url + '/work/homelab/');
-    assert.ok(await reducedPage.locator('[data-telemetry-flow]').evaluate(element => element.classList.contains('is-static')));
-    const reducedPackets = await reducedPage.locator('[data-flow-packet]').evaluateAll(packets => packets.map(packet => {
-      const style = getComputedStyle(packet);
-      return { animation: style.animationName, display: style.display };
-    }));
-    assert.ok(reducedPackets.every(packet => packet.animation === 'none' && packet.display === 'none'));
-    assert.ok(await reducedPage.locator('[data-event-trace]').evaluate(element => element.classList.contains('is-static')));
-    assert.equal(await reducedPage.locator('[data-trace-step].is-revealed').count(), 5);
-    await reducedContext.close();
-
-    const tabletContext = await browser.newContext({
-      viewport: { width: 768, height: 900 },
-      reducedMotion: 'reduce'
-    });
-    const tabletPage = await tabletContext.newPage();
-    await tabletPage.goto(url);
-    const tabletBackground = tabletPage.locator('.background-index');
-    await tabletBackground.locator(':scope > summary').click();
-    await tabletPage.locator('.background-ledger').scrollIntoViewIfNeeded();
-    const tabletLedgerBoxes = await tabletPage.locator('.background-ledger > section').evaluateAll(sections => sections.map(section => {
-      const rect = section.getBoundingClientRect();
-      return { width: rect.width, top: rect.top, bottom: rect.bottom };
-    }));
-    assert.equal(tabletLedgerBoxes.length, 3);
-    assert.ok(tabletLedgerBoxes.every(box => box.width >= 250));
-    assert.ok(tabletLedgerBoxes[1].top >= tabletLedgerBoxes[0].bottom - 1);
-    assert.ok(tabletLedgerBoxes[2].top >= tabletLedgerBoxes[1].bottom - 1);
-    await tabletContext.close();
-
-    const mobileContext = await browser.newContext({
-      viewport: { width: 320, height: 900 },
-      reducedMotion: 'reduce'
-    });
-    const mobilePage = await mobileContext.newPage();
-    await mobilePage.goto(url);
-    const menu = mobilePage.locator('.mobile-menu');
-    const menuSummary = menu.locator(':scope > summary');
-    await menuSummary.focus();
-    await menuSummary.press('Enter');
-    assert.ok(await menu.evaluate(element => element.open));
-    await menuSummary.press('Escape');
-    assert.equal(await menu.evaluate(element => element.open), false);
-    assert.ok(await menuSummary.evaluate(element => element === document.activeElement));
-
-    const offshift = mobilePage.locator('.offshift');
-    const offshiftSummary = offshift.locator(':scope > summary');
-    await offshiftSummary.focus();
-    await offshiftSummary.press('Enter');
-    assert.ok(await offshift.evaluate(element => element.open));
-
-    const background = mobilePage.locator('.background-index');
-    const backgroundSummary = background.locator(':scope > summary');
-    await backgroundSummary.focus();
-    await backgroundSummary.press('Enter');
-    assert.ok(await background.evaluate(element => element.open));
-    await mobilePage.locator('.background-ledger').scrollIntoViewIfNeeded();
-    const ledgerBoxes = await mobilePage.locator('.background-ledger > section').evaluateAll(sections => sections.map(section => {
-      const rect = section.getBoundingClientRect();
-      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
-    }));
-    assert.equal(ledgerBoxes.length, 3);
-    assert.ok(ledgerBoxes.every(box => box.left >= -1 && box.right <= 321));
-    assert.ok(ledgerBoxes[1].top >= ledgerBoxes[0].bottom - 1);
-    assert.ok(ledgerBoxes[2].top >= ledgerBoxes[1].bottom - 1);
-
-    await mobilePage.goto(url + '/work/homelab/');
-    assert.equal(await mobilePage.locator('[data-telemetry-flow]').getAttribute('role'), 'region');
-    assert.equal(await mobilePage.locator('[data-telemetry-flow]').getAttribute('aria-pressed'), null);
-    assert.equal(await mobilePage.locator('[data-flow-instruction]').isHidden(), true);
-    const mobileFlow = mobilePage.locator('[data-telemetry-flow]');
-    await mobileFlow.focus();
-    const mobileScrollBeforeSpace = await mobilePage.evaluate(() => scrollY);
-    await mobilePage.keyboard.press('Space');
-    await delay(100);
-    assert.ok(await mobilePage.evaluate(() => scrollY) > mobileScrollBeforeSpace, 'Static telemetry region swallowed Space');
-    const mobileTrace = mobilePage.locator('[data-event-trace]');
-    await mobileTrace.scrollIntoViewIfNeeded();
-    const traceBox = await mobileTrace.boundingBox();
-    const fourthStepBox = await mobilePage.locator('.example-grid > div:first-child details:nth-of-type(4)').boundingBox();
-    assert.ok(traceBox && fourthStepBox && traceBox.y >= fourthStepBox.y + fourthStepBox.height - 1);
-    assert.ok(traceBox.x >= -1 && traceBox.x + traceBox.width <= 321);
-    assert.equal(await mobilePage.locator('[data-trace-step].is-revealed').count(), 5);
-    assert.ok(await mobilePage.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
-    await mobileContext.close();
-
-    const fallback = await browser.newContext({
-      javaScriptEnabled: false,
-      viewport: { width: 320, height: 900 }
-    });
-    const nojs = await fallback.newPage();
-    await nojs.goto(url);
-    assert.equal(await nojs.locator('#theme-toggle').isVisible(), false);
-    assert.ok(await nojs.locator('a[href="mailto:barry.sampath@outlook.com"]').count());
-    assert.ok(await nojs.locator('.hero-actions a[href="resume/Barry_Sampath_Resume.pdf"]').isVisible());
-    assert.match(await nojs.locator('.interest-topics').innerText(), /Identity & access/);
-    await nojs.locator('.mobile-menu > summary').click();
-    const resume = nojs.locator('.mobile-menu a[aria-label="Résumé (PDF)"]');
-    assert.ok(await resume.isVisible());
-    const pdf = await nojs.request.get(new URL(await resume.getAttribute('href'), nojs.url()).href);
-    assert.ok(pdf.ok(), 'Direct résumé link must resolve');
-    assert.match(pdf.headers()['content-type'], /application\/pdf/);
-    assert.equal((await pdf.body()).subarray(0, 5).toString(), '%PDF-');
-    await fallback.close();
-
-    console.log(
-      `PASS: ${scans} browser/accessibility scenarios; persisted theme, bounded and reduced motion, ` +
-      'telemetry, trace, mobile keyboard/layout, safe terminal and no-JavaScript paths.'
-    );
-  } finally {
-    if (browser) {
-      // Installed browser channels can occasionally stall while their driver exits on Windows.
-      // The assertions have finished at this point, so bound teardown rather than hanging CI.
-      await Promise.race([browser.close().catch(() => {}), delay(5000)]);
+    for (const [href, from] of links) {
+      const response = await page.request.get(href);
+      expect(response.status() === 200, 'internal link resolves', from, `${href} gave ${response.status()}`);
     }
-    server.kill();
-    server.stdout.destroy();
+    await context.close();
   }
-})().catch(error => {
-  console.error(error);
-  process.exitCode = 1;
-}).finally(() => {
-  setTimeout(() => process.exit(Number.isInteger(process.exitCode) ? process.exitCode : 0), 250);
-});
+
+  // Missing nested address.
+  {
+    const context = await newContext(browser, { width: 1440, theme: null });
+    const page = await context.newPage();
+    const problems = [];
+    page.on('requestfailed', request => problems.push('request failed: ' + request.url()));
+    page.on('pageerror', error => problems.push(error.message));
+    const response = await page.goto(site.url + '/work/nope/deeper/', { waitUntil: 'load' });
+    assert.equal(response.status(), 404, 'a missing nested address returns 404');
+    assert.ok(await page.locator('h1').isVisible(), 'the 404 h1 is visible');
+    const styled = await page.evaluate(() => getComputedStyle(document.querySelector('h1')).fontFamily);
+    assert.ok(!/^"?Times/.test(styled), 'the 404 page is styled, h1 font is ' + styled);
+    const fonts = await page.evaluate(() => document.fonts.ready.then(() => [...document.fonts].filter(f => f.status === 'error').map(f => f.family)));
+    expect(fonts.length === 0 && problems.length === 0, '404 loads its assets', '/work/nope/deeper/', problems.concat(fonts).join(' | '));
+    await page.click('nav[aria-label="Main"] a:text-is("Work")');
+    await page.waitForLoadState('load');
+    let where = await page.evaluate(() => ({ path: location.pathname, hash: location.hash, h1: document.querySelector('h1').textContent }));
+    assert.ok(where.path === '/' && where.hash === '#work' && !/filed/.test(where.h1), 'the Work link on the 404 page leads to the homepage, got ' + JSON.stringify(where));
+    await page.goto(site.url + '/work/nope/deeper/');
+    await page.click('a.brand');
+    await page.waitForLoadState('load');
+    where = await page.evaluate(() => ({ path: location.pathname, h1: document.querySelector('h1').textContent }));
+    assert.ok(where.path === '/' && !/filed/.test(where.h1), 'the brand link on the 404 page leads to the homepage, got ' + JSON.stringify(where));
+    await context.close();
+  }
+
+  // No JavaScript.
+  {
+    const context = await newContext(browser, { width: 1440, theme: null, javaScriptEnabled: false });
+    const page = await context.newPage();
+    for (const pagePath of PAGES) {
+      await page.goto(site.url + pagePath, { waitUntil: 'load' });
+      const facts = await page.evaluate(() => {
+        const visible = selector => [...document.querySelectorAll(selector)].filter(el => el.checkVisibility({ checkVisibilityCSS: true }) && el.getBoundingClientRect().width > 1);
+        const main = document.querySelector('main');
+        return {
+          h1: visible('h1').length, mainText: main.innerText.trim().length, mainOpacity: getComputedStyle(main).opacity,
+          toggle: visible('[data-theme-toggle]').length, terminal: visible('[data-terminal-open]').length
+        };
+      });
+      expect(facts.h1 === 1 && facts.mainText > 50 && facts.mainOpacity === '1', 'no-JavaScript content', pagePath, JSON.stringify(facts));
+      expect(facts.toggle === 0 && facts.terminal === 0, 'no-JavaScript hides script-only controls', pagePath, `toggle ${facts.toggle}, terminal ${facts.terminal} visible`);
+    }
+    await context.close();
+  }
+
+  // Print.
+  {
+    const context = await newContext(browser, { width: 1440, theme: null });
+    const page = await context.newPage();
+    for (const pagePath of PAGES) {
+      await page.goto(site.url + pagePath, { waitUntil: 'load' });
+      await page.emulateMedia({ media: 'print' });
+      const facts = await page.evaluate(() => {
+        const shown = el => el.checkVisibility({ checkVisibilityCSS: true, contentVisibilityAuto: true }) && el.getBoundingClientRect().height > 0;
+        const hiddenDetails = [...document.querySelectorAll('details')].filter(details => !details.closest('header')).flatMap((details, index) =>
+          [...details.children].filter(child => child.tagName !== 'SUMMARY' && !shown(child)).map(() => `details ${index} "${(details.querySelector('summary') || {}).textContent}"`));
+        return {
+          header: [...document.querySelectorAll('header.mast')].filter(shown).length,
+          footer: [...document.querySelectorAll('footer')].filter(shown).length,
+          hiddenDetails
+        };
+      });
+      expect(facts.header === 0 && facts.footer === 0, 'print hides header and footer', pagePath, JSON.stringify(facts));
+      expect(facts.hiddenDetails.length === 0, 'print shows details content', pagePath, [...new Set(facts.hiddenDetails)].join('; '));
+    }
+    await context.close();
+  }
+}
+
+(async () => {
+  const site = await startSite(48777);
+  let browser;
+  try {
+    browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
+    const backgrounds = new Map();
+    for (const pagePath of PAGES) {
+      for (const width of WIDTHS) {
+        for (const theme of THEMES) await checkPage(browser, site, pagePath, width, theme, backgrounds);
+      }
+      await checkReveals(browser, site, pagePath);
+    }
+    for (const pagePath of PAGES) {
+      for (const width of WIDTHS) {
+        const light = backgrounds.get(`${pagePath}|${width}|light`);
+        const dark = backgrounds.get(`${pagePath}|${width}|dark`);
+        expect(light && dark && light !== dark, 'themes differ in background', `${pagePath} at ${width}`, `light ${light}, dark ${dark}`);
+      }
+    }
+    await checkSite(browser, site);
+
+    const isKnown = failure => KNOWN_FAILURES.some(key => {
+      const [check, page] = key.split('|');
+      return check === failure.check && (page === undefined || failure.page === page || failure.page.startsWith(page + ' at '));
+    });
+    const real = failures.filter(failure => !isKnown(failure));
+    const known = failures.filter(isKnown);
+    for (const failure of known) console.log(`KNOWN ${failure.check} | ${failure.page} | ${failure.message}`);
+    for (const failure of real) console.error(`FAIL ${failure.check} | ${failure.page} | ${failure.message}`);
+    assert.equal(real.length, 0, `${real.length} browser checks failed`);
+    console.log(`PASS browser: ${PAGES.length} pages, ${WIDTHS.length} widths, 2 themes${known.length ? `, ${known.length} known failures` : ''}`);
+  } finally {
+    if (browser) await browser.close();
+    site.stop();
+  }
+})().catch(error => { console.error(error); process.exitCode = 1; });

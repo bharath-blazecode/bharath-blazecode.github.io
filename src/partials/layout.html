@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="{{csp}}">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+{{robots}}
+<link rel="canonical" href="{{canonical}}">
+<link rel="icon" href="{{root}}favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Barry Sampath">
+<meta property="og:title" content="{{ogTitle}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:url" content="{{canonical}}">
+<meta property="og:image" content="{{ogImage}}">
+<meta property="og:image:alt" content="{{ogImageAlt}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ogTitle}}">
+<meta name="twitter:description" content="{{description}}">
+<meta name="twitter:image" content="{{ogImage}}">
+<meta name="twitter:image:alt" content="{{ogImageAlt}}">
+<script>{{themeScript}}</script>
+{{preload}}
+<style>{{css}}</style>
+{{jsonld}}
+</head>
+<body class="{{bodyClass}}" id="top">
+<a class="skip" href="#main">Skip to content</a>
+<!-- @include header -->
+{{content}}
+<!-- @include footer -->
+{{scripts}}
+</body>
+</html>

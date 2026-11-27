@@ -1,36 +1,31 @@
-/* Scoreboard page: result blocks and evidence figures. Static HTML is the complete reading path. */
-.event { scroll-margin-top: 110px; }
-.event-rail-note { margin-top: 18px; font-size: .75rem; line-height: 1.8; }
-.event h2 { margin-bottom: 20px; }
+/* Scoreboard: one block per event, with the result as the headline. Static HTML is the complete reading path. */
+.event { padding-block: clamp(20px, 3vw, 40px) clamp(40px, 6vw, 92px); scroll-margin-top: calc(var(--mast) + 8px); }
+.case-head + .event .case-grid { border-top: 2px solid var(--ink); }
+.event .case-side .side-note { line-height: 1.8; }
+.event .case-main h2 { margin-bottom: 20px; }
 
-/* One large figure per event, with the detail beside it in mono. */
-.event-result {
-  display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 22px;
-  margin: 0 0 30px; padding: 14px 0 16px;
-  border-top: 3px solid var(--ink); border-bottom: 1px solid var(--line);
-}
-.event-result b { font: 900 clamp(2.8rem, 2rem + 4vw, 5rem)/.95 var(--display); letter-spacing: -.045em; }
-.event-result span { font: .8125rem/1.5 var(--mono); color: var(--muted); max-width: 44ch; }
-/* A participation certificate is not a placement, so it gets the same frame without a headline number. */
-.event-result.is-note span { font-size: .9375rem; color: var(--ink); }
+.event-result { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 22px; max-width: none; margin: 0 0 30px; padding: 16px 0 18px; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--line); }
+.event-result b { padding: 0 .06em; margin: 0 -.06em; font-weight: 900; font-size: clamp(3rem, 2rem + 5vw, 6rem); line-height: .95; letter-spacing: -.05em; background: linear-gradient(transparent 64%, var(--marker) 64% 92%, transparent 92%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+[data-theme=dark] .event-result b { background: linear-gradient(transparent 86%, var(--marker) 86% 95%, transparent 95%); }
+.event-result b { color: var(--ink); }
+.event-result span { max-width: 36em; font-family: var(--mono); font-size: .82rem; line-height: 1.5; color: var(--muted); }
+.event-result.is-note { padding-left: 14px; border-left: 3px solid var(--marker); }
+.event-result.is-note span { font-family: var(--sans); font-weight: 750; font-size: clamp(1.3rem, 2.4vw, 1.9rem); letter-spacing: -.02em; line-height: 1.15; color: var(--ink); }
 
-.event-art { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; margin: 34px 0 6px; align-items: start; }
-.event-art figure { margin: 0; min-width: 0; }
-.event-art img { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: #fff; }
-.event-art figcaption { max-width: 60ch; }
-.event-art:has(> figure:only-child) { grid-template-columns: minmax(0, 1fr); max-width: 560px; }
+.event-art { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px clamp(24px, 3vw, 40px); margin: 38px 0 6px; align-items: start; }
+.event-art .shot { margin-top: 0; }
+.event-art:has(> figure:only-child) { grid-template-columns: minmax(0, 1fr); max-width: 520px; }
+.event-art .shot:nth-child(2) { margin-top: 44px; }
+.event-art:has(> figure:only-child) .shot { margin-top: 0; }
+.event-links { margin-top: 32px; }
 
-/* The section's own padding and rule follow, so the list needs no bottom margin of its own. */
-.event-links { margin: 28px 0 0; }
-
-@media screen and (max-width: 850px) {
-  .event-art { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+@media (max-width: 900px) {
+  .event-art { grid-template-columns: minmax(0, 1fr); }
+  .event-art .shot:nth-child(2) { margin-top: 0; }
   .event-art:has(> figure:only-child) { max-width: none; }
-  .event-rail-note { margin-top: 8px; }
-  .event-result { margin-bottom: 24px; }
 }
-
 @media print {
   .event-art { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .event-art figure, .event-result { break-inside: avoid; }
+  .event-art .shot, .event-result { break-inside: avoid; }
+  .event-result b { background: none; }
 }

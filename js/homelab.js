@@ -1,4 +1,4 @@
-/* Enhancements for the lab notebook and the illustrative investigation. */
+/* Enhancements for the lab notebook, the telemetry diagram and the illustrative investigation. */
 (() => {
   'use strict';
 
@@ -10,7 +10,7 @@
   const status = notebook && notebook.querySelector('[data-notebook-status]');
   if (pages.length > 1 && controls && previous && next && status && pages.every(page => page.dataset.notebookTitle)) {
     let current = 0;
-    function showPage(index, direction) {
+    const showPage = (index, direction) => {
       if (index < 0 || index >= pages.length) return;
       current = index;
       if (direction) notebook.dataset.turn = direction;
@@ -18,7 +18,7 @@
       previous.setAttribute('aria-disabled', String(current === 0));
       next.setAttribute('aria-disabled', String(current === pages.length - 1));
       status.textContent = `Note ${current + 1} of ${pages.length}: ${pages[current].dataset.notebookTitle}`;
-    }
+    };
     previous.addEventListener('click', () => showPage(current - 1, 'previous'));
     next.addEventListener('click', () => showPage(current + 1, 'next'));
     showPage(0);
@@ -31,19 +31,20 @@
     if (detail) link.addEventListener('click', () => { detail.open = true; });
   });
 
-  const flow = document.querySelector('[data-investigation-flow]');
+  // The diagram, the process row and the trace loop only while on screen, in a visible tab, with motion allowed.
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  if (flow && 'IntersectionObserver' in window) {
-    let visible = false;
-    function syncDrawing() {
-      flow.classList.toggle('is-drawing', visible && !document.hidden && !reduced.matches);
-    }
+  if ('IntersectionObserver' in window) {
+    const live = document.querySelectorAll('[data-telemetry-flow], [data-investigation-flow], [data-event-trace]');
+    const onScreen = new Map();
+    const sync = () => {
+      live.forEach(item => item.classList.toggle('is-live', Boolean(onScreen.get(item)) && !document.hidden && !reduced.matches));
+    };
     const observer = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= .15);
-      syncDrawing();
+      entries.forEach(entry => onScreen.set(entry.target, entry.isIntersecting && entry.intersectionRatio >= .15));
+      sync();
     }, { threshold: [0, .15] });
-    observer.observe(flow);
-    document.addEventListener('visibilitychange', syncDrawing);
-    reduced.addEventListener('change', syncDrawing);
+    live.forEach(item => observer.observe(item));
+    document.addEventListener('visibilitychange', sync);
+    reduced.addEventListener('change', sync);
   }
 })();

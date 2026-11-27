@@ -1,0 +1,244 @@
+<!--page
+title: ClassQuest | Barry Sampath
+description: Turning lecture material into playable quests in three days, with a contribution trail from the learning loop to upload security. A team project; the award is the team’s.
+css: base case classquest
+scripts: site classquest
+preload: archivo-variable.woff2 source-serif-italic.woff2
+ogImage: projects/classquest-gameplay.jpg
+ogImageAlt: ClassQuest game world with a player character, learning portals and a concept-progress panel
+-->
+<main id="main">
+
+<header class="case-head shell">
+  <p class="label crumb"><a href="../../#work">Selected work</a> <span aria-hidden="true">/</span> ClassQuest</p>
+  <h1><span class="h1-mark">ClassQuest</span></h1>
+  <div class="case-top">
+    <div>
+      <p class="case-dek">Turning lecture material into playable quests in three days, with a contribution trail from the learning loop to upload security.</p>
+      <p class="case-summary">Built by a five-person team at Code Network&rsquo;s Winter Hackathon, 21 to 23 August 2026. ClassQuest received the People&rsquo;s Choice Award after audience voting across 15 teams.</p>
+    </div>
+    <dl class="facts" aria-label="Project facts">
+      <div><dt class="label">Kind</dt><dd>Team project, three-day hackathon</dd></div>
+      <div><dt class="label">My part</dt><dd><span class="mark">Ten merged pull requests</span> cover the playable demo, frontend foundation, upload security, cohort learning and preferences.</dd></div>
+      <div><dt class="label">With</dt><dd>A team of five. Miguel Pineda led the technical build. The award belongs to the team.</dd></div>
+      <div><dt class="label">Status</dt><dd>Three-day hackathon build; team refinement continued afterwards</dd></div>
+      <div><dt class="label">Stack</dt><dd>React, TypeScript, FastAPI, Python, SQLite</dd></div>
+    </dl>
+  </div>
+</header>
+
+<section class="case-section" id="context" aria-labelledby="context-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">01</span><span class="label">Context</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="context-title">The project and <em>my contribution</em></h2>
+      <p>ClassQuest turns course material into playable challenges: make a prediction, diagnose the result, check source evidence, then apply the idea or try again. Learners join a cohort server and receive readiness feedback based on the group&rsquo;s answers. We built it with React, TypeScript, FastAPI, Python and SQLite.</p>
+      <p>Miguel Pineda led the technical build for our five-person team. My work covered the playable demo, frontend foundation, upload security and cohort features, and I presented during the judging Q&amp;A. The team received the People&rsquo;s Choice Award following audience voting across 15 teams.</p>
+      <p>I was a Code Network Event Officer while competing in its hackathon. The executive cleared this before the event.</p>
+    </div>
+  </div>
+</section>
+
+<section class="case-section" id="built" aria-labelledby="built-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">02</span><span class="label">What I built</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="built-title">My work across <em>ten merged pull requests</em></h2>
+
+      <ol class="trail">
+        <li class="trail-item reveal">
+          <h3>The playable learning loop</h3>
+          <p>I built the cycle of prediction, diagnosis, source evidence, then transfer or retry, along with answer choices and a concept trail. I added an overfitting fixture and updated the backend test expectations to match.</p>
+          <p class="prs"><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/5">PR #5<span class="sr-only"> (external site)</span></a></p>
+        </li>
+        <li class="trail-item reveal">
+          <h3>Frontend foundation and the visual system</h3>
+          <p>I connected sign-in and registration to the existing API, restored returning sessions, and built onboarding and server create/join flows with loading states and error recovery. I applied the team&rsquo;s visual system across those screens and the demo.</p>
+          <p class="prs"><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/11">PR #11<span class="sr-only"> (external site)</span></a><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/14">PR #14<span class="sr-only"> (external site)</span></a></p>
+        </li>
+      </ol>
+
+      <div class="gallery" role="group" aria-label="ClassQuest interface evidence">
+        <figure class="shot gallery-wide reveal">
+          <img src="../../assets/projects/classquest-gameplay-960.webp" srcset="../../assets/projects/classquest-gameplay-480.webp 480w, ../../assets/projects/classquest-gameplay-960.webp 960w" sizes="(max-width: 900px) 92vw, 800px" alt="ClassQuest game world with a player character, learning portals and a concept-progress panel" width="1280" height="720" loading="lazy" decoding="async">
+          <figcaption><span class="label">Fig. 1</span><span>The playable learning world, with concept progression kept visible beside the game.</span></figcaption>
+        </figure>
+        <figure class="shot reveal">
+          <img src="../../assets/projects/classquest-learning-hub-960.webp" srcset="../../assets/projects/classquest-learning-hub-480.webp 480w, ../../assets/projects/classquest-learning-hub-960.webp 960w" sizes="(max-width: 900px) 92vw, 380px" alt="ClassQuest learning hub with challenge, server and progress options" width="1256" height="1280" loading="lazy" decoding="async">
+          <figcaption><span class="label">Fig. 2</span><span>The learning hub and shared-world entry points.</span></figcaption>
+        </figure>
+        <figure class="shot reveal">
+          <img src="../../assets/projects/classquest-sign-in-960.webp" srcset="../../assets/projects/classquest-sign-in-480.webp 480w, ../../assets/projects/classquest-sign-in-960.webp 960w" sizes="(max-width: 900px) 92vw, 380px" alt="ClassQuest sign-in screen with a demo-world option" width="1280" height="663" loading="lazy" decoding="async">
+          <figcaption><span class="label">Fig. 3</span><span>Sign-in, account creation and a direct route into the demo world.</span></figcaption>
+        </figure>
+      </div>
+
+      <ol class="trail">
+        <li class="trail-item reveal">
+          <h3>Upload security and regression tests</h3>
+          <p>I separated client-supplied filenames from server storage names, bounded the application read and added regression tests for path-like names and size limits. <a href="#upload-decision">Follow the decision and inspect the evidence below.</a></p>
+          <p class="prs"><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/12">PR #12<span class="sr-only"> (external site)</span></a></p>
+        </li>
+        <li class="trail-item reveal">
+          <h3>Cohort learning and preferences</h3>
+          <p>I added an asynchronous practice challenge and readiness feedback based on shared answer patterns. When the answer data is sparse or tied, the application uses a fallback rather than presenting a confident readiness judgement. Local learning preferences are validated and still work when storage is blocked.</p>
+          <p class="prs"><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/20">PR #20<span class="sr-only"> (external site)</span></a><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/21">PR #21<span class="sr-only"> (external site)</span></a><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/23">PR #23<span class="sr-only"> (external site)</span></a></p>
+        </li>
+        <li class="trail-item reveal">
+          <h3>Iteration and debugging</h3>
+          <p>I revised the starting experience to remove forced learning modes, fixed a dependent hub card exposed by a failed typecheck, and added universal dashboard actions.</p>
+          <p class="prs"><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/24">PR #24<span class="sr-only"> (external site)</span></a><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/25">PR #25<span class="sr-only"> (external site)</span></a><a class="pr ext" href="https://github.com/MikePineda/class-quest/pull/26">PR #26<span class="sr-only"> (external site)</span></a></p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="band-stage upload-decision" id="upload-decision" aria-labelledby="upload-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="label">One decision</span><p class="label side-note">PR #12<br>Merged 22 Aug 2026</p></div>
+    <div class="case-main">
+      <h2 id="upload-title"><span class="hl">A filename is a label.</span> <span class="hl"><em>It should not choose a path.</em></span></h2>
+      <p class="upload-summary">I changed the upload handler so the server chooses where a file is stored, while keeping its original name for display. I also bounded the application read and added regression tests. The useful part is the boundary: a familiar label should not decide where bytes get written.</p>
+      <p class="upload-credit">My patch, within a five-person team&rsquo;s build. Miguel Pineda led the technical work; the People&rsquo;s Choice Award belongs to the team.</p>
+
+      <div class="upload-sheet doc">
+        <div class="upload-controls" role="group" aria-label="Explore the upload decision" hidden>
+          <button type="button" data-upload-choice="before" aria-controls="upload-before" aria-pressed="true"><span aria-hidden="true">01</span>Before</button>
+          <button type="button" data-upload-choice="change" aria-controls="upload-change" aria-pressed="false"><span aria-hidden="true">02</span>The change</button>
+          <button type="button" data-upload-choice="evidence" aria-controls="upload-evidence" aria-pressed="false"><span aria-hidden="true">03</span>What backs it</button>
+        </div>
+
+        <div class="upload-panels">
+          <section class="upload-panel" id="upload-before" aria-labelledby="upload-before-title">
+            <p class="label">01 / Before</p>
+            <h3 id="upload-before-title">One name. <em>Two jobs.</em></h3>
+            <figure class="upload-path">
+              <div class="upload-path-pair">
+                <div class="upload-ticket"><span class="label">From the uploader</span><strong>lecture.pdf</strong><small>A document label</small></div>
+                <svg class="upload-path-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg>
+                <div class="upload-storage"><span class="label">Used for storage</span><code>doc_dir / filename</code><small>The label also chose the name on disk</small></div>
+              </div>
+              <figcaption>A normal-looking name hides the trust decision.</figcaption>
+            </figure>
+            <p>The original handler joined the supplied filename to the upload directory. A path-like name could steer that join outside the intended folder. It also read the entire file <strong>before</strong> checking its size.</p>
+            <div class="upload-code-note"><span class="label">Two lines from the old handler</span><pre><code>data = f.file.read()
+path = doc_dir / filename</code></pre><p class="small">Non-adjacent lines; <a class="ext" href="https://github.com/MikePineda/class-quest/blob/dba6cad390425b17c8bdc846d5cd917fe3f1bf26/backend/app/routers/servers.py#L138-L183">read them in context<span class="sr-only"> (external site)</span></a>.</p></div>
+          </section>
+
+          <section class="upload-panel" id="upload-change" aria-labelledby="upload-change-title">
+            <p class="label">02 / The change</p>
+            <h3 id="upload-change-title">Keep the label. <em>Choose the path.</em></h3>
+            <figure class="upload-path">
+              <div class="upload-path-pair">
+                <div class="upload-ticket"><span class="label">For display</span><strong>lecture.pdf</strong><small>The original name stays</small></div>
+                <svg class="upload-path-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9h12M6 15h12M15 5l-6 14"/></svg>
+                <div class="upload-storage"><span class="label">For storage</span><code>doc_dir / document_id</code><small>The server generates the ID</small></div>
+              </div>
+              <figcaption>The person names the document. The server names the stored file.</figcaption>
+            </figure>
+            <p>The generated document ID becomes the storage name; the original filename stays in the database as display metadata. <a class="ext" href="https://github.com/MikePineda/class-quest/blob/27bdcba8be98902e7443c57bf2ade314dac44ce8/backend/app/routers/servers.py#L175-L194">Inspect the storage change<span class="sr-only"> (external site)</span></a></p>
+            <div class="upload-read">
+              <h4>The extra byte</h4>
+              <p>It is enough to tell whether the file is too large. The helper asks for at most <code>limit + 1</code> bytes, then returns HTTP 413 (&ldquo;too large&rdquo;) if it got more than the limit. A file exactly at the limit still works.</p>
+              <figure class="upload-byte-note">
+                <div class="upload-bytes" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><b>6</b><i></i></div>
+                <figcaption>The test uses a 5-byte limit and 9 available bytes. The helper requests 6 and rejects the oversized content. This tiny limit is a test fixture.</figcaption>
+              </figure>
+              <pre><code>data = file.file.read(max_bytes + 1)
+if len(data) &gt; max_bytes:
+    raise HTTPException(...)</code></pre>
+              <p class="small">Excerpt; exception arguments shortened. <a class="ext" href="https://github.com/MikePineda/class-quest/blob/27bdcba8be98902e7443c57bf2ade314dac44ce8/backend/app/routers/servers.py#L22-L30">Read the full helper<span class="sr-only"> (external site)</span></a></p>
+            </div>
+          </section>
+
+          <section class="upload-panel" id="upload-evidence" aria-labelledby="upload-evidence-title">
+            <p class="label">03 / What backs it</p>
+            <h3 id="upload-evidence-title">A change you can <em>check for yourself.</em></h3>
+            <p>Three added test functions cover four cases. The filename test runs twice; each case also checks the original label and stored bytes are preserved.</p>
+            <ol class="upload-test-notes" data-upload-tests>
+              <li><span class="upload-case-number" aria-hidden="true">01</span><div><strong>A relative path as a filename</strong><p><code>../outside.txt</code> stays metadata. The stored file remains inside the server&rsquo;s upload directory.</p></div></li>
+              <li><span class="upload-case-number" aria-hidden="true">02</span><div><strong>An absolute path as a filename</strong><p><code>/tmp/outside.txt</code> also cannot choose the storage destination.</p></div></li>
+              <li><span class="upload-case-number" aria-hidden="true">03</span><div><strong>Read just enough to reject</strong><p>With 9 bytes available and a 5-byte limit, the read requests 6 bytes and returns HTTP 413.</p></div></li>
+              <li><span class="upload-case-number" aria-hidden="true">04</span><div><strong>Accept the boundary</strong><p>Five bytes at a 5-byte limit are accepted. The limit does not reject a file that fits.</p></div></li>
+            </ol>
+            <p><a class="upload-evidence-link ext" href="https://github.com/MikePineda/class-quest/blob/27bdcba8be98902e7443c57bf2ade314dac44ce8/backend/tests/test_servers.py#L108-L157">Read the four cases in the merged patch<span class="sr-only"> (external site)</span></a></p>
+            <p class="small">These notes explain the published tests; this page does not run them. The PR records the checks run for the patch. The existing mixed file-and-pasted-text test was retained.</p>
+          </section>
+        </div>
+        <p id="upload-status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+        <div class="upload-source"><a class="textlink ext" href="https://github.com/MikePineda/class-quest/pull/12">Read my merged PR #12<span class="sr-only"> (external site)</span></a><span class="label">22 August 2026 / ClassQuest</span></div>
+      </div>
+
+      <div class="upload-limits" role="group" aria-labelledby="upload-limits-title"><h3 id="upload-limits-title">A focused fix, with more to do.</h3><p>This patch did not add malware scanning, parser isolation or upstream request limits before multipart parsing. It bounds this application read; it does not make the whole upload pipeline safe or prevent every kind of resource exhaustion. <a class="ext" href="https://github.com/MikePineda/class-quest/blob/27bdcba8be98902e7443c57bf2ade314dac44ce8/docs/security/SECURITY_BASELINE.md#L26-L65">See the recorded scope and deferred work<span class="sr-only"> (external site)</span></a></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="case-section" id="lessons" aria-labelledby="lessons-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">03</span><span class="label">What broke</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="lessons-title">Three problems <em>found during the build</em></h2>
+      <ol class="steps">
+        <li><b>A failed typecheck left a broken card in the hub.</b> An upstream change invalidated a dependent component, and we moved past the type error under time pressure. Testing exposed the broken card later.</li>
+        <li><b>The first onboarding forced a learning mode on people.</b> The team already understood the modes, which made the forced choice seem clearer to us than it was to new users. We removed that step.</li>
+        <li><b>The upload handler was insecure in its first version.</b> It used client-supplied filenames for storage and read each whole file before checking its size. I separated the storage name from the label, bounded that read and added regression tests.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="case-section" id="reflection" aria-labelledby="reflection-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">04</span><span class="label">What I&rsquo;d change</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="reflection-title">What I would <em>do earlier</em></h2>
+      <ol class="steps">
+        <li><b>Start with safe upload defaults.</b> Server-generated identifiers and bounded reads should have been in the first version rather than the patch.</li>
+        <li><b>Test onboarding with someone outside the team on day one.</b> Someone who had not been part of the planning conversation could have challenged our assumptions about the starting experience much earlier.</li>
+        <li><b>Finish the security baseline earlier.</b> Writing down what is unhardened is most useful while there is still time to harden some of it, not at the end as documentation.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="case-section" id="evidence" aria-labelledby="evidence-title">
+  <div class="shell case-grid">
+    <div class="case-side"><span class="num" aria-hidden="true">05</span><span class="label">Evidence</span></div>
+    <div class="case-main prose">
+      <h2 class="reveal" id="evidence-title">Pull requests and <em>repository</em></h2>
+      <p class="lede">These pull requests document my contributions during the hackathon. The team continued refining the application afterwards.</p>
+      <ul class="evidence evidence-grid">
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/5"><span class="et">Playable learning demo, overfitting fixture, backend test updates</span><span class="eu">PR #5</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/11"><span class="et">Frontend foundation, sign-in, sessions, onboarding, server flows</span><span class="eu">PR #11</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/12"><span class="et">Upload security patch, traversal and size-limit tests, security baseline</span><span class="eu">PR #12</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/14"><span class="et">Visual system applied across screens</span><span class="eu">PR #14</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/20"><span class="et">Asynchronous cohort practice challenge</span><span class="eu">PR #20</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/21"><span class="et">Readiness feedback with sparse-evidence safeguards</span><span class="eu">PR #21</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/23"><span class="et">Validated learning preferences with storage fallbacks</span><span class="eu">PR #23</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/24"><span class="et">Role and learning-mode starting path, later revised</span><span class="eu">PR #24</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/25"><span class="et">Forced learning modes and the obsolete dependent card removed</span><span class="eu">PR #25</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pull/26"><span class="et">Universal dashboard actions</span><span class="eu">PR #26</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest/pulls?q=is%3Apr+author%3Abharath-blazecode"><span class="et">All of my pull requests on the repository</span><span class="eu">Filtered view</span><span class="sr-only"> (external site)</span></a></li>
+        <li><a class="ext" href="https://github.com/MikePineda/class-quest"><span class="et">Team repository</span><span class="eu">MikePineda/class-quest</span><span class="sr-only"> (external site)</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="shell">
+  <nav class="case-next" aria-label="Continue exploring">
+    <a href="../../#work"><span class="label">Back to</span><strong><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m0 0 5-5m-5 5 5 5"/></svg>All work</strong></a>
+    <a href="../luna/"><span class="label">Next case study</span><strong>LUNA<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></strong></a>
+  </nav>
+</div>
+
+<section class="case-close" aria-labelledby="close-title">
+  <div class="shell">
+    <h2 id="close-title">Let&rsquo;s compare notes.</h2>
+    <a class="email" href="mailto:barry.sampath@outlook.com">barry.sampath@outlook.com</a>
+  </div>
+</section>
+
+</main>
