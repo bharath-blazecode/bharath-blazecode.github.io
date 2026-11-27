@@ -119,6 +119,17 @@ Repository changes should preserve the distinction between completed work, share
 - Competition evidence in `assets/competitions/` is the owner's own certificates and result screenshots, recompressed. The leaderboard is cropped to its panel; nothing in them is edited. Teammates named on the Scoreboard page (Alan Nguyen, Akira Hasuo) are credited as in the public LinkedIn post.
 - The downloadable résumé is stored in `resume/` and linked directly from every masthead, the homepage introduction and the Contact section.
 
+## Versions
+
+Each major design of the site is tagged and kept as a GitHub Release, so earlier versions stay downloadable from the [Releases page](https://github.com/bharath-blazecode/bharath-blazecode.github.io/releases).
+
+| Tag | Design |
+|---|---|
+| `v4` | Field Notes, the design that was live until the 2027 redesign |
+| `v5` | The 2027 redesign described in this README |
+
+A new tag is added when a redesign is merged into `main`. Smaller fixes between redesigns are not tagged.
+
 ## Build and deployment
 
 `.github/workflows/pages.yml` builds the site and publishes `dist/` to GitHub Pages on each push to `main`. The repository's Pages source must be set to "GitHub Actions" for this to take effect. Only `dist/` is published, so `past looks/`, tests and tools are not served.
