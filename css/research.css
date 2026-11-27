@@ -9,7 +9,7 @@
 .rs-band-head { margin-bottom: clamp(26px, 3.4vw, 48px); }
 .rs-band-head .label { display: block; margin-bottom: 14px; }
 .rs-band-head h2 { font-size: clamp(2.3rem, 5.2vw, 4.6rem); }
-.rs-grid { display: grid; grid-template-columns: minmax(0, 7.4fr) minmax(0, 4fr); gap: var(--gap); align-items: end; }
+.rs-grid { display: grid; grid-template-columns: minmax(0, 7.4fr) minmax(0, 4fr); gap: var(--gap); align-items: start; }
 .rs-thread > div { display: grid; grid-template-columns: 8.4em minmax(0, 1fr); gap: 16px; padding: 18px 0 20px; border-top: 1px solid var(--ink); }
 .rs-thread dt { padding-top: 4px; }
 .rs-thread dd { max-width: 36em; }
