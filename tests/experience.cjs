@@ -12,7 +12,7 @@ const entries = [
   { id: 'experience-events', label: 'Code Network', org: 'Code Network', title: 'Event Officer', date: 'Mar to Sep 2026', kind: 'Previous committee role', text: 'up to 40 participants', bullets: [] },
   { id: 'experience-coles', label: 'Coles Group', org: 'Coles Group', title: 'Customer Service Supervisor', date: 'May 2025 to present', kind: 'Part-time', text: 'more than 20 team members', bullets: [] }
 ];
-const ariaLabel = entry => `${entry.label === entry.org ? entry.org : `${entry.label}, ${entry.org}`}, ${entry.title}, ${entry.date}`;
+const ariaLabel = entry => `${entry.date}, ${entry.label}, ${entry.title}${entry.label === entry.org ? '' : `, ${entry.org}`}`;
 const stop = (page, entry) => page.locator(`[data-experience-target="${entry.id}"]`);
 const focused = (page, entry) => stop(page, entry).evaluate(el => el === document.activeElement);
 
@@ -353,7 +353,8 @@ const noOverflow = page => page.evaluate(() => document.documentElement.scrollWi
           await stop(page, entries[choose]).click();
           await page.evaluate(axeSource);
           const result = await page.evaluate(() => axe.run(document.querySelector('#experience'), {
-            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }
+            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] },
+            rules: { 'label-content-name-mismatch': { enabled: true } }
           }));
           const summary = result.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(' ')).slice(0, 4).join(' | ')}`);
           assert.deepEqual(summary, [], `axe violations in ${theme}`);

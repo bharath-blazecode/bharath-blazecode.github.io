@@ -351,7 +351,7 @@ const paper = page => page.evaluate(() => getComputedStyle(document.documentElem
           const { context: axeContext, page: axePage } = await open(browser, site, { width, reducedMotion: 'reduce', bypassCSP: true, saved: theme });
           await scrollThrough(axePage);
           await axePage.evaluate(axeSource);
-          const result = await axePage.evaluate(() => axe.run());
+          const result = await axePage.evaluate(() => axe.run(document, { rules: { 'label-content-name-mismatch': { enabled: true } } }));
           const summary = result.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(' ')).slice(0, 4).join(' | ')}`);
           assert.deepEqual(summary, [], `axe violations at ${width} ${theme}`);
           await axeContext.close();

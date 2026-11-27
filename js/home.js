@@ -82,8 +82,9 @@
       button.setAttribute('aria-controls', role.id);
       button.setAttribute('aria-expanded', 'false');
       const full = organisation.textContent.trim();
-      const name = role.dataset.pathLabel === full ? full : `${role.dataset.pathLabel}, ${full}`;
-      button.setAttribute('aria-label', `${name}, ${title.textContent}, ${date}`);
+      // Same order as the visible text, so the spoken name contains what is on screen.
+      const extra = role.dataset.pathLabel === full ? '' : `, ${full}`;
+      button.setAttribute('aria-label', `${date}, ${role.dataset.pathLabel}, ${title.textContent}${extra}`);
       const marker = document.createElement('span');
       marker.className = 'experience-marker';
       marker.setAttribute('aria-hidden', 'true');
@@ -93,7 +94,8 @@
         const part = document.createElement('span');
         part.className = className;
         part.textContent = value;
-        label.append(part);
+        // The space keeps the words apart when the text is read as one string; flex layout does not show it.
+        label.append(part, ' ');
       }
       button.append(marker, label);
       xpStops.append(button);
