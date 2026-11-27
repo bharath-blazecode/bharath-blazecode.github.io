@@ -14,6 +14,7 @@ The website carries the professional story and project detail. This README is fo
 - [ClassQuest](https://bharath-blazecode.github.io/work/classquest/)
 - [LUNA](https://bharath-blazecode.github.io/work/luna/)
 - [Scoreboard: CTFs and hackathon results](https://bharath-blazecode.github.io/work/competitions/)
+- [AI Cyber Risk Assessment Research](https://bharath-blazecode.github.io/research/)
 
 Each case study separates project context, my contribution and the evidence available for inspection.
 
@@ -38,25 +39,27 @@ node node_modules/playwright/cli.js install chromium
 npm run test:all
 ```
 
-`npm run test:all` runs every suite in turn: `test:browser`, `test:home`, `test:desk`, `test:terminal`, `test:explainer`, `test:homelab`, `test:classquest`, `test:mobile` and `test:writing`. Each can also be run alone. The suites cover the homepage, the three case studies, the Scoreboard and the 404 page at 320, 390, 820 and 1440px in both themes, plus reduced motion, keyboard use, the no-JavaScript path and printing. Axe is included for automated accessibility checks, but an automated pass does not establish WCAG conformance or replace assistive-technology testing.
+`npm run test:all` runs every suite in turn: `test:browser`, `test:home`, `test:experience`, `test:desk`, `test:terminal`, `test:explainer`, `test:research`, `test:chess`, `test:homelab`, `test:classquest`, `test:mobile` and `test:writing`. Each can also be run alone. The suites cover the homepage, the research page, the three case studies, the Scoreboard and the 404 page at 320, 390, 820 and 1440px in both themes, plus reduced motion, keyboard use, the no-JavaScript path and printing. Axe is included for automated accessibility checks, but an automated pass does not establish WCAG conformance or replace assistive-technology testing.
 
 ## How the site is put together
 
 Pages live in `src/pages` and share one layout, header and footer from `src/partials`. `tools/build.cjs` renders them into `dist/`. Each page starts with a short block that names its title, description, stylesheets and scripts. The build inlines the CSS for each page, so the first paint needs one request, and writes a Content-Security-Policy with hashes for the inline theme script and styles. Navigation is edited in one place, `src/partials/header.html`.
 
 ```text
-src/pages/                  the six pages: home, 404 and work/*
+src/pages/                  the seven pages: home, research, 404 and work/*
 src/partials/               layout, header, footer and the research explainer
-src/data/person.json        JSON-LD for the homepage
+src/data/                   JSON-LD for the homepage and the research page
 src/desk-scene.js           source for the 3D desk (bundled with Three.js into assets/desk/)
 css/base.css                design tokens and shared components
 css/home.css                homepage sections
 css/case.css                case studies, Scoreboard and 404
+css/research.css            research page
 css/terminal.css            terminal overlay
 css/explainer.css           research explainer
 js/theme.js                 applies a saved theme before first paint
 js/site.js                  theme control, menu, scroll reveals, terminal loader
-js/home.js                  desk loading, project folders, responder, chess knight
+js/home.js                  desk loading, project folders, responder, Experience path
+js/chess.js                 chess game, loaded on request; js/chess-engine.js is its search
 js/terminal.js              terminal engine; js/terminal-data.js holds its files
 js/explainer.js, js/homelab.js, js/classquest.js   page components
 assets/                     images, fonts, the desk bundle and still images
@@ -83,9 +86,11 @@ The responder is a small pixel sprite that stands on the at-a-glance list. It pl
 
 The terminal opens from the header or with the backtick key. It is a simulation: a small virtual filesystem of text written from the pages, with `ls`, `cd`, `cat`, `grep`, pipes, tab completion and history. The files in `logs` are illustrative Sysmon and Wazuh events for the home lab story and say so. Nothing executes, nothing is fetched and visitor input is inserted as text. Commands such as `nmap` and `ssh` explain why they are not run.
 
-The research explainer places three invented evidence samples against the ASD Essentials. It is labelled as an illustration of the research question. It shows no results and nothing in it is the output of a model.
+Experience is a path of points, one per role, with the date, organisation and title under each. Choosing a point opens that role in the panel below; choosing it again, Close or Escape closes it. The first role is open on load. On phones the path scrolls sideways and keeps the chosen point in view. The path and points draw in as the section scrolls into view. Without JavaScript and in print the roles are ordinary disclosures and every one is readable.
 
-The About section has a chess board where a knight makes one legal move per press.
+Research has its own page at `/research/`; the homepage keeps a short teaser. The explainer on that page places three invented evidence samples against the ASD Essentials. It is labelled as an illustration of the research question. It shows no results and nothing in it is the output of a model.
+
+The About section has a short chess game, Gardner minichess on a 5 by 5 board. None of its code loads until the visitor starts it. The opponent is a search of possible moves with alpha-beta pruning and a hand-written evaluation, run in a worker so the page stays responsive. It explains its choice in plain words from the actual search and adjusts its evaluation to simple counts of how the visitor plays during the visit. It is not a trained model. Nothing played is sent anywhere; only the visitor's own win and loss counts are kept, in that browser.
 
 ### Mobile
 
